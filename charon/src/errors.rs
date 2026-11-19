@@ -218,6 +218,8 @@ pub struct ErrorCtx {
     pub def_id_is_local: bool,
     /// The number of errors encountered so far.
     pub error_count: usize,
+    /// An error was reported that must make translation fail, whatever the other options say.
+    pub fatal: bool,
 }
 
 impl ErrorCtx {
@@ -230,6 +232,7 @@ impl ErrorCtx {
             def_id: None,
             def_id_is_local: false,
             error_count: 0,
+            fatal: false,
         }
     }
 

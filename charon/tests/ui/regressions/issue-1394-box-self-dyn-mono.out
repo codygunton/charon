@@ -7,6 +7,15 @@ opaque type core::marker::MetaSized::{vtable}
 #[lang_item(MetaSized)]
 pub trait MetaSized<Self>
 
+// Full name: core::marker::Sized
+#[fundamental]
+#[lang_item(Sized)]
+pub trait Sized<Self>
+{
+    proof ImpliedClause0: (Self: MetaSized)
+    non-dyn-compatible
+}
+
 struct () {}
 
 vtable core::marker::MetaSized::{vtable}::<S>: core::marker::MetaSized::{vtable} = Opaque(VTable was chosen to be opaque)
@@ -16,31 +25,23 @@ vtable core::marker::MetaSized::{vtable}::<S>: core::marker::MetaSized::{vtable}
 fn panic_in_cleanup() -> !
 = <opaque>
 
-// Full name: alloc::boxed::Box::<S>
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+// Full name: alloc::boxed::Box
 #[fundamental]
 #[lang_item(OwnedBox)]
-pub opaque type Box::<S, Global>
-
-// Full name: alloc::boxed::Box::{impl Destruct for Box::<S, Global>}::drop_glue::<S, Global>
-unsafe fn {impl Destruct for Box::<S, Global>}::drop_glue::<S, Global><'_0>(_1: &'_0 mut Box::<S, Global>)
-= <opaque>
-
-// Full name: alloc::boxed::Box::<(dyn Trait)>
-#[fundamental]
-#[lang_item(OwnedBox)]
-pub opaque type Box::<(dyn Trait), Global>
-
-// Full name: alloc::boxed::Box::{impl Destruct for Box::<(dyn Trait), Global>}::drop_glue::<(dyn Trait), Global>
-unsafe fn {impl Destruct for Box::<(dyn Trait), Global>}::drop_glue::<(dyn Trait), Global><'_0>(_1: &'_0 mut Box::<(dyn Trait), Global>)
-= <opaque>
+pub opaque type Box<T>
+where
+    TraitClause0: (T: MetaSized),
+    TraitClause1: (type_error("removed allocator parameter"): Sized),
 
 // Full name: test_crate::S
 struct S {}
 
-// Full name: alloc::boxed::{Box::<S, Global>}::new::<S>
-#[track_caller]
-#[diagnostic_item("box_new")]
-pub fn new::<S>(_1: S) -> Box::<S, Global>
+// Full name: alloc::boxed::Box::{impl Destruct for Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]}::drop_glue::<S, Global>
+unsafe fn impl_Destruct_for_Box_S_Global::drop_glue::<S, Global><'_0>(_1: &'_0 mut Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}])
 = <opaque>
 
 struct test_crate::Trait::{vtable} {
@@ -58,16 +59,26 @@ trait Trait<Self>
     vtable: test_crate::Trait::{vtable}
 }
 
+// Full name: alloc::boxed::Box::{impl Destruct for Box<(dyn Trait)>[{built_in impl MetaSized for (dyn Trait)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Trait), Global>
+unsafe fn impl_Destruct_for_Box_Global::drop_glue::<(dyn Trait), Global><'_0>(_1: &'_0 mut Box<(dyn Trait)>[{built_in impl MetaSized for (dyn Trait)}, {built_in impl Sized for Global}])
+= <opaque>
+
+// Full name: alloc::boxed::{Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]}::new::<S>
+#[track_caller]
+#[diagnostic_item("box_new")]
+pub fn new::<S>(_1: S) -> Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]
+= <opaque>
+
 // Full name: test_crate::{impl Trait for S}::method
-fn method(self: Box::<S, Global>)
+fn method(self: Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}])
 {
     let mut _0: (); // return
-    let self: Box::<S, Global>; // arg #1
+    let self: Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]; // arg #1
 
     storage_live(_0)
     _0 = ()
     _0 = ()
-    conditional_drop[{impl Destruct for Box::<S, Global>}::drop_glue::<S, Global><'0>] self
+    conditional_drop[impl_Destruct_for_Box_S_Global::drop_glue::<S, Global><'0>] self
     ↳⚡ storage_dead(self)
         unwind_continue
     storage_dead(self)
@@ -75,16 +86,16 @@ fn method(self: Box::<S, Global>)
 }
 
 // Full name: test_crate::{impl Trait for S}::method::{vtable_method}
-fn {vtable_method}(_1: Box::<(dyn Trait), Global>)
+fn {vtable_method}(_1: Box<(dyn Trait)>[{built_in impl MetaSized for (dyn Trait)}, {built_in impl Sized for Global}])
 {
     let mut _0: (); // return
-    let mut _1: Box::<(dyn Trait), Global>; // arg #1
-    let mut _2: Box::<S, Global>; // anonymous local
+    let mut _1: Box<(dyn Trait + '0)>[{built_in impl MetaSized for (dyn Trait + '1)}, {built_in impl Sized for Global}]; // arg #1
+    let mut _2: Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]; // anonymous local
 
     storage_live(_0)
     _0 = ()
     storage_live(_2)
-    _2 = concretize<Box::<S, Global>>(move _1)
+    _2 = concretize<Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]>(move _1)
     _0 = method(move _2)
     ↳⚡ storage_dead(_2)
         storage_dead(_1)
@@ -123,14 +134,14 @@ impl "impl_Trait_for_S" Trait for S {
 fn main()
 {
     let mut _0: (); // return
-    let b: Box::<(dyn Trait), Global>; // local
-        where b :< Box::<(dyn Trait), Global>;
-        where b := Box::<(dyn Trait), Global>;
-    let mut _2: Box::<S, Global>; // anonymous local
+    let b: Box<(dyn Trait + '6)>[{built_in impl MetaSized for (dyn Trait + '7)}, {built_in impl Sized for Global}]; // local
+        where b :< Box<(dyn Trait + '0)>[{built_in impl MetaSized for (dyn Trait + '0)}, {built_in impl Sized for Global}];
+        where b := Box<(dyn Trait + '1)>[{built_in impl MetaSized for (dyn Trait + '1)}, {built_in impl Sized for Global}];
+    let mut _2: Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]; // anonymous local
     let mut _3: S; // anonymous local
     let _4: (); // anonymous local
-    let mut _5: Box::<(dyn Trait), Global>; // anonymous local
-    let mut _6: fn(Box::<(dyn Trait), Global>); // anonymous local
+    let mut _5: Box<(dyn Trait + '8)>[{built_in impl MetaSized for (dyn Trait + '9)}, {built_in impl Sized for Global}]; // anonymous local
+    let mut _6: fn(Box<(dyn Trait + '8)>[{built_in impl MetaSized for (dyn Trait + '9)}, {built_in impl Sized for Global}]); // anonymous local
 
     storage_live(_0)
     _0 = ()
@@ -141,8 +152,8 @@ fn main()
     _2 = new::<S>(move _3)
     ↳⚡ storage_dead(_6)
         unwind_continue
-    b = unsize_cast<Box::<(dyn Trait), Global>, &impl_Trait_for_S::{vtable}>(move _2)
-    conditional_drop[{impl Destruct for Box::<S, Global>}::drop_glue::<S, Global><'2>] _2
+    b = unsize_cast<Box<(dyn Trait + '10)>[{built_in impl MetaSized for (dyn Trait + '11)}, {built_in impl Sized for Global}], &impl_Trait_for_S::{vtable}>(move _2)
+    conditional_drop[impl_Destruct_for_Box_S_Global::drop_glue::<S, Global><'12>] _2
     ↳⚡ storage_dead(_6)
         unwind_continue
     storage_dead(_3)
@@ -152,12 +163,12 @@ fn main()
     storage_live(_5)
     _5 = move b
     storage_live(_6)
-    _6 = cast<fn(Box::<(dyn Trait), Global>)>(read (*_5.metadata).method_method)
+    _6 = cast<fn(Box<(dyn Trait + '8)>[{built_in impl MetaSized for (dyn Trait + '9)}, {built_in impl Sized for Global}])>(read (*_5.metadata).method_method)
     _4 = (read _6)(move _5)
-    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn Trait), Global>}::drop_glue::<(dyn Trait), Global><'8>] _5
+    ↳⚡ conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Trait), Global><'24>] _5
         ↳⚡ storage_dead(_6)
             unwind_terminate(in_cleanup)
-        conditional_drop[{impl Destruct for Box::<(dyn Trait), Global>}::drop_glue::<(dyn Trait), Global><'10>] b
+        conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Trait), Global><'38>] b
         ↳⚡ storage_dead(_6)
             unwind_terminate(in_cleanup)
         storage_dead(_6)
@@ -165,7 +176,7 @@ fn main()
     storage_dead(_5)
     storage_dead(_4)
     _0 = ()
-    conditional_drop[{impl Destruct for Box::<(dyn Trait), Global>}::drop_glue::<(dyn Trait), Global><'9>] b
+    conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Trait), Global><'31>] b
     ↳⚡ storage_dead(_6)
         unwind_continue
     storage_dead(b)

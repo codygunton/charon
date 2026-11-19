@@ -1,0 +1,7 @@
+error: devirtualize: unsizing of Circle to dyn test_crate::Shape at tests/ui/devirtualize-mismatch.rs:28:31 does not match configured implementation test_crate::Square
+  --> tests/ui/devirtualize-mismatch.rs:28:31
+   |
+28 |     total(&Square(2)) + total(&Circle(1))
+   |                               ^^^^^^^^^^
+
+ERROR Charon failed to translate this code (1 errors)

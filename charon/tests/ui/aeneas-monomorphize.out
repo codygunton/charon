@@ -1,0 +1,622 @@
+# Final LLBC before serialization:
+
+// Full name: core::clone::Clone
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
+pub trait Clone<Self>
+
+// Full name: core::array::repeat
+pub fn repeat<T, const N : usize>(_1: T) -> [T; N]
+where
+    TraitClause0: (T: Clone),
+= <opaque>
+
+// Full name: core::array::{[T; N]}::as_slice
+pub fn as_slice<'_0, T, const N : usize>(_1: &'_0 [T; N]) -> &'_0 [T]
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::array::{[T; N]}::as_mut_slice
+pub fn as_mut_slice<'_0, T, const N : usize>(_1: &'_0 mut [T; N]) -> &'_0 mut [T]
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::clone::impls::{impl Clone for u8}
+impl "impl_Clone_for_u8" Clone for u8 {
+    non-dyn-compatible
+}
+
+// Full name: core::marker::Copy
+#[lang_item(Copy)]
+#[diagnostic_item("Copy")]
+pub trait Copy<Self>
+{
+    proof ImpliedClause0: (Self: Clone)
+    non-dyn-compatible
+}
+
+// Full name: core::ops::range::RangeFrom::<usize>
+#[lang_item(RangeFrom)]
+pub struct RangeFrom::<usize> {
+  start: usize,
+}
+
+// Full name: core::panicking::panic_in_cleanup
+#[lang_item(PanicInCleanup)]
+fn panic_in_cleanup() -> !
+= <opaque>
+
+// Full name: core::slice::index::{impl Index<RangeFrom::<usize>> for [u8]}::index::<u8, RangeFrom::<usize>>
+pub fn impl_Index_for_slice::index::<u8, RangeFrom::<usize>><'_0>(_1: &'_0 [u8], _2: RangeFrom::<usize>) -> &'_0 [u8]
+= <opaque>
+
+// Full name: core::slice::index::{impl SliceIndex<[T]> for usize}::index
+pub fn impl_SliceIndex_slice_for_usize::index<'_0, T>(_1: usize, _2: &'_0 [T]) -> &'_0 T
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::slice::index::{impl SliceIndex<[T]> for usize}::index_mut
+#[rustc_no_writable]
+pub fn impl_SliceIndex_slice_for_usize::index_mut<'_0, T>(_1: usize, _2: &'_0 mut [T]) -> &'_0 mut T
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+#[lang_item(SliceLen)]
+pub fn core::slice::{[u8]}::len::<u8><'_0>(_1: &'_0 [u8]) -> usize
+= <opaque>
+
+// Full name: alloc::boxed::Box
+#[fundamental]
+#[lang_item(OwnedBox)]
+pub opaque type Box<T>
+
+// Full name: test_crate::Nop
+pub struct Nop {
+  _0: u8,
+}
+
+opaque type ()
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box<Nop>}::drop_glue::<Nop, Global>
+unsafe fn impl_Destruct_for_Box_Nop_Global::drop_glue::<Nop, Global><'_0>(_1: &'_0 mut Box<Nop>)
+= <opaque>
+
+#[track_caller]
+#[diagnostic_item("box_new")]
+pub fn alloc::boxed::{Box<Nop>}::new::<Nop>(_1: Nop) -> Box<Nop>
+= <opaque>
+
+// Full name: alloc::vec::Vec::<Nop>
+#[diagnostic_item("Vec")]
+pub opaque type Vec::<Nop, Global>
+
+// Full name: alloc::vec::Vec::{impl Destruct for Vec::<Nop, Global>}::drop_glue::<Nop, Global>
+unsafe fn {impl Destruct for Vec::<Nop, Global>}::drop_glue::<Nop, Global><'_0>(_1: &'_0 mut Vec::<Nop, Global>)
+= <opaque>
+
+#[diagnostic_item("vec_new")]
+pub fn alloc::vec::{Vec::<Nop, Global>}::new::<Nop>() -> Vec::<Nop, Global>
+= <opaque>
+
+pub fn alloc::vec::{Vec::<Nop, Global>}::push::<Nop, Global><'_0>(_1: &'_0 mut Vec::<Nop, Global>, _2: Nop)
+= <opaque>
+
+pub fn alloc::vec::{Vec::<Nop, Global>}::len::<Nop, Global><'_0>(_1: &'_0 Vec::<Nop, Global>) -> usize
+= <opaque>
+
+// Full name: test_crate::Buf::<Nop>
+pub struct Buf::<Nop> {
+  v: Vec::<Nop, Global>,
+  pos: (u32, bool),
+}
+
+// Full name: test_crate::Buf::{impl Destruct for Buf::<Nop>}::drop_glue::<Nop>
+unsafe fn {impl Destruct for Buf::<Nop>}::drop_glue::<Nop><'_0>(_1: &'_0 mut Buf::<Nop>)
+{
+    let mut _0: (); // return
+    let _1: &'1 mut Buf::<Nop>; // arg #1
+
+    storage_live(_0)
+    _0 = ()
+    drop[{impl Destruct for Vec::<Nop, Global>}::drop_glue::<Nop, Global><'2>] (*_1).v
+    ↳⚡ storage_dead(_1)
+        unwind_continue
+    storage_dead(_1)
+    return
+}
+
+pub fn test_crate::{Buf::<Nop>}::push::<Nop><'_0>(self: &'_0 mut Buf::<Nop>, i: Nop)
+{
+    let mut _0: (); // return
+    let self: &'1 mut Buf::<Nop>; // arg #1
+    let i: Nop; // arg #2
+    let _3: (); // anonymous local
+    let mut _4: &'3 mut Vec::<Nop, Global>; // anonymous local
+    let mut _5: Nop; // anonymous local
+    let mut _6: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_6)
+    _0 = ()
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &two-phase-mut (*self).v
+    storage_live(_5)
+    _5 = move i
+    _3 = alloc::vec::{Vec::<Nop, Global>}::push::<Nop, Global><'7>(move _4, move _5)
+    ↳⚡ storage_dead(_6)
+        storage_dead(i)
+        storage_dead(self)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_3)
+    _6 = copy (*self).pos.0 panic.+ const 1u32
+    (*self).pos.0 = move _6
+    _0 = ()
+    storage_dead(_6)
+    storage_dead(i)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::{Buf::<Nop>}::first_len::<Nop>
+pub fn first_len::<Nop><'_0, '_1>(self: &'_0 Buf::<Nop>, xs: &'_1 [u8; 4usize]) -> usize
+{
+    let mut _0: usize; // return
+    let self: &'3 Buf::<Nop>; // arg #1
+    let xs: &'5 [u8; 4usize]; // arg #2
+    let s: &'7 [u8]; // local
+        where s :< &'0 [u8];
+        where s := &'1 [u8];
+    let mut _4: &'8 [u8; 4usize]; // anonymous local
+    let mut _5: usize; // anonymous local
+    let mut _6: &'9 [u8]; // anonymous local
+    let _7: &'10 [u8]; // anonymous local
+    let mut _8: &'11 [u8]; // anonymous local
+    let mut _9: RangeFrom::<usize>; // anonymous local
+    let mut _10: usize; // anonymous local
+    let mut _11: &'13 Vec::<Nop, Global>; // anonymous local
+    let mut _12: usize; // anonymous local
+
+    storage_live(_0)
+    storage_live(_12)
+    storage_live(s)
+    storage_live(_4)
+    _4 = &(*xs)
+    s = as_slice<'_, u8, 4usize>(move _4)
+    ↳⚡ undefined_behavior
+    storage_dead(_4)
+    fake_read(s)
+    storage_live(_5)
+    storage_live(_6)
+    storage_live(_7)
+    storage_live(_8)
+    _8 = &(*s) with_metadata(read s.metadata)
+    storage_live(_9)
+    _9 = RangeFrom::<usize> { start: const 1usize }
+    _7 = impl_Index_for_slice::index::<u8, RangeFrom::<usize>><'18>(move _8, move _9)
+    ↳⚡ storage_dead(_12)
+        storage_dead(xs)
+        storage_dead(self)
+        unwind_continue
+    _6 = &(*_7) with_metadata(read _7.metadata)
+    storage_dead(_9)
+    storage_dead(_8)
+    _5 = core::slice::{[u8]}::len::<u8><'22>(move _6)
+    ↳⚡ storage_dead(_12)
+        storage_dead(xs)
+        storage_dead(self)
+        unwind_continue
+    storage_dead(_6)
+    storage_live(_10)
+    storage_live(_11)
+    _11 = &(*self).v
+    _10 = alloc::vec::{Vec::<Nop, Global>}::len::<Nop, Global><'26>(move _11)
+    ↳⚡ storage_dead(_12)
+        storage_dead(xs)
+        storage_dead(self)
+        unwind_continue
+    storage_dead(_11)
+    _12 = copy _5 panic.+ copy _10
+    _0 = move _12
+    storage_dead(_10)
+    storage_dead(_5)
+    storage_dead(s)
+    storage_dead(_7)
+    storage_dead(_12)
+    storage_dead(xs)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::Inst
+pub trait Inst<Self>
+
+// Full name: test_crate::{impl Clone for Nop}
+impl "impl_Clone_for_Nop" Clone for Nop {
+    non-dyn-compatible
+}
+
+// Full name: test_crate::{impl Copy for Nop}
+impl "impl_Copy_for_Nop" Copy for Nop {
+    proof ImpliedClause0: (Nop: Clone) = impl_Clone_for_Nop
+    non-dyn-compatible
+}
+
+// Full name: test_crate::{impl Inst for Nop}
+impl "impl_Inst_for_Nop" Inst for Nop {
+    vtable: lazy
+}
+
+// Full name: test_crate::{impl Inst for Nop}::emit
+pub fn emit<'_0, '_1>(self: &'_0 Nop, b: &'_1 mut Buf::<Nop>)
+{
+    let mut _0: (); // return
+    let self: &'1 Nop; // arg #1
+    let b: &'3 mut Buf::<Nop>; // arg #2
+    let mut _3: bool; // anonymous local
+    let mut _4: u8; // anonymous local
+    let _5: (); // anonymous local
+    let mut _6: &'4 Nop; // anonymous local
+    let _7: Nop; // anonymous local
+    let mut _8: u8; // anonymous local
+    let mut _9: u8; // anonymous local
+    let mut _10: u8; // anonymous local
+    let mut _11: &'5 mut Buf::<Nop>; // anonymous local
+    let _12: (); // anonymous local
+    let mut _13: &'6 mut Buf::<Nop>; // anonymous local
+    let mut _14: Nop; // anonymous local
+
+    storage_live(_0)
+    storage_live(_10)
+    _0 = ()
+    storage_live(_3)
+    storage_live(_4)
+    _4 = copy (*self)._0
+    _3 = move _4 > const 0u8
+    if move _3 {
+        storage_dead(_4)
+        storage_live(_5)
+        storage_live(_6)
+        storage_live(_7)
+        storage_live(_8)
+        storage_live(_9)
+        _9 = copy (*self)._0
+        _10 = copy _9 panic.- const 1u8
+        _8 = move _10
+        storage_dead(_9)
+        _7 = Nop { _0: move _8 }
+        _6 = &_7
+        storage_dead(_8)
+        storage_live(_11)
+        _11 = &two-phase-mut (*b)
+        _5 = emit<'13, '14>(move _6, move _11)
+        ↳⚡ storage_dead(_10)
+            storage_dead(b)
+            storage_dead(self)
+            unwind_continue
+        storage_dead(_11)
+        storage_dead(_6)
+        storage_dead(_7)
+        storage_dead(_5)
+    } else {
+        storage_dead(_4)
+    }
+    storage_dead(_3)
+    storage_live(_12)
+    storage_live(_13)
+    _13 = &two-phase-mut (*b)
+    storage_live(_14)
+    _14 = copy (*self)
+    _12 = test_crate::{Buf::<Nop>}::push::<Nop><'18>(move _13, move _14)
+    ↳⚡ storage_dead(_10)
+        storage_dead(b)
+        storage_dead(self)
+        unwind_continue
+    storage_dead(_14)
+    storage_dead(_13)
+    storage_dead(_12)
+    _0 = ()
+    storage_dead(_10)
+    storage_dead(b)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::run::{promoted_const}
+fn {promoted_const}() -> &'_ Nop
+{
+    let mut _0: &'0 Nop; // return
+    let mut _1: Nop; // anonymous local
+
+    storage_live(_0)
+    storage_live(_1)
+    _1 = Nop { _0: const 2u8 }
+    _0 = &_1
+    return
+}
+
+// Full name: test_crate::run::{promoted_const}
+const {promoted_const}: &'_ Nop = {promoted_const}()
+
+// Full name: test_crate::run
+pub fn run() -> usize
+{
+    let mut _0: usize; // return
+    let mut b: Buf::<Nop>; // local
+    let mut _2: Vec::<Nop, Global>; // anonymous local
+    let mut _3: (u32, bool); // anonymous local
+    let _4: (); // anonymous local
+    let mut _5: &'1 Nop; // anonymous local
+    let mut _6: &'3 mut Buf::<Nop>; // anonymous local
+    let mut _7: &'4 mut Buf::<Nop>; // anonymous local
+    let mut arr: [u8; 4usize]; // local
+    let _9: usize; // anonymous local
+    let x: usize; // local
+    let mut _11: u8; // anonymous local
+    let _12: usize; // anonymous local
+    let boxed: Box<Nop>; // local
+    let mut _14: Nop; // anonymous local
+    let mut _15: usize; // anonymous local
+    let mut _16: usize; // anonymous local
+    let mut _17: &'6 Buf::<Nop>; // anonymous local
+    let mut _18: &'8 [u8; 4usize]; // anonymous local
+    let _19: &'9 [u8; 4usize]; // anonymous local
+    let mut _20: usize; // anonymous local
+    let mut _21: usize; // anonymous local
+    let mut _22: usize; // anonymous local
+    let mut _23: u8; // anonymous local
+    let mut _24: usize; // anonymous local
+    let mut _25: &'10 Nop; // anonymous local
+    let mut _26: &'_ mut [u8; 4usize]; // anonymous local
+    let mut _27: &'_ mut [u8]; // anonymous local
+    let mut _28: &'_ mut u8; // anonymous local
+    let mut _29: &'_ [u8; 4usize]; // anonymous local
+    let mut _30: &'_ [u8]; // anonymous local
+    let mut _31: &'_ u8; // anonymous local
+
+    storage_live(_0)
+    storage_live(_21)
+    storage_live(_24)
+    storage_live(_25)
+    storage_live(b)
+    storage_live(_2)
+    _2 = alloc::vec::{Vec::<Nop, Global>}::new::<Nop>()
+    ↳⚡ storage_dead(_25)
+        storage_dead(_24)
+        storage_dead(_21)
+        storage_dead(_31)
+        storage_dead(_30)
+        storage_dead(_29)
+        storage_dead(_28)
+        storage_dead(_27)
+        storage_dead(_26)
+        unwind_continue
+    storage_live(_3)
+    _3 = (const 0u32, const false)
+    b = Buf::<Nop> { v: move _2, pos: move _3 }
+    storage_dead(_3)
+    conditional_drop[{impl Destruct for Vec::<Nop, Global>}::drop_glue::<Nop, Global><'11>] _2
+    ↳⚡ storage_dead(_25)
+        storage_dead(_24)
+        storage_dead(_21)
+        storage_dead(_31)
+        storage_dead(_30)
+        storage_dead(_29)
+        storage_dead(_28)
+        storage_dead(_27)
+        storage_dead(_26)
+        unwind_continue
+    storage_dead(_2)
+    fake_read(b)
+    storage_live(_4)
+    storage_live(_5)
+    _25 = read {promoted_const}
+    _5 = &(*_25)
+    storage_live(_6)
+    storage_live(_7)
+    _7 = &mut b
+    _6 = &two-phase-mut (*_7)
+    _4 = emit<'19, '20>(move _5, move _6)
+    ↳⚡ conditional_drop[{impl Destruct for Buf::<Nop>}::drop_glue::<Nop><'21>] b
+        ↳⚡ storage_dead(_25)
+            storage_dead(_24)
+            storage_dead(_21)
+            storage_dead(_31)
+            storage_dead(_30)
+            storage_dead(_29)
+            storage_dead(_28)
+            storage_dead(_27)
+            storage_dead(_26)
+            unwind_terminate(in_cleanup)
+        storage_dead(_25)
+        storage_dead(_24)
+        storage_dead(_21)
+        storage_dead(_31)
+        storage_dead(_30)
+        storage_dead(_29)
+        storage_dead(_28)
+        storage_dead(_27)
+        storage_dead(_26)
+        unwind_continue
+    storage_dead(_6)
+    storage_dead(_5)
+    storage_dead(_7)
+    storage_dead(_4)
+    storage_live(arr)
+    arr = repeat<u8, 4usize>[impl_Clone_for_u8](const 0u8)
+    ↳⚡ undefined_behavior
+    fake_read(arr)
+    storage_live(_9)
+    _9 = const 1usize
+    fake_read(arr)
+    storage_live(_26)
+    _26 = &mut arr
+    storage_live(_27)
+    _27 = as_mut_slice<'_, u8, 4usize>(move _26)
+    ↳⚡ undefined_behavior
+    storage_live(_28)
+    _28 = impl_SliceIndex_slice_for_usize::index_mut<'_, u8>(copy _9, move _27)
+    ↳⚡ undefined_behavior
+    (*_28) = const 3u8
+    storage_dead(_9)
+    storage_live(x)
+    storage_live(_11)
+    storage_live(_12)
+    _12 = const 2usize
+    fake_read(arr)
+    storage_live(_29)
+    _29 = &arr
+    storage_live(_30)
+    _30 = as_slice<'_, u8, 4usize>(move _29)
+    ↳⚡ undefined_behavior
+    storage_live(_31)
+    _31 = impl_SliceIndex_slice_for_usize::index<'_, u8>(copy _12, move _30)
+    ↳⚡ undefined_behavior
+    _11 = copy (*_31)
+    x = cast<usize>(move _11)
+    storage_dead(_11)
+    fake_read(x)
+    storage_dead(_12)
+    storage_live(boxed)
+    storage_live(_14)
+    _14 = Nop { _0: const 5u8 }
+    boxed = alloc::boxed::{Box<Nop>}::new::<Nop>(move _14)
+    ↳⚡ conditional_drop[{impl Destruct for Buf::<Nop>}::drop_glue::<Nop><'21>] b
+        ↳⚡ storage_dead(_25)
+            storage_dead(_24)
+            storage_dead(_21)
+            storage_dead(_31)
+            storage_dead(_30)
+            storage_dead(_29)
+            storage_dead(_28)
+            storage_dead(_27)
+            storage_dead(_26)
+            unwind_terminate(in_cleanup)
+        storage_dead(_25)
+        storage_dead(_24)
+        storage_dead(_21)
+        storage_dead(_31)
+        storage_dead(_30)
+        storage_dead(_29)
+        storage_dead(_28)
+        storage_dead(_27)
+        storage_dead(_26)
+        unwind_continue
+    storage_dead(_14)
+    fake_read(boxed)
+    storage_live(_15)
+    storage_live(_16)
+    storage_live(_17)
+    _17 = &b
+    storage_live(_18)
+    storage_live(_19)
+    _19 = &arr
+    _18 = &(*_19)
+    _16 = first_len::<Nop><'28, '29>(move _17, move _18)
+    ↳⚡ conditional_drop[impl_Destruct_for_Box_Nop_Global::drop_glue::<Nop, Global><'30>] boxed
+        ↳⚡ storage_dead(_25)
+            storage_dead(_24)
+            storage_dead(_21)
+            storage_dead(_31)
+            storage_dead(_30)
+            storage_dead(_29)
+            storage_dead(_28)
+            storage_dead(_27)
+            storage_dead(_26)
+            unwind_terminate(in_cleanup)
+        conditional_drop[{impl Destruct for Buf::<Nop>}::drop_glue::<Nop><'21>] b
+        ↳⚡ storage_dead(_25)
+            storage_dead(_24)
+            storage_dead(_21)
+            storage_dead(_31)
+            storage_dead(_30)
+            storage_dead(_29)
+            storage_dead(_28)
+            storage_dead(_27)
+            storage_dead(_26)
+            unwind_terminate(in_cleanup)
+        storage_dead(_25)
+        storage_dead(_24)
+        storage_dead(_21)
+        storage_dead(_31)
+        storage_dead(_30)
+        storage_dead(_29)
+        storage_dead(_28)
+        storage_dead(_27)
+        storage_dead(_26)
+        unwind_continue
+    storage_dead(_18)
+    storage_dead(_17)
+    storage_live(_20)
+    _20 = copy x
+    _21 = copy _16 panic.+ copy _20
+    _15 = move _21
+    storage_dead(_20)
+    storage_dead(_16)
+    storage_live(_22)
+    storage_live(_23)
+    _23 = copy (*boxed)._0
+    _22 = cast<usize>(move _23)
+    storage_dead(_23)
+    _24 = copy _15 panic.+ copy _22
+    _0 = move _24
+    storage_dead(_22)
+    storage_dead(_15)
+    conditional_drop[impl_Destruct_for_Box_Nop_Global::drop_glue::<Nop, Global><'31>] boxed
+    ↳⚡ conditional_drop[{impl Destruct for Buf::<Nop>}::drop_glue::<Nop><'21>] b
+        ↳⚡ storage_dead(_25)
+            storage_dead(_24)
+            storage_dead(_21)
+            storage_dead(_31)
+            storage_dead(_30)
+            storage_dead(_29)
+            storage_dead(_28)
+            storage_dead(_27)
+            storage_dead(_26)
+            unwind_terminate(in_cleanup)
+        storage_dead(_25)
+        storage_dead(_24)
+        storage_dead(_21)
+        storage_dead(_31)
+        storage_dead(_30)
+        storage_dead(_29)
+        storage_dead(_28)
+        storage_dead(_27)
+        storage_dead(_26)
+        unwind_continue
+    storage_dead(boxed)
+    storage_dead(x)
+    storage_dead(arr)
+    conditional_drop[{impl Destruct for Buf::<Nop>}::drop_glue::<Nop><'32>] b
+    ↳⚡ storage_dead(_25)
+        storage_dead(_24)
+        storage_dead(_21)
+        storage_dead(_31)
+        storage_dead(_30)
+        storage_dead(_29)
+        storage_dead(_28)
+        storage_dead(_27)
+        storage_dead(_26)
+        unwind_continue
+    storage_dead(b)
+    storage_dead(_19)
+    storage_dead(_25)
+    storage_dead(_24)
+    storage_dead(_21)
+    storage_dead(_31)
+    storage_dead(_30)
+    storage_dead(_29)
+    storage_dead(_28)
+    storage_dead(_27)
+    storage_dead(_26)
+    return
+}
+
+
+

@@ -27,6 +27,7 @@ pub mod add_missing_info {
 /// Passes that effect some kind of normalization on the crate.
 pub mod normalize {
     pub mod desugar_drops;
+    pub mod devirtualize;
     pub mod expand_associated_types;
     pub mod normalize_trait_refs;
     pub mod partial_monomorphization;
@@ -125,6 +126,10 @@ pub fn run_transformation_passes(options: &CliOpts, ctx: &mut TransformCtx) {
         global(&add_missing_info::compute_short_names::Transform),
         // Check that translation emitted consistent types, and unify body lifetimes (best-effort).
         global(&typecheck_and_unify::Check::PostTranslation),
+        // `--devirtualize`: replace configured `dyn Trait` types with their single implementation.
+        // Must run before the body passes so `skip_trait_refs_when_known` makes the former
+        // vtable calls direct.
+        global(&normalize::devirtualize::Transform),
         // Filter the trait impls that were marked invisible since we couldn't filter them out
         // earlier.
         global(&finish_translation::filter_invisible_trait_impls::Transform),

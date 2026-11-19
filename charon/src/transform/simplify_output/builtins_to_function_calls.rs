@@ -260,6 +260,54 @@ impl<'a, 'b> IndexVisitor<'a, 'b> {
             self.ctx
                 .borrow_to_new_var(subplace.clone(), BorrowKind::mutable(mut_access), None);
 
+        // With `--monomorphize`, the polymorphic array `Index` impls can't be used: their output
+        // type is a projection on a trait that has no associated types in monomorphic mode. We
+        // index arrays through their slice instead:
+        // `storage_live(tmp0')`
+        // `tmp0' = core::array::{[T; N]}::as_{mut_}slice(move tmp0)`
+        let (input_var, len) = match len {
+            Some(len) if self.ctx.ctx.options.monomorphize_with_hax => {
+                let item = match mutability {
+                    RefKind::Shared => StdItem::ArrayAsSlice,
+                    RefKind::Mut => StdItem::ArrayAsMutSlice,
+                };
+                let Some(&as_slice_id) = self.std_items.item_map.get(&item) else {
+                    return;
+                };
+                let generics = GenericArgs::new(
+                    [Region::Erased].into(),
+                    [ty.clone()].into(),
+                    [len].into(),
+                    ty_is_sized
+                        .iter()
+                        .cloned()
+                        .map(PolyTraitRef::empty)
+                        .collect(),
+                );
+                let slice_ref_ty = TyKind::Ref(
+                    Region::Erased,
+                    TyKind::Slice(ty.clone(), ty_is_sized.clone()).into_ty(),
+                    mutability,
+                )
+                .into_ty();
+                let slice_var = self.ctx.fresh_var(None, slice_ref_ty);
+                let kind = StatementKind::Call {
+                    call: Call {
+                        func: FnOperand::Regular(mk_fn_ptr(self.ctx.ctx, as_slice_id, generics)),
+                        args: vec![Operand::Move(input_var)],
+                        safety: CallSafety::Inherit,
+                    },
+                    dest: slice_var.clone(),
+                    on_unwind: Block::new_unreachable(self.ctx.span),
+                };
+                self.ctx
+                    .statements
+                    .push(Statement::new(self.ctx.span, kind));
+                (slice_var, None)
+            }
+            len => (input_var, len),
+        };
+
         // Construct the arguments to pass to the indexing function.
         let (last_arg, from_end) = match &pe {
             Index {
@@ -627,8 +675,13 @@ impl Transform {
         ]
         .map(|(item, path)| (item, NamePattern::parse(path).unwrap(), Vec::new()));
 
-        // Resolve the items
+        // Resolve the items. With `--monomorphize`, rustc's own calls to these methods are
+        // translated as separate monomorphic instances; we want the polymorphic items registered
+        // for this pass.
         for (id, name) in &ctx.translated.item_names {
+            if name.mono_args().is_some() {
+                continue;
+            }
             for (_, pattern, found) in &mut matches {
                 if pattern.matches(&ctx.translated, name) {
                     found.push(*id);
@@ -641,6 +694,9 @@ impl Transform {
             let FunSource::TraitImpl { trait_ref, .. } = &fun.src else {
                 continue;
             };
+            if fun.item_meta.name.mono_args().is_some() {
+                continue;
+            }
             let Some(trait_decl) = ctx.translated.trait_decls.get(trait_ref.id) else {
                 continue;
             };

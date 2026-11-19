@@ -131,6 +131,11 @@ pub struct TranslateCtx<'tcx> {
     pub items_to_translate: VecDeque<TransItemSource<'tcx>>,
     /// The declaration we've already processed (successfully or not).
     pub processed: HashSet<TransItemSource<'tcx>>,
+    /// Polymorphic items that we translate (opaque) even with `--monomorphize`, instead of hiding
+    /// them like other polymorphic items: the standard-library functions that
+    /// `builtins_to_function_calls` calls (the pass can't request new instances), and the builtin
+    /// `Box` type, which keeps its generic arguments.
+    pub poly_items_in_mono: HashSet<TransItemSource<'tcx>>,
     /// While translating, record which item is "contained" by another, in the sense that
     /// `--start-from` the parent should make the child be considered started from too. We use this
     /// to compute `ItemMeta.started_from` at the end of translation.

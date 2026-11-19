@@ -284,6 +284,7 @@ impl<'tcx> TranslateCtx<'tcx> {
     fn register_polymorphic_function(&mut self, def_id: DefId) -> FunDeclId {
         let def_id = def_id.sinto(&self.hax_state);
         let item = TransItemSource::polymorphic(&def_id, TransItemSourceKind::Fun);
+        self.poly_items_in_mono.insert(item.clone());
         self.register_and_enqueue(&None, item).expect_item()
     }
 
@@ -298,9 +299,12 @@ impl<'tcx> TranslateCtx<'tcx> {
         if self.options.reconstruct_asserts {
             self.register_poly_function_by_path("core::hint::unreachable_unchecked")?;
         }
-        if self.options.ops_to_function_calls {
+        let mono = self.options.monomorphize_with_hax;
+        if self.options.ops_to_function_calls || (mono && self.options.index_to_function_calls) {
             self.register_poly_function_by_path("array::as_slice")?;
             self.register_poly_function_by_path("array::as_mut_slice")?;
+        }
+        if self.options.ops_to_function_calls {
             self.register_poly_function_by_path("core::array::repeat")?;
         }
         if self.options.index_to_function_calls {
@@ -309,11 +313,16 @@ impl<'tcx> TranslateCtx<'tcx> {
                 (tcx.lang_items().index_trait().unwrap(), sym::index),
                 (tcx.lang_items().index_mut_trait().unwrap(), sym::index_mut),
             ] {
+                // With `--monomorphize`, arrays are indexed through `as_slice`/`as_mut_slice` and
+                // the `SliceIndex` impls (see `builtins_to_function_calls`): the outputs of the
+                // polymorphic `Index` impls are projections on a trait that has no associated
+                // types in monomorphic mode.
                 let impls = tcx.all_impls(trait_id).filter(|&impl_id| {
-                    matches!(
-                        tcx.impl_trait_ref(impl_id).skip_binder().self_ty().kind(),
-                        ty::Array(..) | ty::Slice(..)
-                    )
+                    !mono
+                        && matches!(
+                            tcx.impl_trait_ref(impl_id).skip_binder().self_ty().kind(),
+                            ty::Array(..) | ty::Slice(..)
+                        )
                 });
                 for impl_id in impls {
                     let method_id = tcx
@@ -1065,6 +1074,26 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                 builtin,
             });
         }
+        if builtin == Some(BuiltinAdt::Box)
+            && self.t_ctx.options.treat_box_as_builtin
+            && self.should_monomorphize_item(item, kind)
+        {
+            // A builtin `Box` is a type constructor for consumers: it keeps its generic arguments
+            // (like tuples above), so we refer to the polymorphic declaration.
+            let src = TransItemSource::polymorphic(&item.def_id, kind);
+            self.t_ctx.poly_items_in_mono.insert(src.clone());
+            let id: TypeDeclId = if enqueue {
+                self.register_and_enqueue(span, src)
+            } else {
+                self.register_no_enqueue(span, &src)
+            };
+            let generics = self.translate_generic_args(span, item)?;
+            return Ok(TypeDeclRef {
+                id,
+                generics: Box::new(generics),
+                builtin,
+            });
+        }
         let item_ref: DeclRef<ItemId> =
             self.translate_item_maybe_enqueue(span, item, kind, enqueue)?;
         assert!(item_ref.trait_ref.is_none());
@@ -1304,6 +1333,7 @@ pub fn translate<'tcx>(
         file_to_id: Default::default(),
         items_to_translate: Default::default(),
         processed: Default::default(),
+        poly_items_in_mono: Default::default(),
         containment_graph: Default::default(),
         translate_stack: Default::default(),
         cached_spans: Default::default(),

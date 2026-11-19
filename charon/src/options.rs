@@ -56,6 +56,14 @@ pub struct CliOpts {
     #[clap(long, value_name = "N")]
     #[serde(default)]
     pub code_duplication_limit: Option<usize>,
+    /// `<Trait>=<Type>`: replace the trait object type `dyn <Trait>` with `<Type>`, the only type
+    /// that is ever turned into a `dyn <Trait>`. Unsizing casts to `dyn <Trait>` become moves and
+    /// method calls through its vtable become direct calls to `<Type>`'s impl. Translation fails if
+    /// some other type is unsized to `dyn <Trait>`. `<Trait>` is a name pattern; `<Type>` is a
+    /// name pattern or `()`. Can be repeated.
+    #[clap(long, value_name = "TRAIT=TYPE")]
+    #[serde(default)]
+    pub devirtualize: Vec<String>,
     /// Whether to precisely translate drops and drop-related code. For this, we add explicit
     /// `Destruct` bounds to all generic parameters and set the MIR level to at least `elaborated`.
     ///
@@ -282,7 +290,8 @@ pub struct CliOpts {
     /// single opaque declaration with id `TypeDeclId::UNIT`, and stores its field types in its
     /// generic arguments. This is meant for consumers that build tuples of arbitrary arity on the
     /// fly and don't care about their declaration. Note that this makes tuple types ill-typed with
-    /// respect to their declaration; it is also incompatible with `--monomorphize`.
+    /// respect to their declaration. With `--monomorphize`, tuples are the only types that keep
+    /// generic arguments.
     #[clap(long)]
     #[serde(default)]
     pub no_gen_tuple_structs: bool,
@@ -693,6 +702,10 @@ impl CliOpts {
                 "`--dest` is deprecated, use `--dest-file` instead",
             )
         }
+        for arg in &self.devirtualize {
+            crate::transform::normalize::devirtualize::parse_mapping(arg)
+                .map_err(|msg| anyhow::anyhow!(msg))?;
+        }
 
         if self.remove_adt_clauses && self.lift_associated_types.is_empty() {
             anyhow::bail!(
@@ -706,18 +719,6 @@ impl CliOpts {
             anyhow::bail!(
                 "`--monomorphize-mut=except-types` should be used with `--remove-adt-clauses` \
                 to avoid generics mismatches"
-            )
-        }
-        if self.no_gen_tuple_structs && self.monomorphize {
-            anyhow::bail!(
-                "`--no-gen-tuple-structs` is not compatible with `--monomorphize`, as \
-                monomorphization requires each tuple to have its own type declaration"
-            )
-        }
-        if self.monomorphize && (self.ops_to_function_calls || self.index_to_function_calls) {
-            anyhow::bail!(
-                "`--monomorphize` is not compatible with `--ops-to-function-calls` or \
-                  `--index-to-function-calls`"
             )
         }
         if self.no_serialize && self.format.is_some() {
@@ -844,6 +845,8 @@ pub struct TranslateOptions {
     pub no_code_duplication: bool,
     /// See [CliOpts::code_duplication_limit].
     pub code_duplication_limit: Option<usize>,
+    /// See [CliOpts::devirtualize].
+    pub devirtualize: Vec<String>,
     /// Transform array-to-slice unsizing and repeat expressions into standard library function
     /// calls in LLBC.
     pub ops_to_function_calls: bool,
@@ -1058,6 +1061,7 @@ impl TranslateOptions {
             ullbc: options.ullbc,
             no_code_duplication: options.no_code_duplication,
             code_duplication_limit: options.code_duplication_limit,
+            devirtualize: options.devirtualize.clone(),
             ops_to_function_calls: options.ops_to_function_calls,
             index_to_function_calls: options.index_to_function_calls,
             item_opacities,

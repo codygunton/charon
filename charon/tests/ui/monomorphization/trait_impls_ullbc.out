@@ -51,14 +51,13 @@ fn do_test::<bool>(init: bool, expected: bool)
         _4 = &expected;
         storage_live(_5);
         _5 = &init;
-        _3 = eq<'9, '10>(move _4, move _5) -> bb1 (unwind: bb4);
+        _3 = eq<'9, '10>(move _4, move _5) -> bb1 (unwind: bb2);
     }
 
     bb1: {
-        if move _3 -> bb2 else -> bb3;
-    }
-
-    bb2: {
+        storage_live(_6);
+        _6 = &test_crate::do_test::<bool>::{promoted_const} with_metadata(const 34usize);
+        assert(move _3 == true) else panic(panic(move _6));
         storage_dead(_5);
         storage_dead(_4);
         storage_dead(_3);
@@ -69,15 +68,7 @@ fn do_test::<bool>(init: bool, expected: bool)
         return;
     }
 
-    bb3: {
-        storage_dead(_5);
-        storage_dead(_4);
-        storage_live(_6);
-        _6 = &test_crate::do_test::<bool>::{promoted_const} with_metadata(const 34usize);
-        panic(panic(move _6)) -> (unwind: bb4);
-    }
-
-    bb4 (cleanup): {
+    bb2 (cleanup): {
         storage_dead(expected);
         storage_dead(init);
         storage_dead(_6);

@@ -1003,7 +1003,7 @@ impl<'tcx> TranslateCtx<'tcx> {
 
         let opacity = if attr_info.attributes.iter().any(|attr| attr.is_exclude()) {
             ItemOpacity::Invisible.max(name_opacity)
-        } else if self.is_poly_in_mono(item_src) {
+        } else if self.is_poly_in_mono(item_src) && !self.poly_items_in_mono.contains(item_src) {
             if matches!(item_src.kind, TransItemSourceKind::TraitImpl(..)) {
                 ItemOpacity::Opaque.max(name_opacity)
             } else {

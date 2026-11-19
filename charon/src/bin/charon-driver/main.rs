@@ -95,6 +95,9 @@ fn run_charon() -> Result<usize, CharonFailure> {
     });
 
     let error_count = ctx.errors.borrow().error_count;
+    if ctx.errors.borrow().fatal {
+        return Err(CharonFailure::CharonError(error_count));
+    }
 
     // # Final step: generate the files.
     let targets = options.targets(&ctx.translated.crate_name);
