@@ -1,7 +1,7 @@
 # Final LLBC before serialization:
 
-// Full name: core::iter::adapters::map::Map::<Range::<u32>, test_crate::main::{closure}<'_>>
-pub opaque type Map::<Range::<u32>, test_crate::main::{closure}<'_>>
+// Full name: core::iter::adapters::map::Map::<Range::<u32>, test_crate::main::{closure}<_>>
+pub opaque type Map::<Range::<u32>, test_crate::main::{closure}<_>><'_0>
 
 // Full name: core::option::Option::<u32>
 #[lang_item(Option)]
@@ -11,8 +11,10 @@ pub enum Option::<u32> {
   Some { _0: u32 },
 }
 
-// Full name: core::iter::adapters::map::{impl Iterator for Map::<Range::<u32>, test_crate::main::{closure}<'_>>}::next::<u32, Range::<u32>, test_crate::main::{closure}<'_>>
-pub fn next::<u32, Range::<u32>, test_crate::main::{closure}<'_>><'_0>(_1: &'_0 mut Map::<Range::<u32>, test_crate::main::{closure}<'_>>) -> Option::<u32>
+// Full name: core::iter::adapters::map::{impl Iterator for Map::<Range::<u32>, test_crate::main::{closure}<_>><'_0>}::next::<u32, Range::<u32>, test_crate::main::{closure}<_>>
+pub fn next::<u32, Range::<u32>, test_crate::main::{closure}<_>><'_0, '_1>(_1: &'_1 mut Map::<Range::<u32>, test_crate::main::{closure}<_>><'_0>) -> Option::<u32>
+where
+    Outlives0: ('_0: '_1),
 = <opaque>
 
 // Full name: core::marker::MetaSized
@@ -40,9 +42,9 @@ pub struct Range::<u32> {
   end: u32,
 }
 
-// Full name: core::iter::traits::iterator::Iterator::map::<Range::<u32>, u32, test_crate::main::{closure}<'_>>
+// Full name: core::iter::traits::iterator::Iterator::map::<Range::<u32>, u32, test_crate::main::{closure}<_>>
 #[diagnostic_item("IteratorMap")]
-pub fn map::<Range::<u32>, u32, test_crate::main::{closure}<'_>>(_1: Range::<u32>, _2: test_crate::main::{closure}<'_>) -> Map::<Range::<u32>, test_crate::main::{closure}<'_>>
+pub fn map::<Range::<u32>, u32, test_crate::main::{closure}<_>><'_0>(_1: Range::<u32>, _2: test_crate::main::{closure}<'_0>) -> Map::<Range::<u32>, test_crate::main::{closure}<_>><'_0>
 = <opaque>
 
 // Full name: test_crate::Thing
@@ -83,8 +85,8 @@ struct test_crate::main::{closure#1}<'_0> {
   _0: &'_0 u32,
 }
 
-// Full name: test_crate::apply_fn::<test_crate::main::{closure#1}<'_>>
-fn apply_fn::<test_crate::main::{closure#1}<'_>>(_1: test_crate::main::{closure#1}<'_>) -> u32
+// Full name: test_crate::apply_fn::<test_crate::main::{closure#1}<_>>
+fn apply_fn::<test_crate::main::{closure#1}<_>><'_0>(_1: test_crate::main::{closure#1}<'_0>) -> u32
 = <opaque>
 
 struct test_crate::main::{closure#2} {
@@ -100,16 +102,16 @@ fn main()
 {
     let mut _0: (); // return
     let mut total: u32; // local
-    let mut iter: Map::<Range::<u32>, test_crate::main::{closure}<'_>>; // local
+    let mut iter: Map::<Range::<u32>, test_crate::main::{closure}<_>><'1>; // local
     let mut _3: Range::<u32>; // anonymous local
-    let mut _4: test_crate::main::{closure}<'1>; // anonymous local
-    let mut _5: &'3 mut u32; // anonymous local
+    let mut _4: test_crate::main::{closure}<'3>; // anonymous local
+    let mut _5: &'5 mut u32; // anonymous local
     let mut _6: Option::<u32>; // anonymous local
-    let mut _7: &'5 mut Map::<Range::<u32>, test_crate::main::{closure}<'_>>; // anonymous local
+    let mut _7: &'8 mut Map::<Range::<u32>, test_crate::main::{closure}<_>><'9>; // anonymous local
     let offset: u32; // local
     let mut _9: u32; // anonymous local
-    let mut _10: test_crate::main::{closure#1}<'7>; // anonymous local
-    let mut _11: &'9 u32; // anonymous local
+    let mut _10: test_crate::main::{closure#1}<'11>; // anonymous local
+    let mut _11: &'13 u32; // anonymous local
     let thing: Thing; // local
     let mut _13: u32; // anonymous local
     let mut _14: test_crate::main::{closure#2}; // anonymous local
@@ -127,7 +129,7 @@ fn main()
     _5 = &mut total
     _4 = test_crate::main::{closure} { _0: move _5 }
     storage_dead(_5)
-    iter = map::<Range::<u32>, u32, test_crate::main::{closure}<'_>>(move _3, move _4)
+    iter = map::<Range::<u32>, u32, test_crate::main::{closure}<_>><'16>(move _3, move _4)
     ↳⚡ unwind_continue
     storage_dead(_4)
     storage_dead(_3)
@@ -135,7 +137,7 @@ fn main()
     storage_live(_6)
     storage_live(_7)
     _7 = &two-phase-mut iter
-    _6 = next::<u32, Range::<u32>, test_crate::main::{closure}<'_>><'14>(move _7)
+    _6 = next::<u32, Range::<u32>, test_crate::main::{closure}<_>><'20, '24>(move _7)
     ↳⚡ unwind_continue
     storage_dead(_7)
     storage_dead(_6)
@@ -148,7 +150,7 @@ fn main()
     _11 = &offset
     _10 = test_crate::main::{closure#1} { _0: move _11 }
     storage_dead(_11)
-    _9 = apply_fn::<test_crate::main::{closure#1}<'_>>(move _10)
+    _9 = apply_fn::<test_crate::main::{closure#1}<_>><'27>(move _10)
     ↳⚡ unwind_continue
     storage_dead(_10)
     storage_dead(_9)

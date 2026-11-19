@@ -50,12 +50,12 @@ where
     return
 }
 
-// Full name: test_crate::apply_to_zero::<test_crate::main::{closure}<'_>>
-fn apply_to_zero::<test_crate::main::{closure}<'_>>(f: test_crate::main::{closure}<'_>) -> u8
+// Full name: test_crate::apply_to_zero::<test_crate::main::{closure}<_>>
+fn apply_to_zero::<test_crate::main::{closure}<_>><'_0>(f: test_crate::main::{closure}<'_0>) -> u8
 {
     let mut _0: u8; // return
-    let f: test_crate::main::{closure}<'0>; // arg #1
-    let mut _2: &'3 test_crate::main::{closure}<'4>; // anonymous local
+    let f: test_crate::main::{closure}<'_0>; // arg #1
+    let mut _2: &'1 test_crate::main::{closure}<'_0>; // anonymous local
     let mut _3: (u8,); // anonymous local
 
     storage_live(_0)
@@ -63,7 +63,7 @@ fn apply_to_zero::<test_crate::main::{closure}<'_>>(f: test_crate::main::{closur
     _2 = &f
     storage_live(_3)
     _3 = (const 0u8,)
-    _0 = call<'7, '11>(move _2, move _3)
+    _0 = call<'4, '8>(move _2, move _3)
     ↳⚡ storage_dead(f)
         unwind_continue
     storage_dead(_3)
@@ -113,12 +113,12 @@ where
     return
 }
 
-// Full name: test_crate::apply_to_zero_mut::<test_crate::main::{closure#1}<'_>>
-fn apply_to_zero_mut::<test_crate::main::{closure#1}<'_>>(f: test_crate::main::{closure#1}<'_>) -> u8
+// Full name: test_crate::apply_to_zero_mut::<test_crate::main::{closure#1}<_>>
+fn apply_to_zero_mut::<test_crate::main::{closure#1}<_>><'_0>(f: test_crate::main::{closure#1}<'_0>) -> u8
 {
     let mut _0: u8; // return
-    let mut f: test_crate::main::{closure#1}<'0>; // arg #1
-    let mut _2: &'3 mut test_crate::main::{closure#1}<'4>; // anonymous local
+    let mut f: test_crate::main::{closure#1}<'_0>; // arg #1
+    let mut _2: &'1 mut test_crate::main::{closure#1}<'_0>; // anonymous local
     let mut _3: (u8,); // anonymous local
 
     storage_live(_0)
@@ -126,7 +126,7 @@ fn apply_to_zero_mut::<test_crate::main::{closure#1}<'_>>(f: test_crate::main::{
     _2 = &mut f
     storage_live(_3)
     _3 = (const 0u8,)
-    _0 = call_mut<'7, '11>(move _2, move _3)
+    _0 = call_mut<'4, '8>(move _2, move _3)
     ↳⚡ storage_dead(f)
         unwind_continue
     storage_dead(_3)
@@ -227,7 +227,7 @@ fn main()
     _4 = &z_1
     _3 = test_crate::main::{closure} { _0: move _4 }
     storage_dead(_4)
-    _2 = apply_to_zero::<test_crate::main::{closure}<'_>>(move _3)
+    _2 = apply_to_zero::<test_crate::main::{closure}<_>><'10>(move _3)
     ↳⚡ unwind_continue
     storage_dead(_3)
     storage_dead(_2)
@@ -240,7 +240,7 @@ fn main()
     _8 = &mut z_5
     _7 = test_crate::main::{closure#1} { _0: move _8 }
     storage_dead(_8)
-    _6 = apply_to_zero_mut::<test_crate::main::{closure#1}<'_>>(move _7)
+    _6 = apply_to_zero_mut::<test_crate::main::{closure#1}<_>><'14>(move _7)
     ↳⚡ unwind_continue
     storage_dead(_7)
     storage_dead(_6)

@@ -1,0 +1,763 @@
+# Final LLBC before serialization:
+
+// Full name: core::iter::adapters::map::Map
+pub opaque type Map<I, F>
+
+opaque type ()
+
+// Full name: core::option::Option
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option<T> {
+  None,
+  Some { _0: T },
+}
+
+// Full name: core::ops::function::FnOnce
+#[fundamental]
+#[lang_item(FnOnce)]
+pub trait FnOnce<Self, Args, Self_Output>
+{
+    fn call_once;
+    vtable: core::ops::function::FnOnce::{vtable}<Args, Self_Output>
+}
+
+// Full name: core::ops::function::FnMut
+#[fundamental]
+#[lang_item(FnMut)]
+pub trait FnMut<Self, Args, Self_Clause0_Output>
+{
+    proof ImpliedClause0: (Self: FnOnce<Args, Self_Clause0_Output>)
+    fn call_mut<'_0_1, Outlives0: (Self: '_0_1)>;
+    vtable: core::ops::function::FnMut::{vtable}<Args, Self_Clause0_Output>
+}
+
+// Full name: core::iter::traits::iterator::Iterator
+#[lang_item(Iterator)]
+#[diagnostic_item("Iterator")]
+pub trait Iterator<Self, Self_Item>
+{
+    fn next<'_0_1, Outlives0: (Self: '_0_1)>;
+    fn map<B, F, TraitClause0_1: (F: FnMut<(Self_Item,), B>)> = map<Self, B, F, Self_Item>[Self, TraitClause0_1]
+    vtable: core::iter::traits::iterator::Iterator::{vtable}<Self_Item>
+}
+
+// Full name: core::iter::adapters::map::{impl Iterator<B> for Map<I, F>}::next
+pub fn impl_Iterator_for_Map::next<'_0, B, I, F, Clause0_Item>(_1: &'_0 mut Map<I, F>) -> Option<B>
+where
+    TraitClause0: (I: Iterator<Clause0_Item>),
+    TraitClause1: (F: FnMut<(Clause0_Item,), B>),
+    Outlives0: (I: '_0),
+    Outlives1: (F: '_0),
+= <opaque>
+
+// Full name: core::iter::traits::collect::{impl IntoIterator<Clause0_Item, I> for I}::into_iter
+pub fn into_iter<I, Clause0_Item>(_1: I) -> I
+where
+    TraitClause0: (I: Iterator<Clause0_Item>),
+= <opaque>
+
+// Full name: core::iter::traits::iterator::Iterator::map
+#[diagnostic_item("IteratorMap")]
+pub fn map<Self, B, F, Clause0_Item>(_1: Self, _2: F) -> Map<Self, F>
+where
+    TraitClause0: (Self: Iterator<Clause0_Item>),
+    TraitClause1: (F: FnMut<(Clause0_Item,), B>),
+= <opaque>
+
+// Full name: core::mem::maybe_uninit::MaybeUninit
+#[lang_item(MaybeUninit)]
+pub opaque type MaybeUninit<T>
+
+// Full name: core::ops::arith::{impl Add<&'_0 u32, u32> for &'_1 u32}::add
+#[track_caller]
+pub fn add<'_0, '_1>(_1: &'_1 u32, _2: &'_0 u32) -> u32
+= <opaque>
+
+// Full name: core::panicking::panic_in_cleanup
+#[lang_item(PanicInCleanup)]
+fn panic_in_cleanup() -> !
+= <opaque>
+
+// Full name: core::slice::iter::Iter
+#[diagnostic_item("SliceIter")]
+pub opaque type Iter<'a, T>
+where
+    Outlives0: (T: 'a),
+    Outlives1: (T: 'a),
+
+// Full name: core::slice::iter::{impl Iterator<&'a T> for Iter<'a, T>}::next
+pub fn impl_Iterator_for_Iter::next<'a, '_1, T>(_1: &'_1 mut Iter<'a, T>) -> Option<&'a T>
+where
+    Outlives0: (T: 'a),
+    Outlives1: ('a: '_1),
+    Outlives2: (T: '_1),
+= <opaque>
+
+// Full name: core::slice::iter::{impl Iterator<&'a T> for Iter<'a, T>}
+impl<'a, T> "impl_Iterator_for_Iter" Iterator<&'a T> for Iter<'a, T>
+where
+    Outlives0: (T: 'a),
+{
+    fn next<'_0_1> = impl_Iterator_for_Iter::next<'a, '_0_1, T>
+    fn map<B, F, TraitClause0_1: (F: FnMut<(&'a T,), B>)> = map<Iter<'a, T>, B, F, &'a T>[impl_Iterator_for_Iter<'a, T>, TraitClause0_1]
+    vtable: lazy
+}
+
+// Full name: core::slice::{[T]}::iter
+#[diagnostic_item("slice_iter")]
+pub fn iter<'_0, T>(_1: &'_0 [T]) -> Iter<'_0, T>
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+// Full name: alloc::boxed::Box
+#[fundamental]
+#[lang_item(OwnedBox)]
+pub opaque type Box<T>
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box<T>}::drop_glue
+unsafe fn impl_Destruct_for_Box::drop_glue<'_0, T, A>(_1: &'_0 mut Box<T>)
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::boxed::{Box<T>}::new
+#[track_caller]
+#[diagnostic_item("box_new")]
+pub fn new<T>(_1: T) -> Box<T>
+= <opaque>
+
+// Full name: alloc::vec::Vec
+#[diagnostic_item("Vec")]
+pub opaque type Vec<T>
+
+// Full name: alloc::slice::{[T]}::into_vec
+pub fn into_vec<T, A>(_1: Box<[T]>) -> Vec<T>
+= <opaque>
+
+// Full name: alloc::vec::Vec::{impl Destruct for Vec<T>}::drop_glue
+unsafe fn impl_Destruct_for_Vec::drop_glue<'_0, T, A>(_1: &'_0 mut Vec<T>)
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::{impl Deref<[T]> for Vec<T>}::deref
+pub fn deref<'_0, T, A>(_1: &'_0 Vec<T>) -> &'_0 [T]
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+struct test_crate::use_wrap::{closure}<'_0> {
+  _0: &'_0 u32,
+}
+
+// Full name: test_crate::Wrap::<test_crate::use_wrap::{closure}<_>>
+pub struct Wrap::<test_crate::use_wrap::{closure}<_>><'_0> {
+  f: test_crate::use_wrap::{closure}<'_0>,
+}
+
+// Full name: test_crate::use_wrap::{impl Fn<(u32,), u32> for test_crate::use_wrap::{closure}<'_0>}::call
+extern "rust-call" fn impl_Fn_unit_for_closure::call<'_0, '_1>(_1: &'_1 test_crate::use_wrap::{closure}<'_0>, tupled_args: (u32,)) -> u32
+where
+    Outlives0: ('_0: '_1),
+{
+    let mut _0: u32; // return
+    let mut _1: &'2 test_crate::use_wrap::{closure}<'_0>; // arg #1
+    let mut tupled_args: (u32,); // arg #2
+    let x: u32; // local
+    let mut _4: u32; // anonymous local
+    let mut _5: u32; // anonymous local
+    let mut _6: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(x)
+    storage_live(_6)
+    x = noretag move tupled_args.0
+    storage_live(_4)
+    _4 = copy x
+    storage_live(_5)
+    _5 = copy (*(*_1)._0)
+    _6 = copy _4 panic.+ copy _5
+    _0 = move _6
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_6)
+    storage_dead(x)
+    storage_dead(tupled_args)
+    storage_dead(_1)
+    return
+}
+
+pub fn test_crate::{Wrap::<test_crate::use_wrap::{closure}<_>><'_0>}::call::<test_crate::use_wrap::{closure}<_>><'_0, '_1>(self: &'_1 Wrap::<test_crate::use_wrap::{closure}<_>><'_0>, x: u32) -> u32
+where
+    Outlives0: ('_0: '_1),
+{
+    let mut _0: u32; // return
+    let self: &'1 Wrap::<test_crate::use_wrap::{closure}<_>><'_0>; // arg #1
+    let x: u32; // arg #2
+    let mut _3: &'3 test_crate::use_wrap::{closure}<'_0>; // anonymous local
+    let mut _4: (u32,); // anonymous local
+    let mut _5: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_3)
+    _3 = &(*self).f
+    storage_live(_4)
+    storage_live(_5)
+    _5 = copy x
+    _4 = (move _5,)
+    _0 = impl_Fn_unit_for_closure::call<'6, '10>(move _3, move _4)
+    ↳⚡ storage_dead(x)
+        storage_dead(self)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_3)
+    storage_dead(x)
+    storage_dead(self)
+    return
+}
+
+struct test_crate::sum_with::{closure}<'_0> {
+  _0: &'_0 mut u32,
+}
+
+// Full name: test_crate::sum_with::{impl FnMut<(&'_1 u32,), ()> for test_crate::sum_with::{closure}<'_0>}::call_mut
+extern "rust-call" fn {impl FnMut<(&'_1 u32,), ()> for test_crate::sum_with::{closure}<'_0>}::call_mut<'_0, '_1, '_2>(_1: &'_2 mut test_crate::sum_with::{closure}<'_0>, tupled_args: (&'_1 u32,))
+where
+    Outlives0: ('_0: '_2),
+{
+    let mut _0: (); // return
+    let mut _1: &'2 mut test_crate::sum_with::{closure}<'_0>; // arg #1
+    let mut tupled_args: (&'_1 u32,); // arg #2
+    let x: &'4 u32; // local
+    let mut _4: u32; // anonymous local
+    let mut _5: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(x)
+    storage_live(_5)
+    _0 = ()
+    x = noretag move tupled_args.0
+    storage_live(_4)
+    _4 = copy (*x)
+    _5 = copy (*(*_1)._0) panic.+ copy _4
+    (*(*_1)._0) = move _5
+    _0 = ()
+    storage_dead(_4)
+    storage_dead(_5)
+    storage_dead(x)
+    storage_dead(tupled_args)
+    storage_dead(_1)
+    return
+}
+
+// Full name: test_crate::apply::<test_crate::sum_with::{closure}<_>>
+pub fn apply::<test_crate::sum_with::{closure}<_>><'_0, '_1>(v: &'_1 Vec<u32>, f: test_crate::sum_with::{closure}<'_0>)
+{
+    let mut _0: (); // return
+    let v: &'1 Vec<u32>; // arg #1
+    let mut f: test_crate::sum_with::{closure}<'_0>; // arg #2
+    let mut _3: Iter<'3, u32>; // anonymous local
+    let mut _4: Iter<'4, u32>; // anonymous local
+    let mut _5: &'6 [u32]; // anonymous local
+    let _6: &'7 [u32]; // anonymous local
+    let mut _7: &'8 Vec<u32>; // anonymous local
+    let mut iter: Iter<'9, u32>; // local
+    let _9: (); // anonymous local
+    let mut _10: Option<&'12 u32>; // anonymous local
+    let mut _11: &'15 mut Iter<'16, u32>; // anonymous local
+    let mut _12: &'17 mut Iter<'18, u32>; // anonymous local
+    let x: &'19 u32; // local
+    let mut _14: &'21 mut test_crate::sum_with::{closure}<'_0>; // anonymous local
+    let mut _15: (&'23 u32,); // anonymous local
+    let mut _16: &'24 u32; // anonymous local
+
+    storage_live(_0)
+    _0 = ()
+    storage_live(_3)
+    storage_live(_4)
+    storage_live(_5)
+    storage_live(_6)
+    storage_live(_7)
+    _7 = &(*v)
+    _6 = deref<'28, u32, Global>(move _7)
+    ↳⚡ storage_dead(f)
+        storage_dead(v)
+        unwind_continue
+    _5 = &(*_6) with_metadata(read _6.metadata)
+    storage_dead(_7)
+    _4 = iter<'33, u32>(move _5)
+    ↳⚡ storage_dead(f)
+        storage_dead(v)
+        unwind_continue
+    storage_dead(_5)
+    _3 = into_iter<Iter<'39, u32>, &'39 u32>[impl_Iterator_for_Iter<'39, u32>](move _4)
+    ↳⚡ storage_dead(f)
+        storage_dead(v)
+        unwind_continue
+    storage_dead(_4)
+    storage_live(iter)
+    iter = move _3
+    loop {
+        storage_live(_9)
+        storage_live(_10)
+        storage_live(_11)
+        storage_live(_12)
+        _12 = &mut iter
+        _11 = &two-phase-mut (*_12)
+        _10 = impl_Iterator_for_Iter::next<'50, '54, u32>(move _11)
+        ↳⚡ storage_dead(f)
+            storage_dead(v)
+            unwind_continue
+        storage_dead(_11)
+        match _10 {
+            Option::None => {
+                break 0
+            },
+            Option::Some => {
+            },
+        }
+        storage_live(x)
+        x = copy (_10 as variant Option::Some)._0
+        storage_live(_14)
+        _14 = &mut f
+        storage_live(_15)
+        storage_live(_16)
+        _16 = &(*x)
+        _15 = (move _16,)
+        _9 = {impl FnMut<(&'_1 u32,), ()> for test_crate::sum_with::{closure}<'_0>}::call_mut<'64, '65, '70>(move _14, move _15)
+        ↳⚡ storage_dead(f)
+            storage_dead(v)
+            unwind_continue
+        storage_dead(_16)
+        storage_dead(_15)
+        storage_dead(_14)
+        storage_dead(x)
+        storage_dead(_12)
+        storage_dead(_10)
+        storage_dead(_9)
+        continue 0
+    }
+    _0 = ()
+    storage_dead(_12)
+    storage_dead(_10)
+    storage_dead(_9)
+    storage_dead(iter)
+    storage_dead(_6)
+    storage_dead(_3)
+    storage_dead(f)
+    storage_dead(v)
+    return
+}
+
+// Full name: test_crate::sum_with
+pub fn sum_with<'_0>(v: &'_0 Vec<u32>) -> u32
+{
+    let mut _0: u32; // return
+    let v: &'1 Vec<u32>; // arg #1
+    let mut acc: u32; // local
+    let _3: (); // anonymous local
+    let mut _4: &'2 Vec<u32>; // anonymous local
+    let mut _5: test_crate::sum_with::{closure}<'4>; // anonymous local
+    let mut _6: &'6 mut u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(acc)
+    acc = const 0u32
+    fake_read(acc)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &(*v)
+    storage_live(_5)
+    storage_live(_6)
+    _6 = &mut acc
+    _5 = test_crate::sum_with::{closure} { _0: move _6 }
+    storage_dead(_6)
+    _3 = apply::<test_crate::sum_with::{closure}<_>><'10, '14>(move _4, move _5)
+    ↳⚡ storage_dead(v)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_3)
+    _0 = copy acc
+    storage_dead(acc)
+    storage_dead(v)
+    return
+}
+
+// Full name: test_crate::use_wrap
+pub fn use_wrap<'_0>(k: &'_0 u32) -> u32
+{
+    let mut _0: u32; // return
+    let k: &'1 u32; // arg #1
+    let w: Wrap::<test_crate::use_wrap::{closure}<_>><'3>; // local
+    let mut _3: test_crate::use_wrap::{closure}<'5>; // anonymous local
+    let mut _4: &'6 u32; // anonymous local
+    let mut _5: &'9 Wrap::<test_crate::use_wrap::{closure}<_>><'10>; // anonymous local
+
+    storage_live(_0)
+    storage_live(w)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &(*k)
+    _3 = test_crate::use_wrap::{closure} { _0: move _4 }
+    storage_dead(_4)
+    w = Wrap::<test_crate::use_wrap::{closure}<_>> { f: move _3 }
+    storage_dead(_3)
+    fake_read(w)
+    storage_live(_5)
+    _5 = &w
+    _0 = test_crate::{Wrap::<test_crate::use_wrap::{closure}<_>><'_0>}::call::<test_crate::use_wrap::{closure}<_>><'15, '19>(move _5, const 1u32)
+    ↳⚡ storage_dead(k)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(w)
+    storage_dead(k)
+    return
+}
+
+struct test_crate::first_plus::{closure}<'_0, '_1> {
+  _0: &'_1 u32,
+}
+
+// Full name: test_crate::Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>>
+pub struct Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'_0, '_1, '_2> {
+  it: Map<Iter<'_0, u32>, test_crate::first_plus::{closure}<'_1, '_2>>,
+}
+
+// Full name: test_crate::first_plus::{impl FnMut<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}::call_mut
+extern "rust-call" fn {impl FnMut<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}::call_mut<'_0, '_1, '_2>(_1: &'_2 mut test_crate::first_plus::{closure}<'_0, '_1>, tupled_args: (&'_0 u32,)) -> u32
+where
+    Outlives0: ('_0: '_2),
+    Outlives1: ('_1: '_2),
+{
+    let mut _0: u32; // return
+    let mut _1: &'3 mut test_crate::first_plus::{closure}<'_0, '_1>; // arg #1
+    let mut tupled_args: (&'_0 u32,); // arg #2
+    let x: &'5 u32; // local
+    let mut _4: &'6 u32; // anonymous local
+    let mut _5: &'7 u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(x)
+    x = noretag move tupled_args.0
+    storage_live(_4)
+    _4 = copy x
+    storage_live(_5)
+    _5 = copy (*_1)._0
+    _0 = add<'17, '18>(move _4, move _5)
+    ↳⚡ storage_dead(x)
+        storage_dead(tupled_args)
+        storage_dead(_1)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(x)
+    storage_dead(tupled_args)
+    storage_dead(_1)
+    return
+}
+
+// Full name: test_crate::first_plus::{impl FnOnce<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}::call_once
+extern "rust-call" fn {impl FnOnce<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}::call_once<'_0, '_1>(_1: test_crate::first_plus::{closure}<'_0, '_1>, _2: (&'_0 u32,)) -> u32
+{
+    let mut _0: u32; // return
+    let mut _1: test_crate::first_plus::{closure}<'_0, '_1>; // arg #1
+    let _2: (&'4 u32,); // arg #2
+    let _3: &'6 mut test_crate::first_plus::{closure}<'_0, '_1>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_3)
+    _3 = &mut _1
+    _0 = {impl FnMut<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}::call_mut<'_0, '_1, '14>(move _3, move _2)
+    ↳⚡ storage_dead(_3)
+        storage_dead(_2)
+        storage_dead(_1)
+        unwind_continue
+    storage_dead(_3)
+    storage_dead(_2)
+    storage_dead(_1)
+    return
+}
+
+// Full name: test_crate::first_plus::{impl FnOnce<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}
+impl<'_0, '_1> FnOnce<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1> {
+    fn call_once = {impl FnOnce<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}::call_once<'_0, '_1>
+    vtable: lazy
+}
+
+// Full name: test_crate::first_plus::{impl FnMut<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}
+impl<'_0, '_1> FnMut<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1> {
+    proof ImpliedClause0: (test_crate::first_plus::{closure}<'_0, '_1>: FnOnce<(&'_0 u32,), u32>) = {impl FnOnce<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}<'_0, '_1>
+    fn call_mut<'_0_1> = {impl FnMut<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}::call_mut<'_0, '_1, '_0_1>
+    vtable: lazy
+}
+
+pub fn test_crate::{Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'_0, '_1, '_2>}::next::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'_0, '_1, '_2, '_3>(self: &'_3 mut Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'_0, '_1, '_2>) -> Option<u32>
+where
+    Outlives0: ('_0: '_3),
+    Outlives1: ('_1: '_3),
+    Outlives2: ('_2: '_3),
+{
+    let mut _0: Option<u32>; // return
+    let self: &'1 mut Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'_0, '_1, '_2>; // arg #1
+    let mut _2: &'3 mut Map<Iter<'_0, u32>, test_crate::first_plus::{closure}<'_1, '_2>>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = &two-phase-mut (*self).it
+    _0 = impl_Iterator_for_Map::next<'53, u32, Iter<'23, u32>, test_crate::first_plus::{closure}<'23, '25>, &'23 u32>[impl_Iterator_for_Iter<'23, u32>, {impl FnMut<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}<'23, '25>](move _2)
+    ↳⚡ storage_dead(self)
+        unwind_continue
+    storage_dead(_2)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::first_plus
+pub fn first_plus<'_0, '_1>(v: &'_0 [u32], k: &'_1 u32) -> Option<u32>
+{
+    let mut _0: Option<u32>; // return
+    let v: &'1 [u32]; // arg #1
+    let k: &'3 u32; // arg #2
+    let mut s: Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'7, '8, '9>; // local
+    let mut _4: Map<Iter<'16, u32>, test_crate::first_plus::{closure}<'17, '18>>; // anonymous local
+    let mut _5: Iter<'19, u32>; // anonymous local
+    let mut _6: &'20 [u32]; // anonymous local
+    let mut _7: test_crate::first_plus::{closure}<'21, '22>; // anonymous local
+    let mut _8: &'27 mut Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'28, '29, '30>; // anonymous local
+
+    storage_live(_0)
+    storage_live(s)
+    storage_live(_4)
+    storage_live(_5)
+    storage_live(_6)
+    _6 = &(*v) with_metadata(read v.metadata)
+    _5 = iter<'34, u32>(move _6)
+    ↳⚡ storage_dead(k)
+        storage_dead(v)
+        unwind_continue
+    storage_dead(_6)
+    storage_live(_7)
+    _7 = test_crate::first_plus::{closure} { _0: copy k }
+    _4 = map<Iter<'58, u32>, u32, test_crate::first_plus::{closure}<'58, '60>, &'58 u32>[impl_Iterator_for_Iter<'58, u32>, {impl FnMut<(&'_0 u32,), u32> for test_crate::first_plus::{closure}<'_0, '_1>}<'58, '60>](move _5, move _7)
+    ↳⚡ storage_dead(k)
+        storage_dead(v)
+        unwind_continue
+    storage_dead(_7)
+    storage_dead(_5)
+    s = Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>> { it: move _4 }
+    storage_dead(_4)
+    fake_read(s)
+    storage_live(_8)
+    _8 = &two-phase-mut s
+    _0 = test_crate::{Src::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'_0, '_1, '_2>}::next::<Map<Iter<_, u32>, test_crate::first_plus::{closure}<_, _>>><'93, '94, '95, '101>(move _8)
+    ↳⚡ storage_dead(k)
+        storage_dead(v)
+        unwind_continue
+    storage_dead(_8)
+    storage_dead(s)
+    storage_dead(k)
+    storage_dead(v)
+    return
+}
+
+fn test_crate::main::{promoted_const}() -> &'_ u32
+{
+    let mut _0: &'0 u32; // return
+    let mut _1: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_1)
+    _1 = const 5u32
+    _0 = &_1
+    return
+}
+
+const test_crate::main::{promoted_const}: &'_ u32 = test_crate::main::{promoted_const}()
+
+fn test_crate::main::{promoted_const#1}() -> &'_ u32
+{
+    let mut _0: &'0 u32; // return
+    let mut _1: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_1)
+    _1 = const 4u32
+    _0 = &_1
+    return
+}
+
+const test_crate::main::{promoted_const#1}: &'_ u32 = test_crate::main::{promoted_const#1}()
+
+// Full name: test_crate::main
+pub fn main()
+{
+    let mut _0: (); // return
+    let v: Vec<u32>; // local
+    let mut _2: Box<MaybeUninit<[u32; 3usize]>>; // anonymous local
+    let mut _3: u32; // anonymous local
+    let mut _4: &'1 Vec<u32>; // anonymous local
+    let _5: &'2 Vec<u32>; // anonymous local
+    let mut _6: u32; // anonymous local
+    let mut _7: &'4 u32; // anonymous local
+    let _8: &'5 u32; // anonymous local
+    let mut _9: Option<u32>; // anonymous local
+    let mut _10: &'7 [u32]; // anonymous local
+    let _11: &'8 [u32]; // anonymous local
+    let mut _12: &'9 Vec<u32>; // anonymous local
+    let _13: &'10 Vec<u32>; // anonymous local
+    let mut _14: &'11 u32; // anonymous local
+    let _15: &'12 u32; // anonymous local
+    let mut _16: &'13 u32; // anonymous local
+    let mut _17: &'14 u32; // anonymous local
+    let mut ret: Vec<u32>; // local
+    let mut x: Box<[u32; 3usize]>; // local
+    let mut y: Box<[u32]>; // local
+    let mut _21: [u32; 3usize]; // anonymous local
+    let mut _22: Box<[u32; 3usize]>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_16)
+    storage_live(_17)
+    _0 = ()
+    storage_live(v)
+    storage_live(_2)
+    storage_live(_21)
+    _21 = [const 1u32, const 2u32, const 3u32]
+    storage_live(_22)
+    _22 = new<[u32; 3usize]>(move _21)
+    ↳⚡ conditional_drop[impl_Destruct_for_Box::drop_glue<'16, MaybeUninit<[u32; 3usize]>, Global>] _2
+        ↳⚡ storage_dead(_17)
+            storage_dead(_16)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_17)
+        storage_dead(_16)
+        storage_dead(ret)
+        unwind_continue
+    storage_live(ret)
+    storage_live(x)
+    storage_live(y)
+    storage_dead(_21)
+    x = noretag move _22
+    storage_dead(_22)
+    y = unsize_cast<Box<[u32]>, 3usize>(move x)
+    ret = into_vec<u32, Global>(move y)
+    ↳⚡ storage_dead(y)
+        storage_dead(x)
+        conditional_drop[impl_Destruct_for_Box::drop_glue<'16, MaybeUninit<[u32; 3usize]>, Global>] _2
+        ↳⚡ storage_dead(_17)
+            storage_dead(_16)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_17)
+        storage_dead(_16)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(y)
+    storage_dead(x)
+    v = move ret
+    storage_dead(_2)
+    fake_read(v)
+    storage_live(_3)
+    storage_live(_4)
+    storage_live(_5)
+    _5 = &v
+    _4 = &(*_5)
+    _3 = sum_with<'20>(move _4)
+    ↳⚡ conditional_drop[impl_Destruct_for_Vec::drop_glue<'21, u32, Global>] v
+        ↳⚡ storage_dead(_17)
+            storage_dead(_16)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_17)
+        storage_dead(_16)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_4)
+    storage_dead(_5)
+    storage_dead(_3)
+    storage_live(_6)
+    storage_live(_7)
+    storage_live(_8)
+    _17 = read test_crate::main::{promoted_const#1}
+    _8 = &(*_17)
+    _7 = &(*_8)
+    _6 = use_wrap<'26>(move _7)
+    ↳⚡ conditional_drop[impl_Destruct_for_Vec::drop_glue<'21, u32, Global>] v
+        ↳⚡ storage_dead(_17)
+            storage_dead(_16)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_17)
+        storage_dead(_16)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_7)
+    storage_dead(_8)
+    storage_dead(_6)
+    storage_live(_9)
+    storage_live(_10)
+    storage_live(_11)
+    storage_live(_12)
+    storage_live(_13)
+    _13 = &v
+    _12 = &(*_13)
+    _11 = deref<'30, u32, Global>(move _12)
+    ↳⚡ conditional_drop[impl_Destruct_for_Vec::drop_glue<'21, u32, Global>] v
+        ↳⚡ storage_dead(_17)
+            storage_dead(_16)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_17)
+        storage_dead(_16)
+        storage_dead(ret)
+        unwind_continue
+    _10 = &(*_11) with_metadata(read _11.metadata)
+    storage_dead(_12)
+    storage_live(_14)
+    storage_live(_15)
+    _16 = read test_crate::main::{promoted_const}
+    _15 = &(*_16)
+    _14 = &(*_15)
+    _9 = first_plus<'38, '39>(move _10, move _14)
+    ↳⚡ conditional_drop[impl_Destruct_for_Vec::drop_glue<'21, u32, Global>] v
+        ↳⚡ storage_dead(_17)
+            storage_dead(_16)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_17)
+        storage_dead(_16)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_14)
+    storage_dead(_10)
+    storage_dead(_15)
+    storage_dead(_13)
+    storage_dead(_11)
+    storage_dead(_9)
+    _0 = ()
+    conditional_drop[impl_Destruct_for_Vec::drop_glue<'40, u32, Global>] v
+    ↳⚡ storage_dead(_17)
+        storage_dead(_16)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(v)
+    storage_dead(_17)
+    storage_dead(_16)
+    storage_dead(ret)
+    return
+}
+
+
+

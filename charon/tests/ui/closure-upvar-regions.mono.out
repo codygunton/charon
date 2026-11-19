@@ -119,27 +119,29 @@ where
     return
 }
 
-struct test_crate::generic_closure::{closure}::<&'_ u8> {
-  _0: &'_ u8,
+struct test_crate::generic_closure::{closure}::<&_ u8><'_0> {
+  _0: &'_0 u8,
 }
 
 // Full name: test_crate::generic_closure::<&_ u8>
-fn generic_closure::<&_ u8><'_0>(x: &'_0 u8) -> test_crate::generic_closure::{closure}::<&'_ u8>
+fn generic_closure::<&_ u8><'_0>(x: &'_0 u8) -> test_crate::generic_closure::{closure}::<&_ u8><'_0>
 {
-    let mut _0: test_crate::generic_closure::{closure}::<&'_ u8>; // return
+    let mut _0: test_crate::generic_closure::{closure}::<&_ u8><'_0>; // return
     let x: &'_0 u8; // arg #1
 
     storage_live(_0)
-    _0 = test_crate::generic_closure::{closure}::<&'_ u8> { _0: copy x }
+    _0 = test_crate::generic_closure::{closure}::<&_ u8> { _0: copy x }
     storage_dead(x)
     return
 }
 
-// Full name: test_crate::generic_closure::{impl Fn<()> for test_crate::generic_closure::{closure}::<&'_ u8>}::call::<&'_ u8>
-extern "rust-call" fn {impl Fn<()> for test_crate::generic_closure::{closure}::<&'_ u8>}::call::<&'_ u8><'_0>(_1: &'_0 test_crate::generic_closure::{closure}::<&'_ u8>, tupled_args: ()) -> &'_ u8
+// Full name: test_crate::generic_closure::{impl Fn<()> for test_crate::generic_closure::{closure}::<&_ u8><'_0>}::call::<&_ u8>
+extern "rust-call" fn {impl Fn<()> for test_crate::generic_closure::{closure}::<&_ u8><'_0>}::call::<&_ u8><'_0, '_1>(_1: &'_1 test_crate::generic_closure::{closure}::<&_ u8><'_0>, tupled_args: ()) -> &'_0 u8
+where
+    Outlives0: ('_0: '_1),
 {
-    let mut _0: &'1 u8; // return
-    let mut _1: &'3 test_crate::generic_closure::{closure}::<&'_ u8>; // arg #1
+    let mut _0: &'_0 u8; // return
+    let mut _1: &'1 test_crate::generic_closure::{closure}::<&_ u8><'_0>; // arg #1
     let mut tupled_args: (); // arg #2
 
     storage_live(_0)
@@ -150,7 +152,7 @@ extern "rust-call" fn {impl Fn<()> for test_crate::generic_closure::{closure}::<
 }
 
 struct test_crate::captured_generic_closure::{closure}<'_0, '_1> {
-  _0: test_crate::generic_closure::{closure}::<&'_ u8>,
+  _0: test_crate::generic_closure::{closure}::<&_ u8><'_1>,
 }
 
 // Full name: test_crate::captured_generic_closure
@@ -158,14 +160,14 @@ pub fn captured_generic_closure<'a>(x: &'a u8) -> test_crate::captured_generic_c
 {
     let mut _0: test_crate::captured_generic_closure::{closure}<'2, '3>; // return
     let x: &'5 u8; // arg #1
-    let inner: test_crate::generic_closure::{closure}::<&'_ u8>; // local
-    let mut _3: &'6 u8; // anonymous local
+    let inner: test_crate::generic_closure::{closure}::<&_ u8><'7>; // local
+    let mut _3: &'8 u8; // anonymous local
 
     storage_live(_0)
     storage_live(inner)
     storage_live(_3)
     _3 = copy x
-    inner = generic_closure::<&_ u8><'11>(move _3)
+    inner = generic_closure::<&_ u8><'13>(move _3)
     ↳⚡ storage_dead(x)
         unwind_continue
     storage_dead(_3)
@@ -186,7 +188,7 @@ where
     let mut _1: &'5 test_crate::captured_generic_closure::{closure}<'_0, '_1>; // arg #1
     let mut tupled_args: (); // arg #2
     let _3: &'6 u8; // anonymous local
-    let mut _4: &'8 test_crate::generic_closure::{closure}::<&'_ u8>; // anonymous local
+    let mut _4: &'10 test_crate::generic_closure::{closure}::<&_ u8><'11>; // anonymous local
     let mut _5: (); // anonymous local
 
     storage_live(_0)
@@ -195,7 +197,7 @@ where
     _4 = &(*_1)._0
     storage_live(_5)
     _5 = ()
-    _3 = {impl Fn<()> for test_crate::generic_closure::{closure}::<&'_ u8>}::call::<&'_ u8><'12>(move _4, move _5)
+    _3 = {impl Fn<()> for test_crate::generic_closure::{closure}::<&_ u8><'_0>}::call::<&_ u8><'15, '19>(move _4, move _5)
     ↳⚡ storage_dead(tupled_args)
         storage_dead(_1)
         unwind_continue
@@ -256,10 +258,6 @@ extern "rust-call" fn {impl Fn<(&'_0 u8,)> for test_crate::captured_fn_ptr::{clo
     storage_dead(tupled_args)
     storage_dead(_1)
     return
-}
-
-struct test_crate::captured_fn_ptr_with_free_region::{closure}<'_0, '_1> {
-  _0: fn<'b>(&'b u8) -> &'_1 u8,
 }
 
 struct test_crate::captured_fn_ptr_with_free_region::{closure}<'_0, '_1> {

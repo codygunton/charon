@@ -35,52 +35,107 @@ use charon_lib::transform::TransformCtx;
 /// monomorphic instance (see `ItemTransCtx::mono_instance_ref`).
 pub(crate) const MONO_REGION_NAME: &str = "__charon_mono_region";
 
-/// Replace each erased region occurrence in `args` by a fresh placeholder region named
-/// `MONO_REGION_NAME`, in order. The arguments of closure (and coroutine) types are left as they
-/// are: their regions are related to each other (e.g. a captured `&'a T` and the signature's
-/// `&'a T`), and closures recover them through their own `extra_early_regions`.
-fn unerase_mono_regions<'tcx>(
+/// Replaces each erased region occurrence by a fresh placeholder region named `MONO_REGION_NAME`,
+/// numbered in order of occurrence.
+///
+/// The arguments of a closure type are not independent: e.g. a captured `&'a T` and the `&'a T`
+/// in the signature are the same region. For them we instead rebuild the closure's own region
+/// structure: its parent arguments are folded as above, and the rest (signature, upvars) is its
+/// identity template (see `DefId::identity_args_with_extra_regions`), whose
+/// `extra_early_regions` placeholders are each renamed to one fresh mono placeholder.
+struct MonoRegionFolder<'tcx, 'a> {
+    s: &'a hax::StateWithOwner<'tcx>,
     tcx: TyCtxt<'tcx>,
-    args: ty::GenericArgsRef<'tcx>,
-) -> (ty::GenericArgsRef<'tcx>, Vec<ty::PlaceholderRegion<'tcx>>) {
-    use rustc_middle::ty::{TypeFoldable, TypeFolder, TypeSuperFoldable};
-    struct Unerase<'tcx> {
-        tcx: TyCtxt<'tcx>,
-        name: rustc_span::Symbol,
-        placeholders: Vec<ty::PlaceholderRegion<'tcx>>,
-    }
-    impl<'tcx> TypeFolder<TyCtxt<'tcx>> for Unerase<'tcx> {
-        fn cx(&self) -> TyCtxt<'tcx> {
-            self.tcx
-        }
-        fn fold_ty(&mut self, ty: ty::Ty<'tcx>) -> ty::Ty<'tcx> {
-            match ty.kind() {
-                ty::Closure(..) | ty::CoroutineClosure(..) | ty::Coroutine(..) => ty,
-                _ => ty.super_fold_with(self),
-            }
-        }
-        fn fold_region(&mut self, region: ty::Region<'tcx>) -> ty::Region<'tcx> {
-            if !region.is_erased() {
-                return region;
-            }
-            let placeholder = ty::PlaceholderRegion::new(
-                ty::UniverseIndex::ROOT,
-                ty::BoundRegion {
-                    var: ty::BoundVar::from_usize(self.placeholders.len()),
-                    kind: ty::BoundRegionKind::NamedForPrinting(self.name),
-                },
-            );
-            self.placeholders.push(placeholder);
-            ty::Region::new_placeholder(self.tcx, placeholder)
+    name: rustc_span::Symbol,
+    placeholders: Vec<ty::PlaceholderRegion<'tcx>>,
+}
+
+impl<'tcx, 'a> MonoRegionFolder<'tcx, 'a> {
+    fn new(s: &'a hax::StateWithOwner<'tcx>, tcx: TyCtxt<'tcx>) -> Self {
+        Self {
+            s,
+            tcx,
+            name: rustc_span::Symbol::intern(MONO_REGION_NAME),
+            placeholders: Vec::new(),
         }
     }
-    let mut folder = Unerase {
-        tcx,
-        name: rustc_span::Symbol::intern(MONO_REGION_NAME),
-        placeholders: Vec::new(),
-    };
-    let args = args.fold_with(&mut folder);
-    (args, folder.placeholders)
+
+    fn fresh(&mut self) -> ty::Region<'tcx> {
+        let placeholder = ty::PlaceholderRegion::new(
+            ty::UniverseIndex::ROOT,
+            ty::BoundRegion {
+                var: ty::BoundVar::from_usize(self.placeholders.len()),
+                kind: ty::BoundRegionKind::NamedForPrinting(self.name),
+            },
+        );
+        self.placeholders.push(placeholder);
+        ty::Region::new_placeholder(self.tcx, placeholder)
+    }
+
+    /// The arguments of closure `def_id`: its parent arguments with fresh mono placeholders, and
+    /// its own (signature, upvars) arguments rebuilt from its identity template. If `rename`,
+    /// the closure's own placeholders become fresh mono placeholders too; otherwise they stay the
+    /// closure's `extra_early_regions`, which the closure binds itself.
+    fn closure_args(
+        &mut self,
+        def_id: DefId,
+        args: ty::GenericArgsRef<'tcx>,
+        rename: bool,
+    ) -> ty::GenericArgsRef<'tcx> {
+        use rustc_middle::ty::TypeFoldable;
+        let tcx = self.tcx;
+        let parent_count = tcx.generics_of(def_id).parent_count;
+        let parent = tcx.mk_args(&args[..parent_count]).fold_with(self);
+        let hax_def_id: hax::DefId = def_id.sinto(self.s);
+        let (identity, _) = hax_def_id.identity_args_with_extra_regions(self.s);
+        let full = tcx.mk_args_from_iter(parent.iter().chain(args[parent_count..].iter().copied()));
+        let own = hax::substitute(
+            tcx,
+            hax::state::UnderOwnerState::typing_env(self.s),
+            Some(full),
+            tcx.mk_args(&identity[parent_count..]),
+        );
+        let own = if rename {
+            let mut renamed: FxHashMap<ty::PlaceholderRegion<'tcx>, ty::Region<'tcx>> =
+                FxHashMap::default();
+            ty::fold_regions(tcx, own, |region, _| match region.kind() {
+                ty::RePlaceholder(placeholder)
+                    if placeholder.bound.kind
+                        != ty::BoundRegionKind::NamedForPrinting(self.name) =>
+                {
+                    *renamed.entry(placeholder).or_insert_with(|| self.fresh())
+                }
+                _ => region,
+            })
+        } else {
+            own
+        };
+        tcx.mk_args_from_iter(parent.iter().chain(own.iter()))
+    }
+}
+
+impl<'tcx, 'a> ty::TypeFolder<TyCtxt<'tcx>> for MonoRegionFolder<'tcx, 'a> {
+    fn cx(&self) -> TyCtxt<'tcx> {
+        self.tcx
+    }
+    fn fold_ty(&mut self, ty: ty::Ty<'tcx>) -> ty::Ty<'tcx> {
+        use rustc_middle::ty::TypeSuperFoldable;
+        match *ty.kind() {
+            ty::Closure(def_id, args) => {
+                let args = self.closure_args(def_id, args, true);
+                ty::Ty::new_closure(self.tcx, def_id, args)
+            }
+            ty::CoroutineClosure(..) | ty::Coroutine(..) => ty,
+            _ => ty.super_fold_with(self),
+        }
+    }
+    fn fold_region(&mut self, region: ty::Region<'tcx>) -> ty::Region<'tcx> {
+        if region.is_erased() {
+            self.fresh()
+        } else {
+            region
+        }
+    }
 }
 
 /// The id of an untranslated item. Note that a given `DefId` may show up as multiple different
@@ -991,13 +1046,20 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         } else {
             item.clone()
         };
-        // Closures and other typeck children recover their regions through their
-        // `extra_early_regions` instead.
         let args = item.rustc_args(s);
-        if item.def_id.is_typeck_child(s) || !args.has_erased_regions() {
+        let is_closure = matches!(item.def_id.kind, hax::DefKind::Closure);
+        // Other typeck children (inline consts, coroutines) keep erased regions.
+        if (item.def_id.is_typeck_child(s) && !is_closure) || !args.has_erased_regions() {
             return (item, Vec::new());
         }
-        let (args, placeholders) = unerase_mono_regions(self.tcx, args);
+        let mut folder = MonoRegionFolder::new(s, self.tcx);
+        let args = if is_closure {
+            // The closure binds its own placeholders through its `extra_early_regions`.
+            folder.closure_args(item.def_id.real_rust_def_id(), args, false)
+        } else {
+            ty::TypeFoldable::fold_with(args, &mut folder)
+        };
+        let placeholders = folder.placeholders;
         let instance = hax::ItemRef::translate_from_hax_def_id(s, item.def_id.clone(), args);
         (instance, placeholders)
     }

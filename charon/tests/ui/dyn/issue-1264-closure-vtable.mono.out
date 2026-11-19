@@ -18,11 +18,11 @@ pub trait Sized<Self>
 
 struct () {}
 
+vtable core::marker::MetaSized::{vtable}::<test_crate::main::{closure#1}<_>><'_0>: core::marker::MetaSized::{vtable} = Opaque(VTable was chosen to be opaque)
+
 vtable core::marker::MetaSized::{vtable}::<test_crate::main::{closure#2}>: core::marker::MetaSized::{vtable} = Opaque(VTable was chosen to be opaque)
 
 vtable core::marker::MetaSized::{vtable}::<test_crate::main::{closure}>: core::marker::MetaSized::{vtable} = Opaque(VTable was chosen to be opaque)
-
-vtable core::marker::MetaSized::{vtable}::<test_crate::main::{closure#1}<'_>>: core::marker::MetaSized::{vtable} = Opaque(VTable was chosen to be opaque)
 
 vtable core::marker::MetaSized::{vtable}::<test_crate::main::{closure#3}>: core::marker::MetaSized::{vtable} = Opaque(VTable was chosen to be opaque)
 
@@ -742,7 +742,7 @@ unsafe fn {impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_
 }
 
 // Full name: test_crate::main::{impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}
-vtable {impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0>: core::ops::function::FnOnce::{vtable} = core::ops::function::FnOnce::{vtable} { size: size_of::<test_crate::main::{closure#1}<'_0>>(), align: align_of::<test_crate::main::{closure#1}<'_0>>(), drop: cast<*const ()>(fnptr({impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_drop_shim}<'_0, '_>)), method_call_once: cast<*const ()>(fnptr({impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}<'_0>)), super_trait_0: &core::marker::MetaSized::{vtable}::<test_crate::main::{closure#1}<'_>> }
+vtable {impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0>: core::ops::function::FnOnce::{vtable} = core::ops::function::FnOnce::{vtable} { size: size_of::<test_crate::main::{closure#1}<'_0>>(), align: align_of::<test_crate::main::{closure#1}<'_0>>(), drop: cast<*const ()>(fnptr({impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_drop_shim}<'_0, '_>)), method_call_once: cast<*const ()>(fnptr({impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}<'_0>)), super_trait_0: &core::marker::MetaSized::{vtable}::<test_crate::main::{closure#1}<_>><'_0> }
 
 // Full name: test_crate::main::{impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}
 extern "rust-call" fn {impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}<'_0, '_1>(_1: &'_1 mut (dyn FnMut<(u32,), ImpliedClause1::Output = u32>), _2: (u32,)) -> u32
@@ -783,7 +783,7 @@ unsafe fn {impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_d
 }
 
 // Full name: test_crate::main::{impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}
-vtable {impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0>: core::ops::function::FnMut::{vtable} = core::ops::function::FnMut::{vtable} { size: size_of::<test_crate::main::{closure#1}<'_0>>(), align: align_of::<test_crate::main::{closure#1}<'_0>>(), drop: cast<*const ()>(fnptr({impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_drop_shim}<'_0, '_>)), method_call_mut: cast<*const ()>(fnptr({impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}<'_0, '_>)), super_trait_0: &core::marker::MetaSized::{vtable}::<test_crate::main::{closure#1}<'_>>, super_trait_1: &{impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0> }
+vtable {impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0>: core::ops::function::FnMut::{vtable} = core::ops::function::FnMut::{vtable} { size: size_of::<test_crate::main::{closure#1}<'_0>>(), align: align_of::<test_crate::main::{closure#1}<'_0>>(), drop: cast<*const ()>(fnptr({impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_drop_shim}<'_0, '_>)), method_call_mut: cast<*const ()>(fnptr({impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}<'_0, '_>)), super_trait_0: &core::marker::MetaSized::{vtable}::<test_crate::main::{closure#1}<_>><'_0>, super_trait_1: &{impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0> }
 
 // Full name: test_crate::main::{impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}
 extern "rust-call" fn {impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}<'_0, '_1>(_1: &'_1 (dyn Fn<(u32,), ImpliedClause1::ImpliedClause1::Output = u32>), _2: (u32,)) -> u32
@@ -824,7 +824,7 @@ unsafe fn {impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_drop
 }
 
 // Full name: test_crate::main::{impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}
-vtable {impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0>: core::ops::function::Fn::{vtable} = core::ops::function::Fn::{vtable} { size: size_of::<test_crate::main::{closure#1}<'_0>>(), align: align_of::<test_crate::main::{closure#1}<'_0>>(), drop: cast<*const ()>(fnptr({impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_drop_shim}<'_0, '_>)), method_call: cast<*const ()>(fnptr({impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}<'_0, '_>)), super_trait_0: &core::marker::MetaSized::{vtable}::<test_crate::main::{closure#1}<'_>>, super_trait_1: &{impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0> }
+vtable {impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0>: core::ops::function::Fn::{vtable} = core::ops::function::Fn::{vtable} { size: size_of::<test_crate::main::{closure#1}<'_0>>(), align: align_of::<test_crate::main::{closure#1}<'_0>>(), drop: cast<*const ()>(fnptr({impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_drop_shim}<'_0, '_>)), method_call: cast<*const ()>(fnptr({impl Fn<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable_method}<'_0, '_>)), super_trait_0: &core::marker::MetaSized::{vtable}::<test_crate::main::{closure#1}<_>><'_0>, super_trait_1: &{impl FnMut<(u32,)> for test_crate::main::{closure#1}<'_0>}::{vtable}<'_0> }
 
 // Full name: test_crate::main::{impl FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0>}
 impl<'_0> FnOnce<(u32,)> for test_crate::main::{closure#1}<'_0> {
