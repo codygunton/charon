@@ -515,11 +515,29 @@ let instantiate_name_generics (binder : Types.generic_args Types.binder)
     (* The caller did not provide generics for the instantiated item, we keep that so. *)
     g
   else begin
-    if not (generic_args_match_params binder.binder_params g) then
-      failwith
-        "(partially) monomorphized generic parameters do not match the \
-         supplied generic arguments";
-    apply_args_to_binder g st_substitute_visitor#visit_generic_args binder
+    let pr, pt, pc, ptr =
+      TypesUtils.generic_params_lengths binder.binder_params
+    in
+    let ar, at, ac, atr = TypesUtils.generic_args_lengths g in
+    if pt = 0 && pc = 0 && ptr = 0 && at = 0 && ac = 0 && atr = 0 && ar > pr
+    then begin
+      (* Monomorphic instances bind the regions of their arguments; the item's
+         other regions (late-bound ones, the extra regions of closures) come
+         after them and are appended, as above. *)
+      let bound, extra = Collections.List.split_at g.regions pr in
+      let args =
+        apply_args_to_binder { g with regions = bound }
+          st_substitute_visitor#visit_generic_args binder
+      in
+      { args with regions = args.regions @ extra }
+    end
+    else begin
+      if not (generic_args_match_params binder.binder_params g) then
+        failwith
+          "(partially) monomorphized generic parameters do not match the \
+           supplied generic arguments";
+      apply_args_to_binder g st_substitute_visitor#visit_generic_args binder
+    end
   end
 
 (** The arguments this type was declared with, i.e. the ones it had before

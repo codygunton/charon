@@ -97,3 +97,23 @@ fn mono_usage() {
     let _container1 = MonoContainer::create(42i32);
     let _container2 = MonoContainer::create("test");
 }
+
+// Instances whose arguments contain a closure type that binds both the regions of its parent's
+// arguments and its own extra regions: the `Instantiated` binder of the closure only binds the
+// former, the latter are appended.
+#[pattern::pass("test_crate::call_it<@T, @F>")]
+fn call_it<T, F: Fn() -> T>(f: F) -> T {
+    f()
+}
+
+#[pattern::pass("test_crate::local_closure<@T>")]
+fn local_closure<T: Copy>(x: T) -> T {
+    let y = &x;
+    call_it(|| *y)
+}
+
+#[pattern::pass("test_crate::closure_usage")]
+fn closure_usage() -> u8 {
+    let a = 1u8;
+    *local_closure(&a)
+}
