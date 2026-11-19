@@ -559,10 +559,15 @@ impl<'tcx> TranslateCtx<'tcx> {
         }
     }
 
-    /// Whether this item is polymorphic, while we are in monomorphic mode. Items that are not
-    /// monomorphized at all (foreign items with `--monomorphize-local-only`) don't count.
+    /// Whether this item is polymorphic, while we are in monomorphic mode; such items are hidden.
+    /// With `--monomorphize-local-only` polymorphic items are translated as without
+    /// `--monomorphize`: they are foreign items, or local items reached from polymorphic code,
+    /// e.g. methods with their own type parameters (`Hash::hash<H>`) of monomorphic impls of
+    /// polymorphic traits.
     pub(crate) fn is_poly_in_mono(&self, item_src: &TransItemSource) -> bool {
-        matches!(item_src.item, RustcItem::Poly(..)) && self.is_mono_def(item_src.def_id())
+        self.options.monomorphize_with_hax
+            && !self.options.monomorphize_local_only
+            && matches!(item_src.item, RustcItem::Poly(..))
     }
 
     pub(crate) fn register_no_enqueue(

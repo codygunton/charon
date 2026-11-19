@@ -5,7 +5,7 @@
 //! `Option`, slices, iterators, `Clone`, `FnOnce`, ...) stay polymorphic and are called with
 //! generic arguments and trait references. Local impls of std traits list their items.
 
-#[derive(Clone)]
+#[derive(Clone, Hash)]
 pub struct Nop {
     pub x: u32,
 }
@@ -48,6 +48,12 @@ pub fn vec_index(v: &Vec<u64>, i: usize) -> u64 {
     v[i]
 }
 
+/// `impl Hash for Option<T>` is polymorphic and takes `impl Hash for Nop`, whose method
+/// `hash<H>` has its own type parameter: it is translated polymorphically.
+pub fn hash_opt(n: Option<Nop>, h: &mut std::hash::DefaultHasher) {
+    std::hash::Hash::hash(&n, h)
+}
+
 pub fn main() {
     let mut w: Wrapper<Nop> = Wrapper { items: Vec::new() };
     w.push_clone(&Nop { x: 1 });
@@ -56,4 +62,5 @@ pub fn main() {
     let _ = index(&[1u8, 2], 1);
     let _ = sum(&vec![1, 2]);
     let _ = array_index([1, 2, 3, 4], 2);
+    hash_opt(None, &mut std::hash::DefaultHasher::new());
 }

@@ -452,9 +452,14 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     }
 
     /// Return the definition for this item. This uses the polymorphic or monomorphic definition
-    /// depending on user choice. For `TraitDecl` or `VTable`, we always use polymorphic definitions.
+    /// depending on user choice. For `TraitDecl` or `VTable`, we always use polymorphic definitions,
+    /// and also for items with type parameters, which a monomorphic item can refer to with
+    /// `--monomorphize-local-only` (e.g. the `hash<H>` method of an `impl Hash`).
     pub fn hax_def(&mut self, item: &hax::ItemRef<'tcx>) -> Result<Arc<hax::FullDef<'tcx>>, Error> {
-        let item = if self.monomorphize() && !self.item_src.kind.is_for_trait() {
+        let item = if self.monomorphize()
+            && !self.item_src.kind.is_for_trait()
+            && !item.has_non_lt_param
+        {
             RustcItem::Mono(item.clone())
         } else {
             RustcItem::Poly(item.def_id.clone())

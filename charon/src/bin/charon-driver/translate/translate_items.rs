@@ -1317,11 +1317,6 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
                     let binder_kind = BinderKind::TraitMethod(trait_id, trait_method_id);
                     let bound_fn_ref = match &impl_item.value {
                         Some(value) => {
-                            if self.monomorphize() && value.skip_binder.item.has_non_lt_param {
-                                // Methods with their own type parameters have no monomorphic
-                                // instance to refer to.
-                                continue;
-                            }
                             // By default we only enqueue required methods (those that don't have a default
                             // impl). If the impl is transparent, we enqueue all the implemented methods.
                             if item_meta.opacity.is_transparent() {
