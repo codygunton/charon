@@ -160,9 +160,15 @@ impl TransformCtx {
                 let fun_decl_id = decl.def_id;
                 let is_local = decl.item_meta.is_local;
                 let span = decl.item_meta.span;
+                let probe = crate::memtrace::start();
                 self.with_def_id(fun_decl_id, is_local, span, |ctx| f(ctx, &mut body));
                 let decl = &mut self.translated.fun_decls[id];
                 decl.body = body;
+                if let Some(probe) = probe {
+                    probe.finish(|| {
+                        format!("body {}", crate::memtrace::short_name(&decl.item_meta.name))
+                    });
+                }
                 decl.item_meta.has_errors |= self.errors.borrow().item_has_errors(fun_decl_id);
             }
         }

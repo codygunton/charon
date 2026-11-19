@@ -660,6 +660,9 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         fallback: Option<&TypeDeclKind>,
     ) -> Option<Layout> {
         use rustc_abi as r_abi;
+        if self.options.no_layouts {
+            return None;
+        }
 
         fn translate_variant_layout_data(
             layout_data: &r_abi::LayoutData<r_abi::FieldIdx, r_abi::VariantIdx>,

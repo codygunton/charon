@@ -21,6 +21,7 @@ impl<'tcx> TranslateCtx<'tcx> {
         });
         let trans_id = self.register_no_enqueue(&None, item_src);
         let def_id = item_src.def_id();
+        let memprobe = charon_lib::memtrace::start();
         if self.translate_stack.contains(&trans_id) {
             register_error!(
                 self,
@@ -31,6 +32,7 @@ impl<'tcx> TranslateCtx<'tcx> {
             return;
         }
         self.translate_stack.push(trans_id);
+        let memlabel = charon_lib::memtrace::enabled().then(|| format!("{def_id:?}"));
         self.with_def_id(def_id, &trans_id, |mut ctx| {
             let span = ctx.def_span(def_id);
             // Catch cycles
@@ -61,6 +63,9 @@ impl<'tcx> TranslateCtx<'tcx> {
         }
         // We must be careful not to early-return from this function to not unbalance the stack.
         self.translate_stack.pop();
+        if let Some(probe) = memprobe {
+            probe.finish(|| format!("translate-item {}", memlabel.unwrap_or_default()));
+        }
     }
 
     pub(crate) fn translate_item_aux(

@@ -50,6 +50,12 @@ pub struct CliOpts {
     #[clap(long)]
     #[serde(default)]
     pub no_code_duplication: bool,
+    /// Per-function bound on control-flow reconstruction with code duplication: if reconstructing
+    /// a body translates more than `N` times its number of blocks (counting duplicates), that body
+    /// is reconstructed as with `--no-code-duplication` instead. Other bodies keep duplication.
+    #[clap(long, value_name = "N")]
+    #[serde(default)]
+    pub code_duplication_limit: Option<usize>,
     /// Whether to precisely translate drops and drop-related code. For this, we add explicit
     /// `Destruct` bounds to all generic parameters and set the MIR level to at least `elaborated`.
     ///
@@ -408,6 +414,11 @@ pub struct CliOpts {
     #[clap(long)]
     #[serde(default)]
     pub no_compute_layout_guarantees: bool,
+    /// Don't translate type layouts (`TypeDecl::layout` stays empty). For consumers such as aeneas
+    /// that don't use layouts.
+    #[clap(long)]
+    #[serde(default)]
+    pub no_layouts: bool,
     /// Panic on the first error. This is useful for debugging.
     #[clap(long)]
     #[serde(default)]
@@ -831,6 +842,8 @@ pub struct TranslateOptions {
     /// Reconstruct the control-flow by breaking forward out of enclosing loops instead of
     /// duplicating the blocks reachable from several branches.
     pub no_code_duplication: bool,
+    /// See [CliOpts::code_duplication_limit].
+    pub code_duplication_limit: Option<usize>,
     /// Transform array-to-slice unsizing and repeat expressions into standard library function
     /// calls in LLBC.
     pub ops_to_function_calls: bool,
@@ -875,6 +888,8 @@ pub struct TranslateOptions {
     pub no_reorder_decls: bool,
     /// Don't compute type layout guarantees.
     pub no_compute_layout_guarantees: bool,
+    /// Don't translate type layouts.
+    pub no_layouts: bool,
     /// Transform Drop to Call drop_glue
     pub desugar_drops: bool,
     /// Reconstruct conditional drops from rustc drop flags.
@@ -1042,6 +1057,7 @@ impl TranslateOptions {
             monomorphize_with_hax: options.monomorphize,
             ullbc: options.ullbc,
             no_code_duplication: options.no_code_duplication,
+            code_duplication_limit: options.code_duplication_limit,
             ops_to_function_calls: options.ops_to_function_calls,
             index_to_function_calls: options.index_to_function_calls,
             item_opacities,
@@ -1066,6 +1082,7 @@ impl TranslateOptions {
             no_normalize: options.no_normalize,
             no_reorder_decls: options.no_reorder_decls,
             no_compute_layout_guarantees: options.no_compute_layout_guarantees,
+            no_layouts: options.no_layouts,
             desugar_drops: options.desugar_drops,
             resugar_drops: options.resugar_drops,
             detect_drop_flags: options.detect_drop_flags,

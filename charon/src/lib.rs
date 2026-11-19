@@ -53,6 +53,7 @@ pub mod logger;
 pub mod ast;
 pub mod errors;
 pub mod export;
+pub mod memtrace;
 #[cfg(feature = "minirust")]
 pub mod minirust;
 pub mod name_matcher;

@@ -13,6 +13,9 @@ Options:
       --no-code-duplication
           Reconstruct the control-flow without duplicating blocks: a block reachable from several branches is emitted once, and the branches `break` forward to it out of an enclosing `loop`. This can shrink bodies a lot, at the cost of control-flow that is harder to read. Note that consumers which expect `if`/`loop`-shaped bodies (e.g. aeneas) may not support the result
 
+      --code-duplication-limit <N>
+          Per-function bound on control-flow reconstruction with code duplication: if reconstructing a body translates more than `N` times its number of blocks (counting duplicates), that body is reconstructed as with `--no-code-duplication` instead. Other bodies keep duplication
+
       --precise-drops
           Whether to precisely translate drops and drop-related code. For this, we add explicit `Destruct` bounds to all generic parameters and set the MIR level to at least `elaborated`.
           
@@ -241,6 +244,9 @@ Options:
 
       --no-compute-layout-guarantees
           Don't compute type layout guarantees
+
+      --no-layouts
+          Don't translate type layouts (`TypeDecl::layout` stays empty). For consumers such as aeneas that don't use layouts
 
       --abort-on-error
           Panic on the first error. This is useful for debugging

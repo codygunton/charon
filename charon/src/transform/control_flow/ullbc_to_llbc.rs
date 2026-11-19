@@ -899,6 +899,13 @@ struct ReconstructCtx<'a> {
     /// stack.
     special_jump_stack: Vec<SpecialJump>,
     mode: ReconstructMode,
+    /// In `Duplicate` mode with `--code-duplication-limit`: the number of source blocks we may
+    /// translate (counting duplicates) before giving up on duplication for this body.
+    budget: Option<usize>,
+    /// Number of source blocks translated so far.
+    translated_blocks: usize,
+    /// Set once `budget` is exceeded; the partial result is then discarded.
+    over_budget: bool,
 }
 
 impl<'a> ReconstructCtx<'a> {
@@ -910,6 +917,11 @@ impl<'a> ReconstructCtx<'a> {
         // Translate the body by reconstructing the loops and the
         // conditional branchings.
         let allow_duplication = !ctx.options.no_code_duplication;
+        let budget = ctx
+            .options
+            .code_duplication_limit
+            .filter(|_| allow_duplication)
+            .map(|factor| factor.saturating_mul(src_body.body.len()));
         Ok(ReconstructCtx {
             cfg,
             body: src_body,
@@ -920,7 +932,27 @@ impl<'a> ReconstructCtx<'a> {
             } else {
                 ReconstructMode::ForwardBreak
             },
+            budget,
+            translated_blocks: 0,
+            over_budget: false,
         })
+    }
+
+    /// Reconstruct the whole body. In `Duplicate` mode, if the duplication budget is exceeded,
+    /// start over in `ForwardBreak` mode (no duplication).
+    fn translate_body(&mut self) -> tgt::Block {
+        let start_block = BlockId::ZERO;
+        let block = self.translate_block(start_block);
+        if !self.over_budget {
+            return block;
+        }
+        drop(block);
+        self.mode = ReconstructMode::ForwardBreak;
+        self.budget = None;
+        self.over_budget = false;
+        self.break_context_depth = 0;
+        self.special_jump_stack.clear();
+        self.translate_block(start_block)
     }
 
     fn translate_statement(&self, st: &src::Statement) -> tgt::Statement {
@@ -1150,6 +1182,16 @@ impl<'a> ReconstructCtx<'a> {
         // For this purpose, we push to the `special_jump_stack` the block ids that must be
         // translated specially. In `translate_jump` we check the stack. At the end of this
         // function we restore the stack to its previous state.
+        if let Some(budget) = self.budget {
+            self.translated_blocks += 1;
+            if self.translated_blocks > budget {
+                self.over_budget = true;
+            }
+        }
+        if self.over_budget {
+            // The result is discarded; stop translating.
+            return tgt::Block::new_unreachable(self.cfg.block_data[block_id].span);
+        }
         let old_context_depth = self.special_jump_stack.len();
         let block_data = &self.cfg.block_data[block_id];
         let span = block_data.span;
@@ -1360,7 +1402,6 @@ fn translate_body(ctx: &mut TransformCtx, body: &mut Body) {
     });
 
     // Calculate info about the graph and heuristically determine loop and switch exit blocks.
-    let start_block = BlockId::ZERO;
     let mut ctx = match ReconstructCtx::build(ctx, src_body) {
         Ok(ctx) => ctx,
         Err(Irreducible(bid)) => {
@@ -1374,7 +1415,7 @@ fn translate_body(ctx: &mut TransformCtx, body: &mut Body) {
         }
     };
     // Translate the blocks using the computed data.
-    let tgt_body = ctx.translate_block(start_block);
+    let tgt_body = ctx.translate_body();
 
     let mut tgt_body = tgt::ExprBody {
         span: src_body.span,

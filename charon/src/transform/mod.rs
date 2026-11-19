@@ -341,7 +341,11 @@ impl TransformCtx {
                     trace!("# Starting pass {}", pass.name());
                     let _guard =
                         crate::timing::scope_lazy("transform", || short_pass_name(pass.name()));
-                    pass.transform_ctx(self)
+                    let probe = crate::memtrace::start();
+                    pass.transform_ctx(self);
+                    if let Some(probe) = probe {
+                        probe.finish(|| format!("pass {}", pass.name()));
+                    }
                 }
             }
             Pass::FusedUnstructuredBody(passes) => {
@@ -355,6 +359,7 @@ impl TransformCtx {
                     }
                 }
                 self.for_each_item_mut(|ctx, mut item| {
+                    let probe = crate::memtrace::start();
                     for pass in passes.iter() {
                         if pass.should_run(&ctx.options) {
                             trace!("# Starting pass {}", pass.name());
@@ -363,6 +368,14 @@ impl TransformCtx {
                             });
                             pass.transform_item(ctx, item.reborrow());
                         }
+                    }
+                    if let Some(probe) = probe {
+                        probe.finish(|| {
+                            format!(
+                                "ullbc-passes {}",
+                                crate::memtrace::short_name(&item.item_meta().name)
+                            )
+                        });
                     }
                 });
                 for pass in passes.iter() {
@@ -373,6 +386,7 @@ impl TransformCtx {
             }
             Pass::FusedStructuredBody(passes) => {
                 self.for_each_fun_decl(|ctx, decl| {
+                    let probe = crate::memtrace::start();
                     for pass in passes.iter() {
                         if pass.should_run(&ctx.options) {
                             trace!("# Starting pass {}", pass.name());
@@ -381,6 +395,14 @@ impl TransformCtx {
                             });
                             pass.transform_function(ctx, decl);
                         }
+                    }
+                    if let Some(probe) = probe {
+                        probe.finish(|| {
+                            format!(
+                                "llbc-passes {}",
+                                crate::memtrace::short_name(&decl.item_meta.name)
+                            )
+                        });
                     }
                 });
             }

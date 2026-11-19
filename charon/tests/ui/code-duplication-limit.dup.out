@@ -1,0 +1,132 @@
+# Final LLBC before serialization:
+
+// Full name: test_crate::shared_tail
+fn shared_tail(a: bool, b: bool, c: bool) -> u32
+{
+    let mut _0: u32; // return
+    let a: bool; // arg #1
+    let b: bool; // arg #2
+    let c: bool; // arg #3
+    let mut x: u32; // local
+    let mut _5: bool; // anonymous local
+    let mut _6: bool; // anonymous local
+    let mut _7: bool; // anonymous local
+    let mut _8: u32; // anonymous local
+    let mut _9: u32; // anonymous local
+    let mut _10: bool; // anonymous local
+    let mut _11: bool; // anonymous local
+    let mut _12: bool; // anonymous local
+    let mut _13: u32; // anonymous local
+    let mut _14: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_8)
+    storage_live(_9)
+    storage_live(_13)
+    storage_live(_14)
+    storage_live(x)
+    x = const 0u32
+    fake_read(x)
+    storage_live(_5)
+    _5 = copy a
+    if move _5 {
+        storage_live(_6)
+        _6 = copy b
+        if move _6 {
+            _8 = copy x panic.+ const 1u32
+            x = move _8
+        } else {
+            storage_live(_7)
+            _7 = copy c
+            if move _7 {
+                _8 = copy x panic.+ const 1u32
+                x = move _8
+            } else {
+                _9 = copy x panic.+ const 2u32
+                x = move _9
+            }
+        }
+    } else {
+        storage_live(_7)
+        _7 = copy c
+        if move _7 {
+            _8 = copy x panic.+ const 1u32
+            x = move _8
+        } else {
+            _9 = copy x panic.+ const 2u32
+            x = move _9
+        }
+    }
+    storage_dead(_7)
+    storage_dead(_6)
+    storage_dead(_5)
+    storage_live(_10)
+    _10 = copy a
+    if move _10 {
+        storage_live(_12)
+        _12 = copy c
+        if move _12 {
+            _13 = copy x panic.+ const 3u32
+            x = move _13
+        } else {
+            _14 = copy x panic.+ const 4u32
+            x = move _14
+        }
+    } else {
+        storage_live(_11)
+        _11 = copy b
+        if move _11 {
+            storage_live(_12)
+            _12 = copy c
+            if move _12 {
+                _13 = copy x panic.+ const 3u32
+                x = move _13
+            } else {
+                _14 = copy x panic.+ const 4u32
+                x = move _14
+            }
+        } else {
+            _14 = copy x panic.+ const 4u32
+            x = move _14
+        }
+    }
+    storage_dead(_12)
+    storage_dead(_11)
+    storage_dead(_10)
+    _0 = copy x
+    storage_dead(x)
+    storage_dead(_14)
+    storage_dead(_13)
+    storage_dead(_9)
+    storage_dead(_8)
+    storage_dead(c)
+    storage_dead(b)
+    storage_dead(a)
+    return
+}
+
+// Full name: test_crate::straight
+fn straight(a: bool) -> u32
+{
+    let mut _0: u32; // return
+    let a: bool; // arg #1
+    let mut _2: bool; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = copy a
+    if move _2 {
+    } else {
+        _0 = const 2u32
+        storage_dead(_2)
+        storage_dead(a)
+        return
+    }
+    _0 = const 1u32
+    storage_dead(_2)
+    storage_dead(a)
+    return
+}
+
+
+
