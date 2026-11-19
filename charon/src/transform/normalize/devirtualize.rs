@@ -212,6 +212,10 @@ struct ReplaceVisitor<'a> {
     destruct: Option<TraitDeclId>,
     /// Types are hash-consed and appear many times; remember what each visited type became.
     visited_tys: &'a mut HashMap<Ty, Ty>,
+    /// The method implementations of the non-generic impls used as proofs. With
+    /// `--monomorphize`, impls don't list their methods, so `skip_trait_refs_when_known` can't
+    /// turn the former vtable calls into direct calls; we do it here.
+    impl_methods: &'a HashMap<(TraitImplId, TraitMethodId), FunDeclId>,
 }
 
 impl ReplaceVisitor<'_> {
@@ -234,6 +238,18 @@ impl VisitAstMut for ReplaceVisitor<'_> {
         }
         self.visited_tys.insert(old_ty, ty.clone());
         Continue(())
+    }
+
+    fn exit_fn_ptr(&mut self, fn_ptr: &mut FnPtr) {
+        let FnPtrKind::Trait(tref, method_id) = fn_ptr.kind.as_ref() else {
+            return;
+        };
+        let TraitRefKind::TraitImpl(impl_ref) = &tref.kind else {
+            return;
+        };
+        if let Some(&fun_id) = self.impl_methods.get(&(impl_ref.id, *method_id)) {
+            *fn_ptr = FnPtr::new(FnPtrKind::Fun(fun_id), fn_ptr.generics.clone());
+        }
     }
 
     fn enter_trait_ref(&mut self, tref: &mut TraitRef) {
@@ -389,6 +405,28 @@ impl TransformPass for Transform {
             .iter()
             .find(|d| d.item_meta.lang_item == Some(from_rustc::LangItem::Destruct))
             .map(|d| d.def_id);
+        let proof_impls: HashSet<TraitImplId> = targets
+            .values()
+            .filter_map(|(_, proof, _)| match &proof.kind {
+                TraitRefKind::TraitImpl(impl_ref) if impl_ref.generics.is_empty() => {
+                    Some(impl_ref.id)
+                }
+                _ => None,
+            })
+            .collect();
+        let impl_methods: HashMap<(TraitImplId, TraitMethodId), FunDeclId> = ctx
+            .translated
+            .fun_decls
+            .iter()
+            .filter_map(|f| match &f.src {
+                FunSource::TraitImpl {
+                    impl_ref, item_id, ..
+                } if proof_impls.contains(&impl_ref.id) => {
+                    Some(((impl_ref.id, *item_id), f.def_id))
+                }
+                _ => None,
+            })
+            .collect();
         let mut visited_tys = HashMap::new();
         ctx.for_each_item_mut(|ctx, mut item| {
             let mut v = ReplaceVisitor {
@@ -396,6 +434,7 @@ impl TransformPass for Transform {
                 targets: &targets,
                 destruct,
                 visited_tys: &mut visited_tys,
+                impl_methods: &impl_methods,
             };
             let _ = item.drive_mut(&mut v);
         });

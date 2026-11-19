@@ -1,0 +1,266 @@
+# Final LLBC before serialization:
+
+// Full name: core::panicking::panic_in_cleanup
+#[lang_item(PanicInCleanup)]
+fn panic_in_cleanup() -> !
+= <opaque>
+
+// Full name: alloc::boxed::Box
+#[fundamental]
+#[lang_item(OwnedBox)]
+pub opaque type Box<T>
+
+// Full name: test_crate::Backend
+pub struct Backend {
+  _0: u32,
+}
+
+opaque type ()
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box<Backend>}::drop_glue::<Backend, Global>
+unsafe fn impl_Destruct_for_Box_Backend_Global::drop_glue::<Backend, Global><'_0>(_1: &'_0 mut Box<Backend>)
+= <opaque>
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box<Backend>}::drop_glue::<Backend, Global>
+unsafe fn impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa), Global><'_0>(_1: &'_0 mut Box<Backend>)
+= <opaque>
+
+// Full name: alloc::boxed::{Box<Backend>}::new::<Backend>
+#[track_caller]
+#[diagnostic_item("box_new")]
+pub fn new::<Backend>(_1: Backend) -> Box<Backend>
+= <opaque>
+
+struct test_crate::Isa::{vtable} {
+  size: usize,
+  align: usize,
+  drop: *const (),
+  method_name: *const (),
+  method_compile: *const (),
+}
+
+// Full name: test_crate::Isa
+pub trait Isa<Self>
+
+// Full name: test_crate::{impl Isa for Backend}
+impl "impl_Isa_for_Backend" Isa for Backend {
+    vtable: lazy
+}
+
+// Full name: test_crate::{impl Isa for Backend}::name
+pub fn name<'_0>(self: &'_0 Backend) -> u32
+{
+    let mut _0: u32; // return
+    let self: &'1 Backend; // arg #1
+
+    storage_live(_0)
+    _0 = copy (*self)._0
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::Ctx::<u32>
+pub struct Ctx::<u32> {
+  v: u32,
+}
+
+// Full name: test_crate::{impl Isa for Backend}::compile
+pub fn compile<'_0>(self: &'_0 Backend, x: u32) -> u32
+{
+    let mut _0: u32; // return
+    let self: &'1 Backend; // arg #1
+    let x: u32; // arg #2
+    let mut _3: bool; // anonymous local
+    let mut _4: u32; // anonymous local
+    let mut _5: u32; // anonymous local
+    let mut _6: &'5 Backend; // anonymous local
+    let mut _7: &'7 Backend; // anonymous local
+    let mut _8: u32; // anonymous local
+    let mut _9: u32; // anonymous local
+    let mut _10: u32; // anonymous local
+    let mut _11: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_10)
+    storage_live(_11)
+    storage_live(_3)
+    storage_live(_4)
+    // Calls back into code that takes `&dyn Isa`.
+    _4 = copy x
+    _3 = move _4 == const 0u32
+    if move _3 {
+    } else {
+        storage_dead(_4)
+        storage_live(_5)
+        storage_live(_6)
+        storage_live(_7)
+        _7 = &(*self)
+        _6 = noretag move _7
+        storage_dead(_7)
+        storage_live(_8)
+        storage_live(_9)
+        _9 = copy x
+        _10 = copy _9 panic.- const 1u32
+        _8 = move _10
+        storage_dead(_9)
+        _5 = lower<'13>(move _6, move _8)
+        ↳⚡ storage_dead(_11)
+            storage_dead(_10)
+            storage_dead(x)
+            storage_dead(self)
+            unwind_continue
+        storage_dead(_8)
+        storage_dead(_6)
+        _11 = copy _5 panic.+ const 1u32
+        _0 = move _11
+        storage_dead(_5)
+        storage_dead(_3)
+        storage_dead(_11)
+        storage_dead(_10)
+        storage_dead(x)
+        storage_dead(self)
+        return
+    }
+    storage_dead(_4)
+    _0 = const 0u32
+    storage_dead(_3)
+    storage_dead(_11)
+    storage_dead(_10)
+    storage_dead(x)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::lower
+fn lower<'_0>(isa: &'_0 Backend, x: u32) -> u32
+{
+    let mut _0: u32; // return
+    let isa: &'3 Backend; // arg #1
+    let x: u32; // arg #2
+    let c: Ctx::<u32>; // local
+    let mut _4: u32; // anonymous local
+    let mut _5: u32; // anonymous local
+    let mut _6: &'5 Backend; // anonymous local
+    let mut _7: u32; // anonymous local
+    let mut _8: u32; // anonymous local
+    let mut _9: &'7 Backend; // anonymous local
+    let mut _10: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_10)
+    storage_live(c)
+    storage_live(_4)
+    _4 = copy x
+    c = Ctx::<u32> { v: move _4 }
+    storage_dead(_4)
+    fake_read(c)
+    storage_live(_5)
+    storage_live(_6)
+    _6 = &(*isa)
+    storage_live(_7)
+    _7 = copy c.v
+    _5 = compile<'16>(move _6, move _7)
+    ↳⚡ storage_dead(_10)
+        storage_dead(x)
+        storage_dead(isa)
+        unwind_continue
+    storage_dead(_7)
+    storage_dead(_6)
+    storage_live(_8)
+    storage_live(_9)
+    _9 = &(*isa)
+    _8 = name<'24>(move _9)
+    ↳⚡ storage_dead(_10)
+        storage_dead(x)
+        storage_dead(isa)
+        unwind_continue
+    storage_dead(_9)
+    _10 = copy _5 panic.+ copy _8
+    _0 = move _10
+    storage_dead(_8)
+    storage_dead(_5)
+    storage_dead(c)
+    storage_dead(_10)
+    storage_dead(x)
+    storage_dead(isa)
+    return
+}
+
+// Full name: test_crate::run
+pub fn run() -> u32
+{
+    let mut _0: u32; // return
+    let b: Backend; // local
+    let boxed: Box<Backend>; // local
+        where boxed :< Box<Backend>;
+        where boxed := Box<Backend>;
+    let mut _3: Box<Backend>; // anonymous local
+    let mut _4: Backend; // anonymous local
+    let mut _5: u32; // anonymous local
+    let mut _6: &'7 Backend; // anonymous local
+    let mut _7: &'10 Backend; // anonymous local
+    let _8: &'11 Backend; // anonymous local
+    let mut _9: u32; // anonymous local
+    let mut _10: &'12 Backend; // anonymous local
+    let mut _11: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_11)
+    storage_live(b)
+    b = Backend { _0: const 7u32 }
+    fake_read(b)
+    storage_live(boxed)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = Backend { _0: const 1u32 }
+    _3 = new::<Backend>(move _4)
+    ↳⚡ storage_dead(_11)
+        unwind_continue
+    boxed = noretag move _3
+    conditional_drop[impl_Destruct_for_Box_Backend_Global::drop_glue::<Backend, Global><'15>] _3
+    ↳⚡ storage_dead(_11)
+        unwind_continue
+    storage_dead(_4)
+    storage_dead(_3)
+    fake_read(boxed)
+    storage_live(_5)
+    storage_live(_6)
+    storage_live(_7)
+    storage_live(_8)
+    _8 = &b
+    _7 = &(*_8)
+    _6 = noretag move _7
+    storage_dead(_7)
+    _5 = lower<'21>(move _6, const 3u32)
+    ↳⚡ conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa), Global><'25>] boxed
+        ↳⚡ storage_dead(_11)
+            unwind_terminate(in_cleanup)
+        storage_dead(_11)
+        unwind_continue
+    storage_dead(_6)
+    storage_live(_9)
+    storage_live(_10)
+    _10 = &(*boxed)
+    _9 = name<'33>(move _10)
+    ↳⚡ conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa), Global><'25>] boxed
+        ↳⚡ storage_dead(_11)
+            unwind_terminate(in_cleanup)
+        storage_dead(_11)
+        unwind_continue
+    storage_dead(_10)
+    _11 = copy _5 panic.+ copy _9
+    _0 = move _11
+    storage_dead(_9)
+    storage_dead(_5)
+    conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa), Global><'37>] boxed
+    ↳⚡ storage_dead(_11)
+        unwind_continue
+    storage_dead(boxed)
+    storage_dead(b)
+    storage_dead(_8)
+    storage_dead(_11)
+    return
+}
+
+
+
