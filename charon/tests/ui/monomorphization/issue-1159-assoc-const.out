@@ -14,12 +14,12 @@ pub trait Sized<Self>
     non-dyn-compatible
 }
 
-// Full name: core::option::Option::<&'_ [u64]>
+// Full name: core::option::Option::<&_ [u64]>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
-pub enum Option::<&'_ [u64]> {
+pub enum Option::<&_ [u64]><'_0> {
   None,
-  Some { _0: &'_ [u64] },
+  Some { _0: &'_0 [u64] },
 }
 
 // Full name: test_crate::Concrete
@@ -39,15 +39,15 @@ fn ARR() -> [u64; 1usize]
 const ARR: [u64; 1usize] = ARR()
 
 // Full name: test_crate::{impl MyConfig for Concrete}::SLICE_HOLDER
-pub fn SLICE_HOLDER() -> Option::<&'_ [u64]>
+pub fn SLICE_HOLDER() -> Option::<&_ [u64]><'static>
 {
-    let mut _0: Option::<&'_ [u64]>; // return
-    let mut _1: &'1 [u64]; // anonymous local
-    let mut _2: &'3 [u64; 1usize]; // anonymous local
-    let _3: &'4 [u64; 1usize]; // anonymous local
-    let mut _4: &'5 [u64; 1usize]; // anonymous local
-    let mut _5: &'6 [u64; 1usize]; // anonymous local
-    let mut _6: &'8 [u64; 1usize]; // anonymous local
+    let mut _0: Option::<&_ [u64]><'1>; // return
+    let mut _1: &'3 [u64]; // anonymous local
+    let mut _2: &'5 [u64; 1usize]; // anonymous local
+    let _3: &'6 [u64; 1usize]; // anonymous local
+    let mut _4: &'7 [u64; 1usize]; // anonymous local
+    let mut _5: &'8 [u64; 1usize]; // anonymous local
+    let mut _6: &'11 [u64; 1usize]; // anonymous local
     let mut _7: [u64; 1usize]; // anonymous local
 
     storage_live(_5)
@@ -64,16 +64,16 @@ pub fn SLICE_HOLDER() -> Option::<&'_ [u64]>
     _4 = move _5
     _3 = &(*_4)
     _2 = &(*_3)
-    _1 = unsize_cast<&'7 [u64], 1usize>(move _2)
+    _1 = unsize_cast<&'9 [u64], 1usize>(move _2)
     storage_dead(_2)
-    _0 = Option::<&'_ [u64]>::Some { _0: move _1 }
+    _0 = Option::<&_ [u64]>::Some { _0: move _1 }
     storage_dead(_1)
     storage_dead(_3)
     return
 }
 
 // Full name: test_crate::{impl MyConfig for Concrete}::SLICE_HOLDER
-pub const SLICE_HOLDER: Option::<&'_ [u64]> = SLICE_HOLDER()
+pub const SLICE_HOLDER: Option::<&_ [u64]><'static> = SLICE_HOLDER()
 
 // Full name: test_crate::{impl MyConfig for Concrete}::op
 pub fn op(x: u64) -> u64

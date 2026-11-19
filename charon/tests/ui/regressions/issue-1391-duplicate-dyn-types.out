@@ -53,16 +53,16 @@ impl "impl_Sub_for_D" Sub for D {
     vtable: impl_Sub_for_D::{vtable}
 }
 
-// Full name: test_crate::Wrapper::<(dyn Sub)>
-struct Wrapper::<(dyn Sub)> {
-  _0: *const (dyn Sub),
+// Full name: test_crate::Wrapper::<(dyn Sub + _)>
+struct Wrapper::<(dyn Sub + _)><'_0> {
+  _0: *const (dyn Sub + '_0),
 }
 
 // Full name: test_crate::generic_context1::<u8>
-fn generic_context1::<u8>(_1: Wrapper::<(dyn Sub)>)
+fn generic_context1::<u8>(_1: Wrapper::<(dyn Sub + _)><'static>)
 {
     let mut _0: (); // return
-    let mut _1: Wrapper::<(dyn Sub)>; // arg #1
+    let mut _1: Wrapper::<(dyn Sub + _)><'1>; // arg #1
 
     storage_live(_0)
     _0 = ()
@@ -72,10 +72,10 @@ fn generic_context1::<u8>(_1: Wrapper::<(dyn Sub)>)
 }
 
 // Full name: test_crate::generic_context2::<u8, u8>
-fn generic_context2::<u8, u8>(_1: Wrapper::<(dyn Sub)>)
+fn generic_context2::<u8, u8>(_1: Wrapper::<(dyn Sub + _)><'static>)
 {
     let mut _0: (); // return
-    let mut _1: Wrapper::<(dyn Sub)>; // arg #1
+    let mut _1: Wrapper::<(dyn Sub + _)><'1>; // arg #1
 
     storage_live(_0)
     _0 = ()
@@ -85,10 +85,10 @@ fn generic_context2::<u8, u8>(_1: Wrapper::<(dyn Sub)>)
 }
 
 // Full name: test_crate::generic_context3::<u8, u8, u8>
-fn generic_context3::<u8, u8, u8>(_1: Wrapper::<(dyn Sub)>)
+fn generic_context3::<u8, u8, u8>(_1: Wrapper::<(dyn Sub + _)><'static>)
 {
     let mut _0: (); // return
-    let mut _1: Wrapper::<(dyn Sub)>; // arg #1
+    let mut _1: Wrapper::<(dyn Sub + _)><'1>; // arg #1
 
     storage_live(_0)
     _0 = ()
@@ -103,29 +103,29 @@ fn main()
     let mut _0: (); // return
     let d: D; // local
     let _2: (); // anonymous local
-    let mut _3: Wrapper::<(dyn Sub)>; // anonymous local
-    let mut _4: *const (dyn Sub + '5); // anonymous local
-    let mut _5: *const (dyn Sub + '6); // anonymous local
-    let mut _6: *const (dyn Sub + '7); // anonymous local
+    let mut _3: Wrapper::<(dyn Sub + _)><'4>; // anonymous local
+    let mut _4: *const (dyn Sub + '7); // anonymous local
+    let mut _5: *const (dyn Sub + '8); // anonymous local
+    let mut _6: *const (dyn Sub + '9); // anonymous local
         where _6 := *const (dyn Sub + '0);
     let mut _7: *const D; // anonymous local
-    let _8: &'9 D; // anonymous local
+    let _8: &'11 D; // anonymous local
     let _9: (); // anonymous local
-    let mut _10: Wrapper::<(dyn Sub)>; // anonymous local
-    let mut _11: *const (dyn Sub + '10); // anonymous local
-    let mut _12: *const (dyn Sub + '11); // anonymous local
-    let mut _13: *const (dyn Sub + '12); // anonymous local
+    let mut _10: Wrapper::<(dyn Sub + _)><'12>; // anonymous local
+    let mut _11: *const (dyn Sub + '13); // anonymous local
+    let mut _12: *const (dyn Sub + '14); // anonymous local
+    let mut _13: *const (dyn Sub + '15); // anonymous local
         where _13 := *const (dyn Sub + '1);
     let mut _14: *const D; // anonymous local
-    let _15: &'13 D; // anonymous local
+    let _15: &'16 D; // anonymous local
     let _16: (); // anonymous local
-    let mut _17: Wrapper::<(dyn Sub)>; // anonymous local
-    let mut _18: *const (dyn Sub + '14); // anonymous local
-    let mut _19: *const (dyn Sub + '15); // anonymous local
-    let mut _20: *const (dyn Sub + '16); // anonymous local
+    let mut _17: Wrapper::<(dyn Sub + _)><'17>; // anonymous local
+    let mut _18: *const (dyn Sub + '18); // anonymous local
+    let mut _19: *const (dyn Sub + '19); // anonymous local
+    let mut _20: *const (dyn Sub + '20); // anonymous local
         where _20 := *const (dyn Sub + '2);
     let mut _21: *const D; // anonymous local
-    let _22: &'17 D; // anonymous local
+    let _22: &'21 D; // anonymous local
 
     storage_live(_0)
     _0 = ()
@@ -141,12 +141,12 @@ fn main()
     storage_live(_8)
     _8 = &d
     _7 = &raw const (*_8)
-    _6 = unsize_cast<*const (dyn Sub + '18), &impl_Sub_for_D::{vtable}>(move _7)
+    _6 = unsize_cast<*const (dyn Sub + '22), &impl_Sub_for_D::{vtable}>(move _7)
     storage_dead(_7)
     _5 = copy _6
-    _4 = unsize_cast<*const (dyn Sub + '22),  at []>(move _5)
+    _4 = unsize_cast<*const (dyn Sub + '27),  at []>(move _5)
     storage_dead(_5)
-    _3 = Wrapper::<(dyn Sub)> { _0: move _4 }
+    _3 = Wrapper::<(dyn Sub + _)> { _0: move _4 }
     storage_dead(_4)
     _2 = generic_context1::<u8>(move _3)
     ↳⚡ unwind_continue
@@ -163,12 +163,12 @@ fn main()
     storage_live(_15)
     _15 = &d
     _14 = &raw const (*_15)
-    _13 = unsize_cast<*const (dyn Sub + '23), &impl_Sub_for_D::{vtable}>(move _14)
+    _13 = unsize_cast<*const (dyn Sub + '29), &impl_Sub_for_D::{vtable}>(move _14)
     storage_dead(_14)
     _12 = copy _13
-    _11 = unsize_cast<*const (dyn Sub + '27),  at []>(move _12)
+    _11 = unsize_cast<*const (dyn Sub + '34),  at []>(move _12)
     storage_dead(_12)
-    _10 = Wrapper::<(dyn Sub)> { _0: move _11 }
+    _10 = Wrapper::<(dyn Sub + _)> { _0: move _11 }
     storage_dead(_11)
     _9 = generic_context2::<u8, u8>(move _10)
     ↳⚡ unwind_continue
@@ -185,12 +185,12 @@ fn main()
     storage_live(_22)
     _22 = &d
     _21 = &raw const (*_22)
-    _20 = unsize_cast<*const (dyn Sub + '28), &impl_Sub_for_D::{vtable}>(move _21)
+    _20 = unsize_cast<*const (dyn Sub + '36), &impl_Sub_for_D::{vtable}>(move _21)
     storage_dead(_21)
     _19 = copy _20
-    _18 = unsize_cast<*const (dyn Sub + '32),  at []>(move _19)
+    _18 = unsize_cast<*const (dyn Sub + '41),  at []>(move _19)
     storage_dead(_19)
-    _17 = Wrapper::<(dyn Sub)> { _0: move _18 }
+    _17 = Wrapper::<(dyn Sub + _)> { _0: move _18 }
     storage_dead(_18)
     _16 = generic_context3::<u8, u8, u8>(move _17)
     ↳⚡ unwind_continue

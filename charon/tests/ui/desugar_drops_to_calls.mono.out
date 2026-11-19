@@ -39,7 +39,7 @@ fn panic_in_cleanup() -> !
 = <opaque>
 
 // Full name: std::io::stdio::_print
-pub fn _print<'_0>(_1: Arguments::<'_>)
+pub fn _print<'_0>(_1: Arguments::<_><'_0>)
 = <opaque>
 
 // Full name: alloc::alloc::Global
@@ -164,8 +164,8 @@ pub fn drop<'_0>(self: &'_0 mut Point)
     let mut _0: (); // return
     let self: &'1 mut Point; // arg #1
     let _2: (); // anonymous local
-    let mut _3: Arguments::<'_>; // anonymous local
-    let mut _4: &'3 str; // anonymous local
+    let mut _3: Arguments::<_><'3>; // anonymous local
+    let mut _4: &'8 str; // anonymous local
 
     storage_live(_0)
     _0 = ()
@@ -173,11 +173,11 @@ pub fn drop<'_0>(self: &'_0 mut Point)
     storage_live(_3)
     storage_live(_4)
     _4 = &test_crate::impl_Drop_for_Point::drop::{promoted_const} with_metadata(const 15usize)
-    _3 = from_str::<'_>(move _4)
+    _3 = from_str::<_><'5>(move _4)
     ↳⚡ storage_dead(self)
         storage_dead(_4)
         unwind_continue
-    _2 = _print<'7>(move _3)
+    _2 = _print<'12>(move _3)
     ↳⚡ storage_dead(self)
         storage_dead(_4)
         unwind_continue

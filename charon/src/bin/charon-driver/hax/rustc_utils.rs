@@ -200,6 +200,17 @@ pub fn translate_user_annotation<'tcx>(
                     },
                 )
             }
+            // The region parameters of Charon's monomorphic instances (`MONO_REGION_NAME`) are
+            // free regions of the item, like early-bound parameters.
+            ty::RePlaceholder(placeholder)
+                if matches!(
+                    placeholder.bound.kind,
+                    ty::BoundRegionKind::NamedForPrinting(name)
+                        if name.as_str() == "__charon_mono_region"
+                ) =>
+            {
+                region
+            }
             ty::ReVar(_) | ty::RePlaceholder(_) | ty::ReErased => {
                 unsupported_region = true;
                 region

@@ -88,6 +88,38 @@ pub trait Fn<Self, Args>
     vtable: core::ops::function::Fn::{vtable}
 }
 
+struct (_, _)::<&_ u8, &_ u8><'_0, '_1> {
+  _0: &'_0 u8,
+  _1: &'_1 u8,
+}
+
+// Full name: test_crate::Adt::<_, u32>
+struct Adt::<_, u32><'_0> {
+  _0: &'_0 u32,
+}
+
+struct (_,)::<Adt::<_, u32><_>><'_0> {
+  _0: Adt::<_, u32><'_0>,
+}
+
+struct (_,)::<&_ u32><'_0> {
+  _0: &'_0 u32,
+}
+
+// Full name: test_crate::Plain::<u32>
+struct Plain::<u32> {
+  _0: u32,
+}
+
+struct (_, _)::<Plain::<u32>, &_ u32><'_0> {
+  _0: Plain::<u32>,
+  _1: &'_0 u32,
+}
+
+struct (_,)::<[&_ u8; 3usize]><'_0> {
+  _0: [&'_0 u8; 3usize],
+}
+
 struct (_,)::<u32> {
   _0: u32,
 }
@@ -292,16 +324,29 @@ impl Fn<(u32,)> for fn(u32) -> u32 {
     vtable: {impl Fn<(u32,)> for fn(u32) -> u32}::{vtable}::<u32, u32>
 }
 
-struct (_,)::<[&'_ u8; 3usize]> {
-  _0: [&'_ u8; 3usize],
+// Full name: {impl FnOnce<(&'_0 u32,)> for fn(&'_0 u32) -> &'_1 u32}::call_once::<&_ u32, &_ u32>
+extern "rust-call" fn {impl FnOnce<(&'_0 u32,)> for fn(&'_0 u32) -> &'_1 u32}::call_once::<&_ u32, &_ u32><'_0, '_1>(fn_ptr: fn(&'_0 u32) -> &'_1 u32, args: (&'_0 u32,)) -> &'_1 u32
+{
+    let mut _0: &'_1 u32; // return
+    let mut fn_ptr: fn(&'_0 u32) -> &'_1 u32; // arg #1
+    let mut args: (&'_0 u32,); // arg #2
+
+    storage_live(_0)
+    _0 = (copy fn_ptr)(move args._0)
+    ↳⚡ storage_dead(args)
+        storage_dead(fn_ptr)
+        unwind_continue
+    storage_dead(args)
+    storage_dead(fn_ptr)
+    return
 }
 
-// Full name: {impl FnOnce<([&'_ u8; 3usize],)> for fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]}::call_once::<u8, u8, 3usize, 3usize>
-extern "rust-call" fn {impl FnOnce<([&'_ u8; 3usize],)> for fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]}::call_once::<u8, u8, 3usize, 3usize><'_0>(fn_ptr: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], args: ([&'_ u8; 3usize],)) -> [&'_0 u8; 3usize]
+// Full name: {impl FnOnce<([&'_0 u8; 3usize],)> for fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]}::call_once::<u8, u8, 3usize, 3usize>
+extern "rust-call" fn {impl FnOnce<([&'_0 u8; 3usize],)> for fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]}::call_once::<u8, u8, 3usize, 3usize><'_0>(fn_ptr: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], args: ([&'_0 u8; 3usize],)) -> [&'_0 u8; 3usize]
 {
     let mut _0: [&'_0 u8; 3usize]; // return
     let mut fn_ptr: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]; // arg #1
-    let mut args: ([&'_ u8; 3usize],); // arg #2
+    let mut args: ([&'_0 u8; 3usize],); // arg #2
 
     storage_live(_0)
     _0 = (copy fn_ptr)<'_0>(move args._0)
@@ -313,17 +358,12 @@ extern "rust-call" fn {impl FnOnce<([&'_ u8; 3usize],)> for fn<'_0_1>([&'_0_1 u8
     return
 }
 
-struct (_, _)::<&'_ u8, &'_ u8> {
-  _0: &'_ u8,
-  _1: &'_ u8,
-}
-
-// Full name: {impl FnOnce<(&'_ u8, &'_ u8)> for fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8)}::call_once::<u8, u8, u8, u8>
-extern "rust-call" fn {impl FnOnce<(&'_ u8, &'_ u8)> for fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8)}::call_once::<u8, u8, u8, u8><'_0, '_1>(fn_ptr: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8), args: (&'_ u8, &'_ u8)) -> (&'_ u8, &'_ u8)
+// Full name: {impl FnOnce<(&'_0 u8, &'_1 u8)> for fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8)}::call_once::<u8, u8, u8, u8>
+extern "rust-call" fn {impl FnOnce<(&'_0 u8, &'_1 u8)> for fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8)}::call_once::<u8, u8, u8, u8><'_0, '_1>(fn_ptr: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8), args: (&'_0 u8, &'_1 u8)) -> (&'_1 u8, &'_0 u8)
 {
-    let mut _0: (&'_ u8, &'_ u8); // return
-    let mut fn_ptr: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8); // arg #1
-    let mut args: (&'_ u8, &'_ u8); // arg #2
+    let mut _0: (&'_1 u8, &'_0 u8); // return
+    let mut fn_ptr: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8); // arg #1
+    let mut args: (&'_0 u8, &'_1 u8); // arg #2
 
     storage_live(_0)
     _0 = (copy fn_ptr)<'_0, '_1>(move args._0, move args._1)
@@ -335,21 +375,12 @@ extern "rust-call" fn {impl FnOnce<(&'_ u8, &'_ u8)> for fn<'_0_1, '_1_1>(&'_0_1
     return
 }
 
-// Full name: test_crate::Adt::<'_, u32>
-struct Adt::<'_, u32> {
-  _0: &'_ u32,
-}
-
-struct (_,)::<Adt::<'_, u32>> {
-  _0: Adt::<'_, u32>,
-}
-
-// Full name: {impl FnOnce<(Adt::<'_, u32>,)> for fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>}::call_once::<u32, u32>
-extern "rust-call" fn {impl FnOnce<(Adt::<'_, u32>,)> for fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>}::call_once::<u32, u32><'_0>(fn_ptr: fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>, args: (Adt::<'_, u32>,)) -> Adt::<'_, u32>
+// Full name: {impl FnOnce<(Adt::<_, u32><'_0>,)> for fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>}::call_once::<u32, u32>
+extern "rust-call" fn {impl FnOnce<(Adt::<_, u32><'_0>,)> for fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>}::call_once::<u32, u32><'_0>(fn_ptr: fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>, args: (Adt::<_, u32><'_0>,)) -> Adt::<_, u32><'_0>
 {
-    let mut _0: Adt::<'_, u32>; // return
-    let mut fn_ptr: fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>; // arg #1
-    let mut args: (Adt::<'_, u32>,); // arg #2
+    let mut _0: Adt::<_, u32><'_0>; // return
+    let mut fn_ptr: fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>; // arg #1
+    let mut args: (Adt::<_, u32><'_0>,); // arg #2
 
     storage_live(_0)
     _0 = (copy fn_ptr)<'_0>(move args._0)
@@ -387,46 +418,15 @@ extern "rust-call" fn {impl FnOnce<(ConstAdt::<3usize>,)> for fn(ConstAdt::<3usi
     return
 }
 
-// Full name: test_crate::Plain::<u32>
-struct Plain::<u32> {
-  _0: u32,
-}
-
-struct (_, _)::<Plain::<u32>, &'_ u32> {
-  _0: Plain::<u32>,
-  _1: &'_ u32,
-}
-
-// Full name: {impl FnOnce<(Plain::<u32>, &'_ u32)> for fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32}::call_once::<Plain::<u32>, u32, u32>
-extern "rust-call" fn {impl FnOnce<(Plain::<u32>, &'_ u32)> for fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32}::call_once::<Plain::<u32>, u32, u32><'_0>(fn_ptr: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, args: (Plain::<u32>, &'_ u32)) -> &'_0 u32
+// Full name: {impl FnOnce<(Plain::<u32>, &'_0 u32)> for fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32}::call_once::<Plain::<u32>, u32, u32>
+extern "rust-call" fn {impl FnOnce<(Plain::<u32>, &'_0 u32)> for fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32}::call_once::<Plain::<u32>, u32, u32><'_0>(fn_ptr: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, args: (Plain::<u32>, &'_0 u32)) -> &'_0 u32
 {
     let mut _0: &'_0 u32; // return
     let mut fn_ptr: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32; // arg #1
-    let mut args: (Plain::<u32>, &'_ u32); // arg #2
+    let mut args: (Plain::<u32>, &'_0 u32); // arg #2
 
     storage_live(_0)
     _0 = (copy fn_ptr)<'_0>(move args._0, move args._1)
-    ↳⚡ storage_dead(args)
-        storage_dead(fn_ptr)
-        unwind_continue
-    storage_dead(args)
-    storage_dead(fn_ptr)
-    return
-}
-
-struct (_,)::<&'_ u32> {
-  _0: &'_ u32,
-}
-
-// Full name: {impl FnOnce<(&'_ u32,)> for fn(&'_ u32) -> &'_ u32}::call_once::<&'_ u32, &'_ u32>
-extern "rust-call" fn {impl FnOnce<(&'_ u32,)> for fn(&'_ u32) -> &'_ u32}::call_once::<&'_ u32, &'_ u32>(fn_ptr: fn(&'_ u32) -> &'_ u32, args: (&'_ u32,)) -> &'_ u32
-{
-    let mut _0: &'0 u32; // return
-    let mut fn_ptr: fn(&'1 u32) -> &'2 u32; // arg #1
-    let mut args: (&'_ u32,); // arg #2
-
-    storage_live(_0)
-    _0 = (copy fn_ptr)(move args._0)
     ↳⚡ storage_dead(args)
         storage_dead(fn_ptr)
         unwind_continue
@@ -449,10 +449,10 @@ impl "impl_Trait_for_u32" Trait for u32 {
 }
 
 // Full name: test_crate::identity
-fn identity<'a>(x: Adt::<'_, u32>) -> Adt::<'_, u32>
+fn identity<'a>(x: Adt::<_, u32><'a>) -> Adt::<_, u32><'a>
 {
-    let mut _0: Adt::<'_, u32>; // return
-    let x: Adt::<'_, u32>; // arg #1
+    let mut _0: Adt::<_, u32><'1>; // return
+    let x: Adt::<_, u32><'2>; // arg #1
 
     storage_live(_0)
     _0 = move x
@@ -460,14 +460,14 @@ fn identity<'a>(x: Adt::<'_, u32>) -> Adt::<'_, u32>
     return
 }
 
-fn test_crate::call_once::<'_, fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>>(f: fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>, x: Adt::<'_, u32>) -> Adt::<'_, u32>
+fn test_crate::call_once::<_, fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>><'_0>(f: fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>, x: Adt::<_, u32><'_0>) -> Adt::<_, u32><'_0>
 {
-    let mut _0: Adt::<'_, u32>; // return
-    let f: fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>; // arg #1
-    let x: Adt::<'_, u32>; // arg #2
-    let mut _3: fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>; // anonymous local
-    let mut _4: (Adt::<'_, u32>,); // anonymous local
-    let mut _5: Adt::<'_, u32>; // anonymous local
+    let mut _0: Adt::<_, u32><'1>; // return
+    let f: fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>; // arg #1
+    let x: Adt::<_, u32><'2>; // arg #2
+    let mut _3: fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>; // anonymous local
+    let mut _4: (Adt::<_, u32><'4>,); // anonymous local
+    let mut _5: Adt::<_, u32><'5>; // anonymous local
 
     storage_live(_0)
     storage_live(_3)
@@ -476,7 +476,65 @@ fn test_crate::call_once::<'_, fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>>(f: f
     storage_live(_5)
     _5 = move x
     _4 = (move _5,)
-    _0 = {impl FnOnce<(Adt::<'_, u32>,)> for fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>}::call_once::<u32, u32><'1>(move _3, move _4)
+    _0 = {impl FnOnce<(Adt::<_, u32><'_0>,)> for fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>}::call_once::<u32, u32><'8>(move _3, move _4)
+    ↳⚡ storage_dead(x)
+        storage_dead(f)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_3)
+    storage_dead(x)
+    storage_dead(f)
+    return
+}
+
+// Full name: test_crate::generic_call_once::<fn(&_ u32) -> &_ u32, &_ u32, &_ u32>
+fn generic_call_once::<fn(&_ u32) -> &_ u32, &_ u32, &_ u32><'_0, '_1, '_2, '_3>(f: fn(&'_0 u32) -> &'_1 u32, x: &'_2 u32) -> &'_3 u32
+{
+    let mut _0: &'_3 u32; // return
+    let f: fn(&'_0 u32) -> &'_1 u32; // arg #1
+    let x: &'_2 u32; // arg #2
+    let mut _3: fn(&'_0 u32) -> &'_1 u32; // anonymous local
+    let mut _4: (&'_2 u32,); // anonymous local
+    let mut _5: &'_2 u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_3)
+    _3 = move f
+    storage_live(_4)
+    storage_live(_5)
+    _5 = move x
+    _4 = (move _5,)
+    _0 = {impl FnOnce<(&'_0 u32,)> for fn(&'_0 u32) -> &'_1 u32}::call_once::<&_ u32, &_ u32><'2, '3>(move _3, move _4)
+    ↳⚡ storage_dead(x)
+        storage_dead(f)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_3)
+    storage_dead(x)
+    storage_dead(f)
+    return
+}
+
+// Full name: test_crate::generic_call_once::<fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], [&_ u8; 3usize], [&_ u8; 3usize]>
+fn generic_call_once::<fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], [&_ u8; 3usize], [&_ u8; 3usize]><'_0, '_1>(f: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], x: [&'_0 u8; 3usize]) -> [&'_1 u8; 3usize]
+{
+    let mut _0: [&'_1 u8; 3usize]; // return
+    let f: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]; // arg #1
+    let x: [&'_0 u8; 3usize]; // arg #2
+    let mut _3: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]; // anonymous local
+    let mut _4: ([&'_0 u8; 3usize],); // anonymous local
+    let mut _5: [&'_0 u8; 3usize]; // anonymous local
+
+    storage_live(_0)
+    storage_live(_3)
+    _3 = move f
+    storage_live(_4)
+    storage_live(_5)
+    _5 = move x
+    _4 = (move _5,)
+    _0 = {impl FnOnce<([&'_0 u8; 3usize],)> for fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]}::call_once::<u8, u8, 3usize, 3usize><'1>(move _3, move _4)
     ↳⚡ storage_dead(x)
         storage_dead(f)
         unwind_continue
@@ -517,72 +575,50 @@ fn generic_call_once::<fn(ConstAdt::<3usize>) -> ConstAdt::<3usize>, ConstAdt::<
     return
 }
 
-// Full name: test_crate::generic_call_once::<fn(&'_ u32) -> &'_ u32, &'_ u32, &'_ u32>
-fn generic_call_once::<fn(&'_ u32) -> &'_ u32, &'_ u32, &'_ u32>(f: fn(&'_ u32) -> &'_ u32, x: &'_ u32) -> &'_ u32
+// Full name: test_crate::generic_call_once2::<fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, Plain::<u32>, &_ u32, &_ u32>
+fn generic_call_once2::<fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, Plain::<u32>, &_ u32, &_ u32><'_0, '_1>(f: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, x: Plain::<u32>, y: &'_0 u32) -> &'_1 u32
 {
-    let mut _0: &'0 u32; // return
-    let f: fn(&'1 u32) -> &'2 u32; // arg #1
-    let x: &'3 u32; // arg #2
-    let mut _3: fn(&'4 u32) -> &'5 u32; // anonymous local
-    let mut _4: (&'_ u32,); // anonymous local
-    let mut _5: &'6 u32; // anonymous local
+    let mut _0: &'_1 u32; // return
+    let f: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32; // arg #1
+    let x: Plain::<u32>; // arg #2
+    let y: &'_0 u32; // arg #3
+    let mut _4: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32; // anonymous local
+    let mut _5: (Plain::<u32>, &'_0 u32); // anonymous local
+    let mut _6: Plain::<u32>; // anonymous local
+    let mut _7: &'_0 u32; // anonymous local
 
     storage_live(_0)
-    storage_live(_3)
-    _3 = move f
     storage_live(_4)
+    _4 = move f
     storage_live(_5)
-    _5 = move x
-    _4 = (move _5,)
-    _0 = {impl FnOnce<(&'_ u32,)> for fn(&'_ u32) -> &'_ u32}::call_once::<&'_ u32, &'_ u32>(move _3, move _4)
-    ↳⚡ storage_dead(x)
+    storage_live(_6)
+    _6 = move x
+    storage_live(_7)
+    _7 = move y
+    _5 = (move _6, move _7)
+    _0 = {impl FnOnce<(Plain::<u32>, &'_0 u32)> for fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32}::call_once::<Plain::<u32>, u32, u32><'1>(move _4, move _5)
+    ↳⚡ storage_dead(y)
+        storage_dead(x)
         storage_dead(f)
         unwind_continue
+    storage_dead(_7)
+    storage_dead(_6)
     storage_dead(_5)
     storage_dead(_4)
-    storage_dead(_3)
-    storage_dead(x)
-    storage_dead(f)
-    return
-}
-
-// Full name: test_crate::generic_call_once::<fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], [&'_ u8; 3usize], [&'_ u8; 3usize]>
-fn generic_call_once::<fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], [&'_ u8; 3usize], [&'_ u8; 3usize]>(f: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], x: [&'_ u8; 3usize]) -> [&'_ u8; 3usize]
-{
-    let mut _0: [&'0 u8; 3usize]; // return
-    let f: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]; // arg #1
-    let x: [&'3 u8; 3usize]; // arg #2
-    let mut _3: fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]; // anonymous local
-    let mut _4: ([&'_ u8; 3usize],); // anonymous local
-    let mut _5: [&'6 u8; 3usize]; // anonymous local
-
-    storage_live(_0)
-    storage_live(_3)
-    _3 = move f
-    storage_live(_4)
-    storage_live(_5)
-    _5 = move x
-    _4 = (move _5,)
-    _0 = {impl FnOnce<([&'_ u8; 3usize],)> for fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize]}::call_once::<u8, u8, 3usize, 3usize><'10>(move _3, move _4)
-    ↳⚡ storage_dead(x)
-        storage_dead(f)
-        unwind_continue
-    storage_dead(_5)
-    storage_dead(_4)
-    storage_dead(_3)
+    storage_dead(y)
     storage_dead(x)
     storage_dead(f)
     return
 }
 
 // Full name: test_crate::swap
-fn swap<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'_ u8, &'_ u8)
+fn swap<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'b u8, &'a u8)
 {
-    let mut _0: (&'_ u8, &'_ u8); // return
-    let x: &'1 u8; // arg #1
-    let y: &'2 u8; // arg #2
-    let mut _3: &'3 u8; // anonymous local
-    let mut _4: &'4 u8; // anonymous local
+    let mut _0: (&'2 u8, &'3 u8); // return
+    let x: &'5 u8; // arg #1
+    let y: &'6 u8; // arg #2
+    let mut _3: &'7 u8; // anonymous local
+    let mut _4: &'8 u8; // anonymous local
 
     storage_live(_0)
     storage_live(_3)
@@ -597,12 +633,12 @@ fn swap<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'_ u8, &'_ u8)
     return
 }
 
-// Full name: test_crate::{impl FnOnce<(&'_ u8, &'_ u8)> for for<'a, 'b> swap<'a, 'b>}::call_once
-extern "rust-call" fn {impl FnOnce<(&'_ u8, &'_ u8)> for for<'a, 'b> swap<'a, 'b>}::call_once<'a, 'b>(state: for<'a, 'b> swap<'a, 'b>, args: (&'_ u8, &'_ u8)) -> (&'_ u8, &'_ u8)
+// Full name: test_crate::{impl FnOnce<(&'a u8, &'b u8)> for for<'a, 'b> swap<'a, 'b>}::call_once
+extern "rust-call" fn {impl FnOnce<(&'a u8, &'b u8)> for for<'a, 'b> swap<'a, 'b>}::call_once<'a, 'b>(state: for<'a, 'b> swap<'a, 'b>, args: (&'a u8, &'b u8)) -> (&'b u8, &'a u8)
 {
-    let mut _0: (&'_ u8, &'_ u8); // return
+    let mut _0: (&'b u8, &'a u8); // return
     let mut state: for<'a, 'b> swap<'a, 'b>; // arg #1
-    let mut args: (&'_ u8, &'_ u8); // arg #2
+    let mut args: (&'a u8, &'b u8); // arg #2
 
     storage_live(_0)
     _0 = swap<'a, 'b>(move args._0, move args._1)
@@ -614,17 +650,17 @@ extern "rust-call" fn {impl FnOnce<(&'_ u8, &'_ u8)> for for<'a, 'b> swap<'a, 'b
     return
 }
 
-// Full name: test_crate::generic_call_once2::<for<'a, 'b> swap<'a, 'b>, &'_ u8, &'_ u8, (&'_ u8, &'_ u8)>
-fn generic_call_once2::<for<'a, 'b> swap<'a, 'b>, &'_ u8, &'_ u8, (&'_ u8, &'_ u8)>(f: for<'a, 'b> swap<'a, 'b>, x: &'_ u8, y: &'_ u8) -> (&'_ u8, &'_ u8)
+// Full name: test_crate::generic_call_once2::<for<'a, 'b> swap<'a, 'b>, &_ u8, &_ u8, (&_ u8, &_ u8)>
+fn generic_call_once2::<for<'a, 'b> swap<'a, 'b>, &_ u8, &_ u8, (&_ u8, &_ u8)><'_0, '_1, '_2, '_3>(f: for<'a, 'b> swap<'a, 'b>, x: &'_0 u8, y: &'_1 u8) -> (&'_2 u8, &'_3 u8)
 {
-    let mut _0: (&'_ u8, &'_ u8); // return
+    let mut _0: (&'_2 u8, &'_3 u8); // return
     let f: for<'a, 'b> swap<'a, 'b>; // arg #1
-    let x: &'0 u8; // arg #2
-    let y: &'1 u8; // arg #3
+    let x: &'_0 u8; // arg #2
+    let y: &'_1 u8; // arg #3
     let mut _4: for<'a, 'b> swap<'a, 'b>; // anonymous local
-    let mut _5: (&'_ u8, &'_ u8); // anonymous local
-    let mut _6: &'2 u8; // anonymous local
-    let mut _7: &'3 u8; // anonymous local
+    let mut _5: (&'_0 u8, &'_1 u8); // anonymous local
+    let mut _6: &'_0 u8; // anonymous local
+    let mut _7: &'_1 u8; // anonymous local
 
     storage_live(_0)
     storage_live(_4)
@@ -635,7 +671,7 @@ fn generic_call_once2::<for<'a, 'b> swap<'a, 'b>, &'_ u8, &'_ u8, (&'_ u8, &'_ u
     storage_live(_7)
     _7 = move y
     _5 = (move _6, move _7)
-    _0 = {impl FnOnce<(&'_ u8, &'_ u8)> for for<'a, 'b> swap<'a, 'b>}::call_once<'6, '7>(move _4, move _5)
+    _0 = {impl FnOnce<(&'a u8, &'b u8)> for for<'a, 'b> swap<'a, 'b>}::call_once<'2, '3>(move _4, move _5)
     ↳⚡ storage_dead(y)
         storage_dead(x)
         storage_dead(f)
@@ -650,17 +686,17 @@ fn generic_call_once2::<for<'a, 'b> swap<'a, 'b>, &'_ u8, &'_ u8, (&'_ u8, &'_ u
     return
 }
 
-// Full name: test_crate::generic_call_once2::<fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, Plain::<u32>, &'_ u32, &'_ u32>
-fn generic_call_once2::<fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, Plain::<u32>, &'_ u32, &'_ u32>(f: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, x: Plain::<u32>, y: &'_ u32) -> &'_ u32
+// Full name: test_crate::generic_call_once2::<fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8), &_ u8, &_ u8, (&_ u8, &_ u8)>
+fn generic_call_once2::<fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8), &_ u8, &_ u8, (&_ u8, &_ u8)><'_0, '_1, '_2, '_3>(f: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8), x: &'_0 u8, y: &'_1 u8) -> (&'_2 u8, &'_3 u8)
 {
-    let mut _0: &'0 u32; // return
-    let f: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32; // arg #1
-    let x: Plain::<u32>; // arg #2
-    let y: &'1 u32; // arg #3
-    let mut _4: fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32; // anonymous local
-    let mut _5: (Plain::<u32>, &'_ u32); // anonymous local
-    let mut _6: Plain::<u32>; // anonymous local
-    let mut _7: &'2 u32; // anonymous local
+    let mut _0: (&'_2 u8, &'_3 u8); // return
+    let f: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8); // arg #1
+    let x: &'_0 u8; // arg #2
+    let y: &'_1 u8; // arg #3
+    let mut _4: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8); // anonymous local
+    let mut _5: (&'_0 u8, &'_1 u8); // anonymous local
+    let mut _6: &'_0 u8; // anonymous local
+    let mut _7: &'_1 u8; // anonymous local
 
     storage_live(_0)
     storage_live(_4)
@@ -671,43 +707,7 @@ fn generic_call_once2::<fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, Plain
     storage_live(_7)
     _7 = move y
     _5 = (move _6, move _7)
-    _0 = {impl FnOnce<(Plain::<u32>, &'_ u32)> for fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32}::call_once::<Plain::<u32>, u32, u32><'4>(move _4, move _5)
-    ↳⚡ storage_dead(y)
-        storage_dead(x)
-        storage_dead(f)
-        unwind_continue
-    storage_dead(_7)
-    storage_dead(_6)
-    storage_dead(_5)
-    storage_dead(_4)
-    storage_dead(y)
-    storage_dead(x)
-    storage_dead(f)
-    return
-}
-
-// Full name: test_crate::generic_call_once2::<fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8), &'_ u8, &'_ u8, (&'_ u8, &'_ u8)>
-fn generic_call_once2::<fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8), &'_ u8, &'_ u8, (&'_ u8, &'_ u8)>(f: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8), x: &'_ u8, y: &'_ u8) -> (&'_ u8, &'_ u8)
-{
-    let mut _0: (&'_ u8, &'_ u8); // return
-    let f: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8); // arg #1
-    let x: &'0 u8; // arg #2
-    let y: &'1 u8; // arg #3
-    let mut _4: fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8); // anonymous local
-    let mut _5: (&'_ u8, &'_ u8); // anonymous local
-    let mut _6: &'2 u8; // anonymous local
-    let mut _7: &'3 u8; // anonymous local
-
-    storage_live(_0)
-    storage_live(_4)
-    _4 = move f
-    storage_live(_5)
-    storage_live(_6)
-    _6 = move x
-    storage_live(_7)
-    _7 = move y
-    _5 = (move _6, move _7)
-    _0 = {impl FnOnce<(&'_ u8, &'_ u8)> for fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8)}::call_once::<u8, u8, u8, u8><'6, '7>(move _4, move _5)
+    _0 = {impl FnOnce<(&'_0 u8, &'_1 u8)> for fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8)}::call_once::<u8, u8, u8, u8><'2, '3>(move _4, move _5)
     ↳⚡ storage_dead(y)
         storage_dead(x)
         storage_dead(f)
@@ -727,17 +727,17 @@ pub fn test<'a>(x: &'a u32) -> &'a u32
 {
     let mut _0: &'1 u32; // return
     let x: &'2 u32; // arg #1
-    let f: fn<'b>(Adt::<'_, u32>) -> Adt::<'_, u32>; // local
-        where f :< fn<'b>(Adt::<'_, u32>) -> Adt::<'_, u32>;
-        where f := fn<'b>(Adt::<'_, u32>) -> Adt::<'_, u32>;
-    let _3: Adt::<'_, u32>; // anonymous local
-    let mut _4: fn<'b>(Adt::<'_, u32>) -> Adt::<'_, u32>; // anonymous local
-    let mut _5: Adt::<'_, u32>; // anonymous local
-    let mut _6: &'3 u32; // anonymous local
+    let f: fn<'b>(Adt::<_, u32><'b>) -> Adt::<_, u32><'b>; // local
+        where f :< fn<'b>(Adt::<_, u32><'b>) -> Adt::<_, u32><'b>;
+        where f := fn<'b>(Adt::<_, u32><'b>) -> Adt::<_, u32><'b>;
+    let _3: Adt::<_, u32><'4>; // anonymous local
+    let mut _4: fn<'b>(Adt::<_, u32><'b>) -> Adt::<_, u32><'b>; // anonymous local
+    let mut _5: Adt::<_, u32><'5>; // anonymous local
+    let mut _6: &'6 u32; // anonymous local
 
     storage_live(_0)
     storage_live(f)
-    f = fn_def_to_fn_ptr(const identity<'6>)
+    f = fn_def_to_fn_ptr(const identity<'9>)
     fake_read(f)
     storage_live(_3)
     storage_live(_4)
@@ -745,9 +745,9 @@ pub fn test<'a>(x: &'a u32) -> &'a u32
     storage_live(_5)
     storage_live(_6)
     _6 = &(*x)
-    _5 = Adt::<'_, u32> { _0: move _6 }
+    _5 = Adt::<_, u32> { _0: move _6 }
     storage_dead(_6)
-    _3 = test_crate::call_once::<'_, fn<'_0_1>(Adt::<'_, u32>) -> Adt::<'_, u32>>(move _4, move _5)
+    _3 = test_crate::call_once::<_, fn<'_0_1>(Adt::<_, u32><'_0_1>) -> Adt::<_, u32><'_0_1>><'12>(move _4, move _5)
     ↳⚡ storage_dead(x)
         unwind_continue
     storage_dead(_5)
@@ -833,7 +833,7 @@ pub fn test_free_region<'a>(x: &'a u32) -> &'a u32
     _4 = copy f
     storage_live(_5)
     _5 = &(*x)
-    _3 = generic_call_once::<fn(&'_ u32) -> &'_ u32, &'_ u32, &'_ u32>(move _4, move _5)
+    _3 = generic_call_once::<fn(&_ u32) -> &_ u32, &_ u32, &_ u32><'50, '51, '52, '53>(move _4, move _5)
     ↳⚡ storage_dead(x)
         unwind_continue
     _0 = &(*_3)
@@ -884,7 +884,7 @@ pub fn test_freshen_whole_adt<'a>(x: Plain::<u32>, y: &'a u32) -> &'a u32
     _6 = move x
     storage_live(_7)
     _7 = &(*y)
-    _4 = generic_call_once2::<fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, Plain::<u32>, &'_ u32, &'_ u32>(move _5, move _6, move _7)
+    _4 = generic_call_once2::<fn<'_0_1>(Plain::<u32>, &'_0_1 u32) -> &'_0_1 u32, Plain::<u32>, &_ u32, &_ u32><'10, '11>(move _5, move _6, move _7)
     ↳⚡ storage_dead(y)
         storage_dead(x)
         unwind_continue
@@ -902,8 +902,8 @@ pub fn test_freshen_whole_adt<'a>(x: Plain::<u32>, y: &'a u32) -> &'a u32
 // Full name: test_crate::array_identity
 fn array_identity<'a>(x: [&'a u8; 3usize]) -> [&'a u8; 3usize]
 {
-    let mut _0: [&'6 u8; 3usize]; // return
-    let x: [&'9 u8; 3usize]; // arg #1
+    let mut _0: [&'7 u8; 3usize]; // return
+    let x: [&'11 u8; 3usize]; // arg #1
 
     storage_live(_0)
     _0 = copy x
@@ -914,23 +914,23 @@ fn array_identity<'a>(x: [&'a u8; 3usize]) -> [&'a u8; 3usize]
 // Full name: test_crate::test_const_under_binder
 pub fn test_const_under_binder<'a>(x: [&'a u8; 3usize]) -> [&'a u8; 3usize]
 {
-    let mut _0: [&'6 u8; 3usize]; // return
-    let x: [&'9 u8; 3usize]; // arg #1
+    let mut _0: [&'7 u8; 3usize]; // return
+    let x: [&'11 u8; 3usize]; // arg #1
     let f: fn<'b>([&'b u8; 3usize]) -> [&'b u8; 3usize]; // local
         where f :< fn<'b>([&'b u8; 3usize]) -> [&'b u8; 3usize];
         where f := fn<'b>([&'b u8; 3usize]) -> [&'b u8; 3usize];
     let mut _3: fn<'b>([&'b u8; 3usize]) -> [&'b u8; 3usize]; // anonymous local
-    let mut _4: [&'12 u8; 3usize]; // anonymous local
+    let mut _4: [&'15 u8; 3usize]; // anonymous local
 
     storage_live(_0)
     storage_live(f)
-    f = fn_def_to_fn_ptr(const array_identity<'17>)
+    f = fn_def_to_fn_ptr(const array_identity<'21>)
     fake_read(f)
     storage_live(_3)
     _3 = copy f
     storage_live(_4)
     _4 = copy x
-    _0 = generic_call_once::<fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], [&'_ u8; 3usize], [&'_ u8; 3usize]>(move _3, move _4)
+    _0 = generic_call_once::<fn<'_0_1>([&'_0_1 u8; 3usize]) -> [&'_0_1 u8; 3usize], [&_ u8; 3usize], [&_ u8; 3usize]><'36, '37>(move _3, move _4)
     ↳⚡ storage_dead(x)
         unwind_continue
     storage_dead(_4)
@@ -941,20 +941,20 @@ pub fn test_const_under_binder<'a>(x: [&'a u8; 3usize]) -> [&'a u8; 3usize]
 }
 
 // Full name: test_crate::test_fn_def_regions
-pub fn test_fn_def_regions<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'_ u8, &'_ u8)
+pub fn test_fn_def_regions<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'b u8, &'a u8)
 {
-    let mut _0: (&'_ u8, &'_ u8); // return
-    let x: &'1 u8; // arg #1
-    let y: &'2 u8; // arg #2
-    let mut _3: &'3 u8; // anonymous local
-    let mut _4: &'4 u8; // anonymous local
+    let mut _0: (&'2 u8, &'3 u8); // return
+    let x: &'5 u8; // arg #1
+    let y: &'6 u8; // arg #2
+    let mut _3: &'7 u8; // anonymous local
+    let mut _4: &'8 u8; // anonymous local
 
     storage_live(_0)
     storage_live(_3)
     _3 = &(*x)
     storage_live(_4)
     _4 = &(*y)
-    _0 = generic_call_once2::<for<'a, 'b> swap<'a, 'b>, &'_ u8, &'_ u8, (&'_ u8, &'_ u8)>(const swap<'9, '10>, move _3, move _4)
+    _0 = generic_call_once2::<for<'a, 'b> swap<'a, 'b>, &_ u8, &_ u8, (&_ u8, &_ u8)><'13, '14, '15, '16>(const swap<'25, '26>, move _3, move _4)
     ↳⚡ storage_dead(y)
         storage_dead(x)
         unwind_continue
@@ -966,21 +966,21 @@ pub fn test_fn_def_regions<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'_ u8, &'_ u8)
 }
 
 // Full name: test_crate::test_fn_ptr_regions
-pub fn test_fn_ptr_regions<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'_ u8, &'_ u8)
+pub fn test_fn_ptr_regions<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'b u8, &'a u8)
 {
-    let mut _0: (&'_ u8, &'_ u8); // return
-    let x: &'1 u8; // arg #1
-    let y: &'2 u8; // arg #2
-    let f: fn<'c, 'd>(&'c u8, &'d u8) -> (&'_ u8, &'_ u8); // local
-        where f :< fn<'c, 'd>(&'c u8, &'d u8) -> (&'_ u8, &'_ u8);
-        where f := fn<'c, 'd>(&'c u8, &'d u8) -> (&'_ u8, &'_ u8);
-    let mut _4: fn<'c, 'd>(&'c u8, &'d u8) -> (&'_ u8, &'_ u8); // anonymous local
-    let mut _5: &'3 u8; // anonymous local
-    let mut _6: &'4 u8; // anonymous local
+    let mut _0: (&'2 u8, &'3 u8); // return
+    let x: &'5 u8; // arg #1
+    let y: &'6 u8; // arg #2
+    let f: fn<'c, 'd>(&'c u8, &'d u8) -> (&'d u8, &'c u8); // local
+        where f :< fn<'c, 'd>(&'c u8, &'d u8) -> (&'d u8, &'c u8);
+        where f := fn<'c, 'd>(&'c u8, &'d u8) -> (&'d u8, &'c u8);
+    let mut _4: fn<'c, 'd>(&'c u8, &'d u8) -> (&'d u8, &'c u8); // anonymous local
+    let mut _5: &'7 u8; // anonymous local
+    let mut _6: &'8 u8; // anonymous local
 
     storage_live(_0)
     storage_live(f)
-    f = fn_def_to_fn_ptr(const swap<'9, '10>)
+    f = fn_def_to_fn_ptr(const swap<'13, '14>)
     fake_read(f)
     storage_live(_4)
     _4 = copy f
@@ -988,7 +988,7 @@ pub fn test_fn_ptr_regions<'a, 'b>(x: &'a u8, y: &'b u8) -> (&'_ u8, &'_ u8)
     _5 = &(*x)
     storage_live(_6)
     _6 = &(*y)
-    _0 = generic_call_once2::<fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_ u8, &'_ u8), &'_ u8, &'_ u8, (&'_ u8, &'_ u8)>(move _4, move _5, move _6)
+    _0 = generic_call_once2::<fn<'_0_1, '_1_1>(&'_0_1 u8, &'_1_1 u8) -> (&'_1_1 u8, &'_0_1 u8), &_ u8, &_ u8, (&_ u8, &_ u8)><'19, '20, '21, '22>(move _4, move _5, move _6)
     ↳⚡ storage_dead(y)
         storage_dead(x)
         unwind_continue

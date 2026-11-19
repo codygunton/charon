@@ -18,11 +18,11 @@ pub struct Backend {
 opaque type ()
 
 // Full name: alloc::boxed::Box::{impl Destruct for Box<Backend>}::drop_glue::<Backend, Global>
-unsafe fn impl_Destruct_for_Box_Backend_Global::drop_glue::<Backend, Global><'_0>(_1: &'_0 mut Box<Backend>)
+unsafe fn impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa + _), Global><'_0, '_1>(_1: &'_1 mut Box<Backend>)
 = <opaque>
 
 // Full name: alloc::boxed::Box::{impl Destruct for Box<Backend>}::drop_glue::<Backend, Global>
-unsafe fn impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa), Global><'_0>(_1: &'_0 mut Box<Backend>)
+unsafe fn impl_Destruct_for_Box_Backend_Global::drop_glue::<Backend, Global><'_0>(_1: &'_0 mut Box<Backend>)
 = <opaque>
 
 // Full name: alloc::boxed::{Box<Backend>}::new::<Backend>
@@ -232,7 +232,7 @@ pub fn run() -> u32
     _6 = noretag move _7
     storage_dead(_7)
     _5 = lower<'21>(move _6, const 3u32)
-    ↳⚡ conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa), Global><'25>] boxed
+    ↳⚡ conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa + _), Global><'25, '26>] boxed
         ↳⚡ storage_dead(_11)
             unwind_terminate(in_cleanup)
         storage_dead(_11)
@@ -241,8 +241,8 @@ pub fn run() -> u32
     storage_live(_9)
     storage_live(_10)
     _10 = &(*boxed)
-    _9 = name<'33>(move _10)
-    ↳⚡ conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa), Global><'25>] boxed
+    _9 = name<'34>(move _10)
+    ↳⚡ conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa + _), Global><'25, '26>] boxed
         ↳⚡ storage_dead(_11)
             unwind_terminate(in_cleanup)
         storage_dead(_11)
@@ -252,7 +252,7 @@ pub fn run() -> u32
     _0 = move _11
     storage_dead(_9)
     storage_dead(_5)
-    conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa), Global><'37>] boxed
+    conditional_drop[impl_Destruct_for_Box_Global::drop_glue::<(dyn Isa + _), Global><'38, '39>] boxed
     ↳⚡ storage_dead(_11)
         unwind_continue
     storage_dead(boxed)

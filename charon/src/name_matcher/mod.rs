@@ -93,6 +93,28 @@ impl Pattern {
                     mono_args.regions.extend(args.regions.iter().cloned());
                     Some(mono_args)
                 }
+                Some(args)
+                    if instantiation.params.types.is_empty()
+                        && instantiation.params.const_generics.is_empty()
+                        && instantiation.params.trait_clauses.is_empty()
+                        && args.len() == args.regions.len()
+                        && args.regions.len() > instantiation.params.regions.len() =>
+                {
+                    // Monomorphic instances bind the regions of their arguments; the extra
+                    // (late-bound) regions are appended as above.
+                    let k = instantiation.params.regions.len();
+                    let prefix = GenericArgs::new(
+                        args.regions.iter().take(k).cloned().collect(),
+                        Default::default(),
+                        Default::default(),
+                        Default::default(),
+                    );
+                    let mut mono_args = instantiation.as_ref().clone().apply(&prefix);
+                    mono_args
+                        .regions
+                        .extend(args.regions.iter().skip(k).cloned());
+                    Some(mono_args)
+                }
                 Some(args) => {
                     assert!(
                         generic_args_match_params(&instantiation.params, args),

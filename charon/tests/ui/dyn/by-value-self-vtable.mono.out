@@ -39,19 +39,6 @@ where
     TraitClause0: (T: MetaSized),
     TraitClause1: (type_error("removed allocator parameter"): Sized),
 
-// Full name: test_crate::S
-struct S {
-  _0: u32,
-}
-
-// Full name: alloc::boxed::Box::{impl Destruct for Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]}::drop_glue::<S, Global>
-unsafe fn impl_Destruct_for_Box_S_Global::drop_glue::<S, Global><'_0>(_1: &'_0 mut Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}])
-= <opaque>
-
-// Full name: alloc::boxed::Box::{impl Destruct for Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}]}::drop_glue::<*mut u32, Global>
-unsafe fn {impl Destruct for Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}]}::drop_glue::<*mut u32, Global><'_0>(_1: &'_0 mut Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}])
-= <opaque>
-
 struct test_crate::Consume::{vtable} {
   size: usize,
   align: usize,
@@ -68,8 +55,23 @@ trait Consume<Self>
     vtable: test_crate::Consume::{vtable}
 }
 
-// Full name: alloc::boxed::Box::{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global>
-unsafe fn {impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'_0>(_1: &'_0 mut Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}])
+// Full name: alloc::boxed::Box::{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global>
+unsafe fn {impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'_0, '_1>(_1: &'_1 mut Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}])
+where
+    Outlives0: ('_0: '_1),
+= <opaque>
+
+// Full name: test_crate::S
+struct S {
+  _0: u32,
+}
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]}::drop_glue::<S, Global>
+unsafe fn impl_Destruct_for_Box_S_Global::drop_glue::<S, Global><'_0>(_1: &'_0 mut Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}])
+= <opaque>
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}]}::drop_glue::<*mut u32, Global>
+unsafe fn {impl Destruct for Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}]}::drop_glue::<*mut u32, Global><'_0>(_1: &'_0 mut Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}])
 = <opaque>
 
 #[track_caller]
@@ -259,8 +261,8 @@ impl Consume for *mut u32 {
 // Full name: test_crate::mk
 fn mk() -> Box<(dyn Consume + 'static)>[{built_in impl MetaSized for (dyn Consume + 'static)}, {built_in impl Sized for Global}]
 {
-    let mut _0: Box<(dyn Consume + '4)>[{built_in impl MetaSized for (dyn Consume + '5)}, {built_in impl Sized for Global}]; // return
-    let mut _1: Box<(dyn Consume + '6)>[{built_in impl MetaSized for (dyn Consume + '7)}, {built_in impl Sized for Global}]; // anonymous local
+    let mut _0: Box<(dyn Consume + '5)>[{built_in impl MetaSized for (dyn Consume + '7)}, {built_in impl Sized for Global}]; // return
+    let mut _1: Box<(dyn Consume + '8)>[{built_in impl MetaSized for (dyn Consume + '10)}, {built_in impl Sized for Global}]; // anonymous local
     let mut _2: Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]; // anonymous local
     let mut _3: S; // anonymous local
 
@@ -271,13 +273,13 @@ fn mk() -> Box<(dyn Consume + 'static)>[{built_in impl MetaSized for (dyn Consum
     _3 = S { _0: const 42u32 }
     _2 = alloc::boxed::{Box<S>[{built_in impl MetaSized for S}, {built_in impl Sized for Global}]}::new::<S>(move _3)
     ↳⚡ unwind_continue
-    _1 = unsize_cast<Box<(dyn Consume + '8)>[{built_in impl MetaSized for (dyn Consume + '9)}, {built_in impl Sized for Global}], &impl_Consume_for_S::{vtable}>(move _2)
-    conditional_drop[impl_Destruct_for_Box_S_Global::drop_glue::<S, Global><'10>] _2
+    _1 = unsize_cast<Box<(dyn Consume + '11)>[{built_in impl MetaSized for (dyn Consume + '13)}, {built_in impl Sized for Global}], &impl_Consume_for_S::{vtable}>(move _2)
+    conditional_drop[impl_Destruct_for_Box_S_Global::drop_glue::<S, Global><'14>] _2
     ↳⚡ unwind_continue
     storage_dead(_3)
     storage_dead(_2)
-    _0 = unsize_cast<Box<(dyn Consume + '11)>[{built_in impl MetaSized for (dyn Consume + '12)}, {built_in impl Sized for Global}],  at []>(move _1)
-    conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'19>] _1
+    _0 = unsize_cast<Box<(dyn Consume + '15)>[{built_in impl MetaSized for (dyn Consume + '17)}, {built_in impl Sized for Global}],  at []>(move _1)
+    conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'26, '27>] _1
     ↳⚡ unwind_continue
     storage_dead(_1)
     return
@@ -286,9 +288,9 @@ fn mk() -> Box<(dyn Consume + 'static)>[{built_in impl MetaSized for (dyn Consum
 // Full name: test_crate::mk_ptr
 fn mk_ptr(x: *mut u32) -> Box<(dyn Consume + 'static)>[{built_in impl MetaSized for (dyn Consume + 'static)}, {built_in impl Sized for Global}]
 {
-    let mut _0: Box<(dyn Consume + '4)>[{built_in impl MetaSized for (dyn Consume + '5)}, {built_in impl Sized for Global}]; // return
+    let mut _0: Box<(dyn Consume + '5)>[{built_in impl MetaSized for (dyn Consume + '7)}, {built_in impl Sized for Global}]; // return
     let x: *mut u32; // arg #1
-    let mut _2: Box<(dyn Consume + '6)>[{built_in impl MetaSized for (dyn Consume + '7)}, {built_in impl Sized for Global}]; // anonymous local
+    let mut _2: Box<(dyn Consume + '8)>[{built_in impl MetaSized for (dyn Consume + '10)}, {built_in impl Sized for Global}]; // anonymous local
     let mut _3: Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}]; // anonymous local
     let mut _4: *mut u32; // anonymous local
 
@@ -300,14 +302,14 @@ fn mk_ptr(x: *mut u32) -> Box<(dyn Consume + 'static)>[{built_in impl MetaSized 
     _3 = alloc::boxed::{Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}]}::new::<*mut u32>(move _4)
     ↳⚡ storage_dead(x)
         unwind_continue
-    _2 = unsize_cast<Box<(dyn Consume + '8)>[{built_in impl MetaSized for (dyn Consume + '9)}, {built_in impl Sized for Global}], &{impl Consume for *mut u32}::{vtable}>(move _3)
-    conditional_drop[{impl Destruct for Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}]}::drop_glue::<*mut u32, Global><'10>] _3
+    _2 = unsize_cast<Box<(dyn Consume + '11)>[{built_in impl MetaSized for (dyn Consume + '13)}, {built_in impl Sized for Global}], &{impl Consume for *mut u32}::{vtable}>(move _3)
+    conditional_drop[{impl Destruct for Box<*mut u32>[{built_in impl MetaSized for *mut u32}, {built_in impl Sized for Global}]}::drop_glue::<*mut u32, Global><'14>] _3
     ↳⚡ storage_dead(x)
         unwind_continue
     storage_dead(_4)
     storage_dead(_3)
-    _0 = unsize_cast<Box<(dyn Consume + '11)>[{built_in impl MetaSized for (dyn Consume + '12)}, {built_in impl Sized for Global}],  at []>(move _2)
-    conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'19>] _2
+    _0 = unsize_cast<Box<(dyn Consume + '15)>[{built_in impl MetaSized for (dyn Consume + '17)}, {built_in impl Sized for Global}],  at []>(move _2)
+    conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'26, '27>] _2
     ↳⚡ storage_dead(x)
         unwind_continue
     storage_dead(_2)
@@ -319,17 +321,17 @@ fn mk_ptr(x: *mut u32) -> Box<(dyn Consume + 'static)>[{built_in impl MetaSized 
 fn main()
 {
     let mut _0: (); // return
-    let x: Box<(dyn Consume + '4)>[{built_in impl MetaSized for (dyn Consume + '5)}, {built_in impl Sized for Global}]; // local
+    let x: Box<(dyn Consume + '5)>[{built_in impl MetaSized for (dyn Consume + '7)}, {built_in impl Sized for Global}]; // local
     let _v_2: u32; // local
-    let mut _3: &'8 (dyn Consume + '9); // anonymous local
+    let mut _3: &'10 (dyn Consume + '11); // anonymous local
     let mut n: u32; // local
-    let p: Box<(dyn Consume + '10)>[{built_in impl MetaSized for (dyn Consume + '11)}, {built_in impl Sized for Global}]; // local
+    let p: Box<(dyn Consume + '12)>[{built_in impl MetaSized for (dyn Consume + '14)}, {built_in impl Sized for Global}]; // local
     let mut _6: *mut u32; // anonymous local
-    let mut _7: &'13 mut u32; // anonymous local
+    let mut _7: &'16 mut u32; // anonymous local
     let _v_8: u32; // local
-    let mut _9: &'14 (dyn Consume + '15); // anonymous local
-    let mut _10: fn(&'8 (dyn Consume + '9)) -> u32; // anonymous local
-    let mut _11: fn(&'14 (dyn Consume + '15)) -> u32; // anonymous local
+    let mut _9: &'17 (dyn Consume + '18); // anonymous local
+    let mut _10: fn(&'10 (dyn Consume + '11)) -> u32; // anonymous local
+    let mut _11: fn(&'17 (dyn Consume + '18)) -> u32; // anonymous local
 
     storage_live(_0)
     _0 = ()
@@ -343,9 +345,9 @@ fn main()
     storage_live(_3)
     _3 = &(*x) with_metadata(read x.metadata)
     storage_live(_10)
-    _10 = cast<fn(&'8 (dyn Consume + '9)) -> u32>(read (*_3.metadata).method_read)
+    _10 = cast<fn(&'10 (dyn Consume + '11)) -> u32>(read (*_3.metadata).method_read)
     _v_2 = (read _10)(move _3)
-    ↳⚡ conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'30>] x
+    ↳⚡ conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'35, '36>] x
         ↳⚡ storage_dead(_11)
             storage_dead(_10)
             unwind_terminate(in_cleanup)
@@ -363,7 +365,7 @@ fn main()
     _7 = &mut n
     _6 = &raw mut (*_7)
     p = mk_ptr(move _6)
-    ↳⚡ conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'30>] x
+    ↳⚡ conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'35, '36>] x
         ↳⚡ storage_dead(_11)
             storage_dead(_10)
             unwind_terminate(in_cleanup)
@@ -377,13 +379,13 @@ fn main()
     storage_live(_9)
     _9 = &(*p) with_metadata(read p.metadata)
     storage_live(_11)
-    _11 = cast<fn(&'14 (dyn Consume + '15)) -> u32>(read (*_9.metadata).method_read)
+    _11 = cast<fn(&'17 (dyn Consume + '18)) -> u32>(read (*_9.metadata).method_read)
     _v_8 = (read _11)(move _9)
-    ↳⚡ conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'43>] p
+    ↳⚡ conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'51, '52>] p
         ↳⚡ storage_dead(_11)
             storage_dead(_10)
             unwind_terminate(in_cleanup)
-        conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'30>] x
+        conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'35, '36>] x
         ↳⚡ storage_dead(_11)
             storage_dead(_10)
             unwind_terminate(in_cleanup)
@@ -394,8 +396,8 @@ fn main()
     fake_read(_v_8)
     _0 = ()
     storage_dead(_v_8)
-    conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'50>] p
-    ↳⚡ conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'30>] x
+    conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'61, '62>] p
+    ↳⚡ conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'35, '36>] x
         ↳⚡ storage_dead(_11)
             storage_dead(_10)
             unwind_terminate(in_cleanup)
@@ -405,7 +407,7 @@ fn main()
     storage_dead(p)
     storage_dead(n)
     storage_dead(_v_2)
-    conditional_drop[{impl Destruct for Box<(dyn Consume)>[{built_in impl MetaSized for (dyn Consume)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume), Global><'57>] x
+    conditional_drop[{impl Destruct for Box<(dyn Consume + '_0)>[{built_in impl MetaSized for (dyn Consume + '_0)}, {built_in impl Sized for Global}]}::drop_glue::<(dyn Consume + _), Global><'71, '72>] x
     ↳⚡ storage_dead(_11)
         storage_dead(_10)
         unwind_continue

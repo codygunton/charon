@@ -32,15 +32,17 @@ trait T<Self>
     vtable: test_crate::T::{vtable}
 }
 
-// Full name: core::ptr::drop_glue::<(dyn T)>
+// Full name: core::ptr::drop_glue::<(dyn T + _)>
 #[lang_item(DropGlue)]
-unsafe fn drop_glue::<(dyn T)><'_0>(_1: &'_0 mut (dyn T))
+unsafe fn drop_glue::<(dyn T + _)><'_0, '_1>(_1: &'_1 mut (dyn T + '_0))
+where
+    Outlives0: ('_0: '_1),
 {
     let mut ret: (); // return
-    let mut _1: &'_0 mut (dyn T + '0); // arg #1
-    let mut drop_arg: &'_ mut (dyn T + '2); // local
+    let mut _1: &'_1 mut (dyn T + '_0); // arg #1
+    let mut drop_arg: &'_ mut (dyn T + '_0); // local
     let mut drop_ret: (); // local
-    let mut _4: unsafe fn(&'_ mut (dyn T + '2)); // anonymous local
+    let mut _4: unsafe fn(&'_ mut (dyn T + '_0)); // anonymous local
 
     storage_live(ret)
     ret = ()
@@ -48,20 +50,20 @@ unsafe fn drop_glue::<(dyn T)><'_0>(_1: &'_0 mut (dyn T))
     drop_arg = &mut (*_1) with_metadata(read _1.metadata)
     storage_live(drop_ret)
     storage_live(_4)
-    _4 = cast<unsafe fn(&'_ mut (dyn T + '2))>(read (*drop_arg.metadata).drop)
+    _4 = cast<unsafe fn(&'_ mut (dyn T + '_0))>(read (*drop_arg.metadata).drop)
     drop_ret = (read _4)(move drop_arg)
     ↳⚡ unwind_continue
     return
 }
 
-// Full name: core::ptr::drop_in_place::<(dyn T)>
+// Full name: core::ptr::drop_in_place::<(dyn T + _)>
 #[diagnostic_item("ptr_drop_in_place")]
-pub unsafe fn drop_in_place::<(dyn T)>(to_drop: *mut (dyn T))
+pub unsafe fn drop_in_place::<(dyn T + _)><'_0>(to_drop: *mut (dyn T + '_0))
 {
     let mut _0: (); // return
-    let to_drop: *mut (dyn T + '0); // arg #1
-    let mut _2: &'3 mut (dyn T + '4); // anonymous local
-    let mut _3: &'5 mut (dyn T + '6); // anonymous local
+    let to_drop: *mut (dyn T + '_0); // arg #1
+    let mut _2: &'1 mut (dyn T + '_0); // anonymous local
+    let mut _3: &'2 mut (dyn T + '_0); // anonymous local
 
     storage_live(_0)
     _0 = ()
@@ -69,7 +71,7 @@ pub unsafe fn drop_in_place::<(dyn T)>(to_drop: *mut (dyn T))
     storage_live(_3)
     _3 = &mut (*to_drop) with_metadata(read to_drop.metadata)
     _2 = &two-phase-mut (*_3) with_metadata(read _3.metadata)
-    _0 = drop_glue::<(dyn T)><'12>(move _2)
+    _0 = drop_glue::<(dyn T + _)><'5, '9>(move _2)
     ↳⚡ unwind_continue
     storage_dead(_3)
     storage_dead(_2)
@@ -87,7 +89,7 @@ unsafe fn f(p: *mut (dyn T + 'static))
     _0 = ()
     storage_live(_2)
     _2 = copy p
-    _0 = drop_in_place::<(dyn T)>(move _2)
+    _0 = drop_in_place::<(dyn T + _)><'9>(move _2)
     ↳⚡ unwind_continue
     storage_dead(_2)
     return

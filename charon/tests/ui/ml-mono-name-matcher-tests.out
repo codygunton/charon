@@ -192,14 +192,30 @@ fn funs_with_disambiguator(b: bool) -> u32
     return
 }
 
+// Full name: test_crate::MonoContainer::<&_ str>
+struct MonoContainer::<&_ str><'_0> {
+  item: &'_0 str,
+}
+
 // Full name: test_crate::MonoContainer::<i32>
 struct MonoContainer::<i32> {
   item: i32,
 }
 
-// Full name: test_crate::MonoContainer::<&'_ str>
-struct MonoContainer::<&'_ str> {
-  item: &'_ str,
+#[pattern::pass("test_crate::{test_crate::MonoContainer<@T>}::create<@T>")]
+#[pattern::pass("test_crate::_::create<@T>")]
+fn test_crate::{MonoContainer::<&_ str><'_0>}::create::<&_ str><'_0>(item: &'_0 str) -> MonoContainer::<&_ str><'_0>
+{
+    let mut _0: MonoContainer::<&_ str><'_0>; // return
+    let item: &'_0 str; // arg #1
+    let mut _2: &'_0 str; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = move item
+    _0 = MonoContainer::<&_ str> { item: move _2 }
+    storage_dead(_2)
+    return
 }
 
 #[pattern::pass("test_crate::{test_crate::MonoContainer<@T>}::create<@T>")]
@@ -218,22 +234,6 @@ fn test_crate::{MonoContainer::<i32>}::create::<i32>(item: i32) -> MonoContainer
     return
 }
 
-#[pattern::pass("test_crate::{test_crate::MonoContainer<@T>}::create<@T>")]
-#[pattern::pass("test_crate::_::create<@T>")]
-fn test_crate::{MonoContainer::<&'_ str>}::create::<&'_ str>(item: &'_ str) -> MonoContainer::<&'_ str>
-{
-    let mut _0: MonoContainer::<&'_ str>; // return
-    let item: &'1 str; // arg #1
-    let mut _2: &'2 str; // anonymous local
-
-    storage_live(_0)
-    storage_live(_2)
-    _2 = move item
-    _0 = MonoContainer::<&'_ str> { item: move _2 }
-    storage_dead(_2)
-    return
-}
-
 pub const test_crate::mono_usage::{promoted_const}: str = "test" with_metadata(4usize)
 
 // Full name: test_crate::mono_usage
@@ -242,8 +242,8 @@ fn mono_usage()
 {
     let mut _0: (); // return
     let _container1: MonoContainer::<i32>; // local
-    let _container2: MonoContainer::<&'_ str>; // local
-    let mut _3: &'2 str; // anonymous local
+    let _container2: MonoContainer::<&_ str><'2>; // local
+    let mut _3: &'7 str; // anonymous local
 
     storage_live(_0)
     _0 = ()
@@ -254,7 +254,7 @@ fn mono_usage()
     storage_live(_container2)
     storage_live(_3)
     _3 = &test_crate::mono_usage::{promoted_const} with_metadata(const 4usize)
-    _container2 = test_crate::{MonoContainer::<&'_ str>}::create::<&'_ str>(move _3)
+    _container2 = test_crate::{MonoContainer::<&_ str><'_0>}::create::<&_ str><'0>(move _3)
     ↳⚡ unwind_continue
     fake_read(_container2)
     _0 = ()

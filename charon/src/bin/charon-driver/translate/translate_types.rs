@@ -74,8 +74,11 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                         return Ok(Region::Var(DeBruijnVar::bound(dbid, rid)));
                     }
                 }
+                // Placeholders of monomorphic instances outside their item (e.g. in names) are
+                // erased too.
                 if let hax::BoundRegionKind::NamedForPrinting(name) = placeholder.bound.kind
-                    && name.to_string().starts_with("__charon_closure_region_")
+                    && (name.to_string().starts_with("__charon_closure_region_")
+                        || name.to_string() == super::translate_crate::MONO_REGION_NAME)
                 {
                     return Ok(self.translate_erased_region());
                 }

@@ -10,6 +10,12 @@ error: Unexpected error: could not find the late-bound region variable LateParam
 11 |         let y: &'a u32 = x;
    |                ^^^^^^^
 
+error: Unexpected error: could not find the late-bound region variable LateParamRegion { scope: test_crate::no_capture, kind: Named(test_crate::no_capture::'a, "'a") }
+  --> tests/ui/closure-enclosing-regions.rs:19:16
+   |
+19 |         let _: Option<&'a u32> = None;
+   |                ^^^^^^^^^^^^^^^
+
 error: Unexpected error: could not find the late-bound region variable LateParamRegion { scope: test_crate::nested, kind: Named(test_crate::nested::'a, "'a") }
   --> tests/ui/closure-enclosing-regions.rs:27:20
    |
@@ -58,4 +64,4 @@ error: Unexpected error: could not find the late-bound region variable LateParam
 53 |             let inner: &'inner T = z;
    |                        ^^^^^^^^^
 
-ERROR Charon failed to translate this code (10 errors)
+ERROR Charon failed to translate this code (11 errors)

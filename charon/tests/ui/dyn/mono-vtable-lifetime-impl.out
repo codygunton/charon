@@ -18,7 +18,7 @@ pub trait Sized<Self>
 
 struct () {}
 
-vtable core::marker::MetaSized::{vtable}::<Pattern::<'_>>: core::marker::MetaSized::{vtable} = Opaque(VTable was chosen to be opaque)
+vtable core::marker::MetaSized::{vtable}::<Pattern::<_><_>><'_0>: core::marker::MetaSized::{vtable} = Opaque(VTable was chosen to be opaque)
 
 struct str {
   _0: [u8],
@@ -39,16 +39,18 @@ pub trait Trait<Self>
     vtable: test_crate::Trait::{vtable}
 }
 
-// Full name: test_crate::Pattern::<'_>
-pub struct Pattern::<'_> {
-  _0: &'_ str,
+// Full name: test_crate::Pattern::<_>
+pub struct Pattern::<_><'_0> {
+  _0: &'_0 str,
 }
 
-// Full name: test_crate::{impl Trait for Pattern::<'_>}::method::<'_>
-pub fn method::<'_><'_0>(self: &'_0 Pattern::<'_>)
+// Full name: test_crate::{impl Trait for Pattern::<_><'_0>}::method::<_>
+pub fn method::<_><'_0, '_1>(self: &'_1 Pattern::<_><'_0>)
+where
+    Outlives0: ('_0: '_1),
 {
     let mut _0: (); // return
-    let self: &'1 Pattern::<'_>; // arg #1
+    let self: &'3 Pattern::<_><'4>; // arg #1
 
     storage_live(_0)
     _0 = ()
@@ -57,18 +59,18 @@ pub fn method::<'_><'_0>(self: &'_0 Pattern::<'_>)
     return
 }
 
-// Full name: test_crate::{impl Trait for Pattern::<'_>}::method::{vtable_method}::<'_>
-fn {vtable_method}::<'_><'_0>(_1: &'_0 (dyn Trait))
+// Full name: test_crate::{impl Trait for Pattern::<_><'_0>}::method::{vtable_method}::<_>
+fn {vtable_method}::<_><'_0, '_1>(_1: &'_1 (dyn Trait))
 {
     let mut _0: (); // return
-    let mut _1: &'_0 (dyn Trait + '0); // arg #1
-    let mut _2: &'_0 Pattern::<'_>; // anonymous local
+    let mut _1: &'_1 (dyn Trait + '0); // arg #1
+    let mut _2: &'_1 Pattern::<_><'_0>; // anonymous local
 
     storage_live(_0)
     _0 = ()
     storage_live(_2)
-    _2 = concretize<&'_0 Pattern::<'_>>(move _1)
-    _0 = method::<'_><'_0>(move _2)
+    _2 = concretize<&'_1 Pattern::<_><'_0>>(move _1)
+    _0 = method::<_><'_0, '_1>(move _2)
     ↳⚡ storage_dead(_2)
         storage_dead(_1)
         unwind_continue
@@ -77,49 +79,49 @@ fn {vtable_method}::<'_><'_0>(_1: &'_0 (dyn Trait))
     return
 }
 
-// Full name: test_crate::{impl Trait for Pattern::<'_>}::{vtable_drop_shim}::<'_>
-unsafe fn {vtable_drop_shim}::<'_><'_0>(dyn_self: &'_0 mut (dyn Trait))
+// Full name: test_crate::{impl Trait for Pattern::<_><'_0>}::{vtable_drop_shim}::<_>
+unsafe fn {vtable_drop_shim}::<_><'_0, '_1>(dyn_self: &'_1 mut (dyn Trait))
 {
     let mut ret: (); // return
-    let mut dyn_self: &'_0 mut (dyn Trait + '0); // arg #1
-    let mut target_self: &'_0 mut Pattern::<'_>; // local
+    let mut dyn_self: &'_1 mut (dyn Trait + '0); // arg #1
+    let mut target_self: &'_1 mut Pattern::<_><'_0>; // local
 
     storage_live(ret)
     ret = ()
     storage_live(target_self)
-    target_self = concretize<&'_0 mut Pattern::<'_>>(move dyn_self)
+    target_self = concretize<&'_1 mut Pattern::<_><'_0>>(move dyn_self)
     storage_dead(target_self)
     storage_dead(dyn_self)
     return
 }
 
-// Full name: test_crate::{impl Trait for Pattern::<'_>}::{vtable}::<'_>
-vtable {impl Trait for Pattern::<'_>}::{vtable}::<'_>: test_crate::Trait::{vtable} = test_crate::Trait::{vtable} { size: size_of::<Pattern::<'_>>(), align: align_of::<Pattern::<'_>>(), drop: cast<*const ()>(fnptr({vtable_drop_shim}::<'_><'_>)), method_method: cast<*const ()>(fnptr({vtable_method}::<'_><'_>)), super_trait_0: &core::marker::MetaSized::{vtable}::<Pattern::<'_>> }
+// Full name: test_crate::{impl Trait for Pattern::<_><'_0>}::{vtable}::<_>
+vtable {impl Trait for Pattern::<_><'_0>}::{vtable}::<_><'_0>: test_crate::Trait::{vtable} = test_crate::Trait::{vtable} { size: size_of::<Pattern::<_><'_0>>(), align: align_of::<Pattern::<_><'_0>>(), drop: cast<*const ()>(fnptr({vtable_drop_shim}::<_><'_0, '_>)), method_method: cast<*const ()>(fnptr({vtable_method}::<_><'_0, '_>)), super_trait_0: &core::marker::MetaSized::{vtable}::<Pattern::<_><_>><'_0> }
 
-// Full name: test_crate::{impl Trait for Pattern::<'_>}
-impl Trait for Pattern::<'_> {
-    proof ImpliedClause0: (Pattern::<'_>: MetaSized) = {built_in impl MetaSized for Pattern::<'_>}
-    vtable: {impl Trait for Pattern::<'_>}::{vtable}::<'_>
+// Full name: test_crate::{impl Trait for Pattern::<_><'_0>}
+impl<'_0> Trait for Pattern::<_><'_0> {
+    proof ImpliedClause0: (Pattern::<_><'_0>: MetaSized) = {built_in impl MetaSized for Pattern::<_><'_0>}
+    vtable: {impl Trait for Pattern::<_><'_0>}::{vtable}::<_><'_0>
 }
 
 // Full name: test_crate::f
-pub fn f<'a>(x: &'a Pattern::<'_>) -> &'a (dyn Trait + 'a)
+pub fn f<'a>(x: &'a Pattern::<_><'a>) -> &'a (dyn Trait + 'a)
 {
     let mut _0: &'3 (dyn Trait + '4); // return
-    let x: &'6 Pattern::<'_>; // arg #1
-    let mut _2: &'7 (dyn Trait + '8); // anonymous local
-    let _3: &'9 (dyn Trait + '10); // anonymous local
-    let mut _4: &'11 Pattern::<'_>; // anonymous local
+    let x: &'8 Pattern::<_><'9>; // arg #1
+    let mut _2: &'10 (dyn Trait + '11); // anonymous local
+    let _3: &'12 (dyn Trait + '13); // anonymous local
+    let mut _4: &'14 Pattern::<_><'15>; // anonymous local
 
     storage_live(_0)
     storage_live(_2)
     storage_live(_3)
     storage_live(_4)
     _4 = &(*x)
-    _3 = unsize_cast<&'12 (dyn Trait + '13), &{impl Trait for Pattern::<'_>}::{vtable}::<'_>>(move _4)
+    _3 = unsize_cast<&'17 (dyn Trait + '18), &{impl Trait for Pattern::<_><'_0>}::{vtable}::<_><'22>>(move _4)
     storage_dead(_4)
     _2 = &(*_3) with_metadata(read _3.metadata)
-    _0 = unsize_cast<&'15 (dyn Trait + '16),  at []>(move _2)
+    _0 = unsize_cast<&'24 (dyn Trait + '25),  at []>(move _2)
     storage_dead(_3)
     storage_dead(_2)
     storage_dead(x)

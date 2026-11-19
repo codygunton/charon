@@ -2,9 +2,9 @@
 
 struct () {}
 
-struct (_, _)::<&'_ u8, &'_ u8> {
-  _0: &'_ u8,
-  _1: &'_ u8,
+struct (_, _)::<&_ u8, &_ u8><'_0, '_1> {
+  _0: &'_0 u8,
+  _1: &'_1 u8,
 }
 
 // Full name: test_crate::foo::{closure}
@@ -24,7 +24,7 @@ pub fn foo<'a>(x: &'a u8) -> {closure}<'a, 'static, 'a>
 }
 
 // Full name: test_crate::foo::{closure}::{promoted_const}
-fn {promoted_const}<'_0, '_1, '_2>() -> &'_ u8
+fn {promoted_const}<'_0, '_1, '_2, '_3, '_4, '_5>() -> &'_ u8
 {
     let mut _0: &'0 u8; // return
     let mut _1: u8; // anonymous local
@@ -37,22 +37,22 @@ fn {promoted_const}<'_0, '_1, '_2>() -> &'_ u8
 }
 
 // Full name: test_crate::foo::{closure}::{promoted_const}
-const {promoted_const}<'_0, '_1, '_2>: &'_ u8 = {promoted_const}<'_0, '_1, '_2>()
+const {promoted_const}<'_0, '_1, '_2, '_3, '_4, '_5>: &'_ u8 = {promoted_const}<'_0, '_1, '_2, '_3, '_4, '_5>()
 
 // Full name: test_crate::foo::{impl Fn<()> for {closure}<'_0, '_1, '_2>}::call
-extern "rust-call" fn call<'_0, '_1, '_2, '_3>(_1: &'_3 {closure}<'_0, '_1, '_2>, tupled_args: ()) -> (&'_ u8, &'_ u8)
+extern "rust-call" fn call<'_0, '_1, '_2, '_3>(_1: &'_3 {closure}<'_0, '_1, '_2>, tupled_args: ()) -> (&'_0 u8, &'_1 u8)
 where
     Outlives0: ('_0: '_3),
     Outlives1: ('_1: '_3),
     Outlives2: ('_2: '_3),
 {
-    let mut _0: (&'_ u8, &'_ u8); // return
-    let mut _1: &'4 {closure}<'_0, '_1, '_2>; // arg #1
+    let mut _0: (&'2 u8, &'3 u8); // return
+    let mut _1: &'8 {closure}<'_0, '_1, '_2>; // arg #1
     let mut tupled_args: (); // arg #2
-    let mut _3: &'6 u8; // anonymous local
-    let mut _4: &'7 u8; // anonymous local
-    let _5: &'8 u8; // anonymous local
-    let mut _6: &'9 u8; // anonymous local
+    let mut _3: &'10 u8; // anonymous local
+    let mut _4: &'11 u8; // anonymous local
+    let _5: &'12 u8; // anonymous local
+    let mut _6: &'13 u8; // anonymous local
 
     storage_live(_0)
     storage_live(_6)
@@ -60,7 +60,7 @@ where
     _3 = copy (*_1)._0
     storage_live(_4)
     storage_live(_5)
-    _6 = const {promoted_const}<'_0, '_1, '_2>
+    _6 = const {promoted_const}<'_0, '_1, '_2, '_0, '_1, '_2>
     _5 = &(*_6)
     _4 = &(*_5)
     _0 = (move _3, move _4)

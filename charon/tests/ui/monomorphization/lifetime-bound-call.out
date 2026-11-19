@@ -2,8 +2,8 @@
 
 struct () {}
 
-// Full name: test_crate::callee::<'_>
-fn callee::<'_>()
+// Full name: test_crate::callee::<_>
+fn callee::<_><'_0>()
 {
     let mut _0: (); // return
 
@@ -13,8 +13,8 @@ fn callee::<'_>()
     return
 }
 
-// Full name: test_crate::caller::<'_>
-fn caller::<'_>()
+// Full name: test_crate::caller::<_>
+fn caller::<_><'_0>()
 {
     let mut _0: (); // return
     let _1: (); // anonymous local
@@ -22,7 +22,7 @@ fn caller::<'_>()
     storage_live(_0)
     _0 = ()
     storage_live(_1)
-    _1 = callee::<'_>()
+    _1 = callee::<_><'1>()
     ↳⚡ unwind_continue
     storage_dead(_1)
     _0 = ()
@@ -36,7 +36,7 @@ pub fn f()
 
     storage_live(_0)
     _0 = ()
-    _0 = caller::<'_>()
+    _0 = caller::<_><'1>()
     ↳⚡ unwind_continue
     return
 }

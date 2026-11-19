@@ -394,9 +394,11 @@ impl<'tcx> TranslateCtx<'tcx> {
             // FIXME: We have lost the real context in which `item_ref` was defined; it may have
             // trait proofs that refer to it, or conversely `def_id` may have clauses that shadow
             // some impls. So it's incorrect to use `def_id` as owner here.
+            // `soft_typing_parent` is the nesting parent, e.g. the enclosing closure of a closure
+            // (its `typing_parent` is the enclosing function).
             if let RustcItem::Mono(item_ref) = item
-                && let Some(parent_item) =
-                    item_ref.typing_parent(&self.hax_state.with_hax_owner(def_id))
+                && let (Some(parent_item), _, _) =
+                    item_ref.soft_typing_parent(&self.hax_state.with_hax_owner(def_id))
             {
                 self.name_for_item(&RustcItem::Mono(parent_item))?
             } else {
@@ -506,6 +508,12 @@ impl<'tcx> TranslateCtx<'tcx> {
             let span = self.def_span(&item_ref.def_id);
             let mut bt_ctx = ItemTransCtx::new(src.clone(), trans_id, self);
             let binder = bt_ctx.inside_binder(BinderKind::Other, None, |bt_ctx| {
+                // The instance binds the regions of its arguments.
+                for placeholder in bt_ctx.mono_instance_placeholders(span)? {
+                    bt_ctx
+                        .innermost_binder_mut()
+                        .push_unerased_region(placeholder);
+                }
                 // We skip the clauses: the args are enough to uniquely identify an item.
                 bt_ctx.translate_generic_args_without_trait_refs(span, item_ref)
             })?;

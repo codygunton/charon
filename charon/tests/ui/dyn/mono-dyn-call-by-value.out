@@ -24,6 +24,28 @@ pub trait Destruct<Self>
 fn panic_in_cleanup() -> !
 = <opaque>
 
+// Full name: alloc::boxed::Box::<(dyn T + _), Global>
+#[fundamental]
+#[lang_item(OwnedBox)]
+pub opaque type Box::<(dyn T + _), Global><'_0>
+
+// Full name: alloc::boxed::Box::<Foo::<(dyn T + _)><_>, Global>
+#[fundamental]
+#[lang_item(OwnedBox)]
+pub opaque type Box::<Foo::<(dyn T + _)><_>, Global><'_0>
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global>
+unsafe fn {impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'_0, '_1>(_1: &'_1 mut Box::<(dyn T + _), Global><'_0>)
+where
+    Outlives0: ('_0: '_1),
+= <opaque>
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box::<Foo::<(dyn T + _)><_>, Global><'_0>}::drop_glue::<Foo::<(dyn T + _)><_>, Global>
+unsafe fn {impl Destruct for Box::<Foo::<(dyn T + _)><_>, Global><'_0>}::drop_glue::<Foo::<(dyn T + _)><_>, Global><'_0, '_1>(_1: &'_1 mut Box::<Foo::<(dyn T + _)><_>, Global><'_0>)
+where
+    Outlives0: ('_0: '_1),
+= <opaque>
+
 // Full name: alloc::boxed::Box::<(), Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
@@ -33,15 +55,6 @@ pub opaque type Box::<(), Global>
 unsafe fn {impl Destruct for Box::<(), Global>}::drop_glue::<(), Global><'_0>(_1: &'_0 mut Box::<(), Global>)
 = <opaque>
 
-// Full name: alloc::boxed::Box::<Foo::<(dyn T)>, Global>
-#[fundamental]
-#[lang_item(OwnedBox)]
-pub opaque type Box::<Foo::<(dyn T)>, Global>
-
-// Full name: alloc::boxed::Box::{impl Destruct for Box::<Foo::<(dyn T)>, Global>}::drop_glue::<Foo::<(dyn T)>, Global>
-unsafe fn {impl Destruct for Box::<Foo::<(dyn T)>, Global>}::drop_glue::<Foo::<(dyn T)>, Global><'_0>(_1: &'_0 mut Box::<Foo::<(dyn T)>, Global>)
-= <opaque>
-
 // Full name: alloc::boxed::Box::<Foo::<()>, Global>
 #[fundamental]
 #[lang_item(OwnedBox)]
@@ -49,15 +62,6 @@ pub opaque type Box::<Foo::<()>, Global>
 
 // Full name: alloc::boxed::Box::{impl Destruct for Box::<Foo::<()>, Global>}::drop_glue::<Foo::<()>, Global>
 unsafe fn {impl Destruct for Box::<Foo::<()>, Global>}::drop_glue::<Foo::<()>, Global><'_0>(_1: &'_0 mut Box::<Foo::<()>, Global>)
-= <opaque>
-
-// Full name: alloc::boxed::Box::<(dyn T), Global>
-#[fundamental]
-#[lang_item(OwnedBox)]
-pub opaque type Box::<(dyn T), Global>
-
-// Full name: alloc::boxed::Box::{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global>
-unsafe fn {impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'_0>(_1: &'_0 mut Box::<(dyn T), Global>)
 = <opaque>
 
 #[track_caller]
@@ -170,40 +174,40 @@ impl "impl_T_for_unit" T for () {
     vtable: impl_T_for_unit::{vtable}
 }
 
-// Full name: test_crate::Foo::<(dyn T)>
-struct Foo::<(dyn T)> {
-  _0: (dyn T),
+// Full name: test_crate::Foo::<(dyn T + _)>
+struct Foo::<(dyn T + _)><'_0> {
+  _0: (dyn T + '_0),
 }
 
 // Full name: test_crate::main
 fn main()
 {
     let mut _0: (); // return
-    let b: Box::<(dyn T), Global>; // local
-        where b :< Box::<(dyn T), Global>;
-        where b := Box::<(dyn T), Global>;
+    let b: Box::<(dyn T + _), Global><'5>; // local
+        where b :< Box::<(dyn T + _), Global><'0>;
+        where b := Box::<(dyn T + _), Global><'1>;
     let mut _2: Box::<(), Global>; // anonymous local
     let mut _3: (); // anonymous local
     let _4: (); // anonymous local
-    let mut _5: &'7 (dyn T + '8); // anonymous local
+    let mut _5: &'9 (dyn T + '10); // anonymous local
     let _6: (); // anonymous local
-    let mut _7: Box::<(dyn T), Global>; // anonymous local
-    let f: Box::<Foo::<(dyn T)>, Global>; // local
-        where f :< Box::<Foo::<(dyn T)>, Global>;
-        where f := Box::<Foo::<(dyn T)>, Global>;
+    let mut _7: Box::<(dyn T + _), Global><'11>; // anonymous local
+    let f: Box::<Foo::<(dyn T + _)><_>, Global><'13>; // local
+        where f :< Box::<Foo::<(dyn T + _)><_>, Global><'2>;
+        where f := Box::<Foo::<(dyn T + _)><_>, Global><'3>;
     let mut _9: Box::<Foo::<()>, Global>; // anonymous local
     let mut _10: Foo::<()>; // anonymous local
     let mut _11: (); // anonymous local
     let _12: (); // anonymous local
-    let mut _13: &'9 (dyn T + '10); // anonymous local
+    let mut _13: &'14 (dyn T + '15); // anonymous local
     let _14: (); // anonymous local
-    let mut _15: (dyn T + '11); // anonymous local
-    let mut _16: fn(&'7 (dyn T + '8)); // anonymous local
-    let mut _17: *mut (dyn T + '27); // anonymous local
-    let mut _18: fn(*mut (dyn T + '27)); // anonymous local
-    let mut _19: fn(&'9 (dyn T + '10)); // anonymous local
-    let mut _20: *mut (dyn T + '38); // anonymous local
-    let mut _21: fn(*mut (dyn T + '38)); // anonymous local
+    let mut _15: (dyn T + '16); // anonymous local
+    let mut _16: fn(&'9 (dyn T + '10)); // anonymous local
+    let mut _17: *mut (dyn T + '36); // anonymous local
+    let mut _18: fn(*mut (dyn T + '36)); // anonymous local
+    let mut _19: fn(&'14 (dyn T + '15)); // anonymous local
+    let mut _20: *mut (dyn T + '60); // anonymous local
+    let mut _21: fn(*mut (dyn T + '60)); // anonymous local
 
     storage_live(_0)
     _0 = ()
@@ -213,8 +217,8 @@ fn main()
     _3 = ()
     _2 = alloc::boxed::{Box::<(), Global>}::new::<()>(move _3)
     ↳⚡ unwind_continue
-    b = unsize_cast<Box::<(dyn T), Global>, &impl_T_for_unit::{vtable}>(move _2)
-    conditional_drop[{impl Destruct for Box::<(), Global>}::drop_glue::<(), Global><'12>] _2
+    b = unsize_cast<Box::<(dyn T + _), Global><'17>, &impl_T_for_unit::{vtable}>(move _2)
+    conditional_drop[{impl Destruct for Box::<(), Global>}::drop_glue::<(), Global><'18>] _2
     ↳⚡ unwind_continue
     storage_dead(_3)
     storage_dead(_2)
@@ -223,9 +227,9 @@ fn main()
     storage_live(_5)
     _5 = &(*b) with_metadata(read b.metadata)
     storage_live(_16)
-    _16 = cast<fn(&'7 (dyn T + '8))>(read (*_5.metadata).method_by_ref)
+    _16 = cast<fn(&'9 (dyn T + '10))>(read (*_5.metadata).method_by_ref)
     _4 = (read _16)(move _5)
-    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'21>] b
+    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'29, '30>] b
         ↳⚡ unwind_terminate(in_cleanup)
         unwind_continue
     storage_dead(_5)
@@ -236,15 +240,15 @@ fn main()
     storage_live(_17)
     _17 = &raw mut (*_7) with_metadata(read _7.metadata)
     storage_live(_18)
-    _18 = cast<fn(*mut (dyn T + '27))>(read (*_17.metadata).method_by_val)
+    _18 = cast<fn(*mut (dyn T + '36))>(read (*_17.metadata).method_by_val)
     _6 = (read _18)(move _17)
-    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'28>] _7
+    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'39, '40>] _7
         ↳⚡ unwind_terminate(in_cleanup)
-        conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'21>] b
+        conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'29, '30>] b
         ↳⚡ unwind_terminate(in_cleanup)
         unwind_continue
-    conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'29>] _7
-    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'21>] b
+    conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'43, '44>] _7
+    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'29, '30>] b
         ↳⚡ unwind_terminate(in_cleanup)
         unwind_continue
     storage_dead(_7)
@@ -257,12 +261,12 @@ fn main()
     _10 = Foo::<()> { _0: move _11 }
     storage_dead(_11)
     _9 = alloc::boxed::{Box::<Foo::<()>, Global>}::new::<Foo::<()>>(move _10)
-    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'21>] b
+    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'29, '30>] b
         ↳⚡ unwind_terminate(in_cleanup)
         unwind_continue
-    f = unsize_cast<Box::<Foo::<(dyn T)>, Global>, &impl_T_for_unit::{vtable}>(move _9)
-    conditional_drop[{impl Destruct for Box::<Foo::<()>, Global>}::drop_glue::<Foo::<()>, Global><'30>] _9
-    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'21>] b
+    f = unsize_cast<Box::<Foo::<(dyn T + _)><_>, Global><'45>, &impl_T_for_unit::{vtable}>(move _9)
+    conditional_drop[{impl Destruct for Box::<Foo::<()>, Global>}::drop_glue::<Foo::<()>, Global><'46>] _9
+    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'29, '30>] b
         ↳⚡ unwind_terminate(in_cleanup)
         unwind_continue
     storage_dead(_10)
@@ -272,11 +276,11 @@ fn main()
     storage_live(_13)
     _13 = &(*f)._0 with_metadata(read f.metadata)
     storage_live(_19)
-    _19 = cast<fn(&'9 (dyn T + '10))>(read (*_13.metadata).method_by_ref)
+    _19 = cast<fn(&'14 (dyn T + '15))>(read (*_13.metadata).method_by_ref)
     _12 = (read _19)(move _13)
-    ↳⚡ conditional_drop[{impl Destruct for Box::<Foo::<(dyn T)>, Global>}::drop_glue::<Foo::<(dyn T)>, Global><'37>] f
+    ↳⚡ conditional_drop[{impl Destruct for Box::<Foo::<(dyn T + _)><_>, Global><'_0>}::drop_glue::<Foo::<(dyn T + _)><_>, Global><'57, '58>] f
         ↳⚡ unwind_terminate(in_cleanup)
-        conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'21>] b
+        conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'29, '30>] b
         ↳⚡ unwind_terminate(in_cleanup)
         unwind_continue
     storage_dead(_13)
@@ -286,24 +290,24 @@ fn main()
     storage_live(_20)
     _20 = &raw mut (*f)._0 with_metadata(read f.metadata)
     storage_live(_21)
-    _21 = cast<fn(*mut (dyn T + '38))>(read (*_20.metadata).method_by_val)
+    _21 = cast<fn(*mut (dyn T + '60))>(read (*_20.metadata).method_by_val)
     _14 = (read _21)(move _20)
-    ↳⚡ conditional_drop[{built_in impl Destruct for (dyn T + '43)}::drop_glue<'44>] _15
+    ↳⚡ conditional_drop[{built_in impl Destruct for (dyn T + '65)}::drop_glue<'66>] _15
         ↳⚡ unwind_terminate(in_cleanup)
-        conditional_drop[{impl Destruct for Box::<Foo::<(dyn T)>, Global>}::drop_glue::<Foo::<(dyn T)>, Global><'37>] f
+        conditional_drop[{impl Destruct for Box::<Foo::<(dyn T + _)><_>, Global><'_0>}::drop_glue::<Foo::<(dyn T + _)><_>, Global><'57, '58>] f
         ↳⚡ unwind_terminate(in_cleanup)
-        conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'21>] b
+        conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'29, '30>] b
         ↳⚡ unwind_terminate(in_cleanup)
         unwind_continue
     storage_dead(_15)
     storage_dead(_14)
     _0 = ()
-    conditional_drop[{impl Destruct for Box::<Foo::<(dyn T)>, Global>}::drop_glue::<Foo::<(dyn T)>, Global><'45>] f
-    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'21>] b
+    conditional_drop[{impl Destruct for Box::<Foo::<(dyn T + _)><_>, Global><'_0>}::drop_glue::<Foo::<(dyn T + _)><_>, Global><'69, '70>] f
+    ↳⚡ conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'29, '30>] b
         ↳⚡ unwind_terminate(in_cleanup)
         unwind_continue
     storage_dead(f)
-    conditional_drop[{impl Destruct for Box::<(dyn T), Global>}::drop_glue::<(dyn T), Global><'46>] b
+    conditional_drop[{impl Destruct for Box::<(dyn T + _), Global><'_0>}::drop_glue::<(dyn T + _), Global><'73, '74>] b
     ↳⚡ unwind_continue
     storage_dead(b)
     return

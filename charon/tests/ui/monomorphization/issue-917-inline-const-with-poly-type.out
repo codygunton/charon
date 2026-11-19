@@ -6,10 +6,10 @@ struct (_,)::<()> {
   _0: (),
 }
 
-// Full name: test_crate::foo::{closure}::<()>
+// Full name: test_crate::foo::{const}::{closure}::<()>
 struct {closure}::<()> {}
 
-// Full name: test_crate::foo::{impl Fn<((),)> for {closure}::<()>}::call::<()>
+// Full name: test_crate::foo::{const}::{impl Fn<((),)> for {closure}::<()>}::call::<()>
 extern "rust-call" fn call::<()><'_0>(_1: &'_0 {closure}::<()>, tupled_args: ((),))
 {
     let mut _0: (); // return
@@ -28,7 +28,7 @@ extern "rust-call" fn call::<()><'_0>(_1: &'_0 {closure}::<()>, tupled_args: (()
     return
 }
 
-// Full name: test_crate::foo::{impl FnMut<((),)> for {closure}::<()>}::call_mut::<()>
+// Full name: test_crate::foo::{const}::{impl FnMut<((),)> for {closure}::<()>}::call_mut::<()>
 extern "rust-call" fn call_mut::<()><'_0>(state: &'_0 mut {closure}::<()>, args: ((),))
 {
     let mut _0: (); // return
@@ -51,7 +51,7 @@ extern "rust-call" fn call_mut::<()><'_0>(state: &'_0 mut {closure}::<()>, args:
     return
 }
 
-// Full name: test_crate::foo::{impl FnOnce<((),)> for {closure}::<()>}::call_once::<()>
+// Full name: test_crate::foo::{const}::{impl FnOnce<((),)> for {closure}::<()>}::call_once::<()>
 extern "rust-call" fn call_once::<()>(_1: {closure}::<()>, _2: ((),))
 {
     let mut _0: (); // return
@@ -74,7 +74,7 @@ extern "rust-call" fn call_once::<()>(_1: {closure}::<()>, _2: ((),))
     return
 }
 
-// Full name: test_crate::foo::{closure}::{as_fn}::<()>
+// Full name: test_crate::foo::{const}::{closure}::{as_fn}::<()>
 fn {as_fn}::<()>(arg1: ())
 {
     let mut _0: (); // return

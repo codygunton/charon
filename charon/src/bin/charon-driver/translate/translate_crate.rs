@@ -31,6 +31,58 @@ use charon_lib::name_matcher::NamePattern;
 use charon_lib::options::{CliOpts, ConstHandling, StartFrom, TranslateOptions};
 use charon_lib::transform::TransformCtx;
 
+/// The name of the placeholder regions that stand for the regions in the arguments of a
+/// monomorphic instance (see `ItemTransCtx::mono_instance_ref`).
+pub(crate) const MONO_REGION_NAME: &str = "__charon_mono_region";
+
+/// Replace each erased region occurrence in `args` by a fresh placeholder region named
+/// `MONO_REGION_NAME`, in order. The arguments of closure (and coroutine) types are left as they
+/// are: their regions are related to each other (e.g. a captured `&'a T` and the signature's
+/// `&'a T`), and closures recover them through their own `extra_early_regions`.
+fn unerase_mono_regions<'tcx>(
+    tcx: TyCtxt<'tcx>,
+    args: ty::GenericArgsRef<'tcx>,
+) -> (ty::GenericArgsRef<'tcx>, Vec<ty::PlaceholderRegion<'tcx>>) {
+    use rustc_middle::ty::{TypeFoldable, TypeFolder, TypeSuperFoldable};
+    struct Unerase<'tcx> {
+        tcx: TyCtxt<'tcx>,
+        name: rustc_span::Symbol,
+        placeholders: Vec<ty::PlaceholderRegion<'tcx>>,
+    }
+    impl<'tcx> TypeFolder<TyCtxt<'tcx>> for Unerase<'tcx> {
+        fn cx(&self) -> TyCtxt<'tcx> {
+            self.tcx
+        }
+        fn fold_ty(&mut self, ty: ty::Ty<'tcx>) -> ty::Ty<'tcx> {
+            match ty.kind() {
+                ty::Closure(..) | ty::CoroutineClosure(..) | ty::Coroutine(..) => ty,
+                _ => ty.super_fold_with(self),
+            }
+        }
+        fn fold_region(&mut self, region: ty::Region<'tcx>) -> ty::Region<'tcx> {
+            if !region.is_erased() {
+                return region;
+            }
+            let placeholder = ty::PlaceholderRegion::new(
+                ty::UniverseIndex::ROOT,
+                ty::BoundRegion {
+                    var: ty::BoundVar::from_usize(self.placeholders.len()),
+                    kind: ty::BoundRegionKind::NamedForPrinting(self.name),
+                },
+            );
+            self.placeholders.push(placeholder);
+            ty::Region::new_placeholder(self.tcx, placeholder)
+        }
+    }
+    let mut folder = Unerase {
+        tcx,
+        name: rustc_span::Symbol::intern(MONO_REGION_NAME),
+        placeholders: Vec::new(),
+    };
+    let args = args.fold_with(&mut folder);
+    (args, folder.placeholders)
+}
+
 /// The id of an untranslated item. Note that a given `DefId` may show up as multiple different
 /// item sources, e.g. a constant will have both a `Global` version (for the constant itself) and a
 /// `FunDecl` one (for its initializer function).
@@ -896,6 +948,95 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         self.t_ctx.register_no_enqueue(&dep_src, src).expect_item()
     }
 
+    /// The item source to use for this item reference. For a monomorphic instance (other than a
+    /// trait or vtable), this also returns the placeholder regions of the instance, see
+    /// [`Self::mono_instance_ref`].
+    fn item_source(
+        &mut self,
+        item: &hax::ItemRef<'tcx>,
+        kind: TransItemSourceKind,
+    ) -> (
+        TransItemSource<'tcx>,
+        Option<(hax::ItemRef<'tcx>, Vec<ty::PlaceholderRegion<'tcx>>)>,
+    ) {
+        let mono = self.should_monomorphize_item(item, kind);
+        if mono && !kind.is_for_trait() {
+            let (instance, placeholders) = self.mono_instance_ref(item);
+            let src = TransItemSource::from_item(&instance, kind, mono);
+            (src, Some((instance, placeholders)))
+        } else {
+            (TransItemSource::from_item(item, kind, mono), None)
+        }
+    }
+
+    /// The reference that identifies the monomorphic instance of `item`. Its arguments have their
+    /// regions erased, so that all uses of the item with the same types share the instance, then
+    /// each region occurrence is replaced by a distinct placeholder region. The instance binds
+    /// these placeholders as its leading region parameters (see `translate_item_generics`), so
+    /// e.g. `Holder<&u32>` becomes `Holder::<&'a u32><'a>`, and uses pass the regions found at
+    /// these positions (see `mono_region_args`).
+    pub(crate) fn mono_instance_ref(
+        &self,
+        item: &hax::ItemRef<'tcx>,
+    ) -> (hax::ItemRef<'tcx>, Vec<ty::PlaceholderRegion<'tcx>>) {
+        use rustc_middle::ty::TypeVisitableExt;
+        let s = self.hax_state_with_id();
+        let mut has_non_static_regions = false;
+        self.tcx
+            .for_each_free_region(&item.rustc_args(s), |region| {
+                has_non_static_regions |= !region.is_static();
+            });
+        let item = if item.has_param || has_non_static_regions {
+            item.erase(s)
+        } else {
+            item.clone()
+        };
+        // Closures and other typeck children recover their regions through their
+        // `extra_early_regions` instead.
+        let args = item.rustc_args(s);
+        if item.def_id.is_typeck_child(s) || !args.has_erased_regions() {
+            return (item, Vec::new());
+        }
+        let (args, placeholders) = unerase_mono_regions(self.tcx, args);
+        let instance = hax::ItemRef::translate_from_hax_def_id(s, item.def_id.clone(), args);
+        (instance, placeholders)
+    }
+
+    /// The region arguments to pass to the monomorphic instance `instance` (with placeholder
+    /// regions `placeholders`) of `item`: the regions of `item`'s arguments at the positions of
+    /// the placeholders. Regions that can't be matched (e.g. in bodies) are erased.
+    fn mono_region_args(
+        &mut self,
+        span: Span,
+        item: &hax::ItemRef<'tcx>,
+        instance: &hax::ItemRef<'tcx>,
+        placeholders: &[ty::PlaceholderRegion<'tcx>],
+    ) -> Result<Vec<Region>, Error> {
+        if placeholders.is_empty() {
+            return Ok(Vec::new());
+        }
+        let s = self.hax_state_with_id();
+        let tcx = self.tcx;
+        let actual = hax::normalize(
+            tcx,
+            hax::state::UnderOwnerState::typing_env(s),
+            ty::Unnormalized::new_wip(item.rustc_args(s)),
+        );
+        let template = instance.rustc_args(s);
+        let mapping = hax::match_region_args(tcx, template, actual).unwrap_or_default();
+        placeholders
+            .iter()
+            .map(|placeholder| {
+                let region = mapping
+                    .get(placeholder)
+                    .copied()
+                    .unwrap_or(tcx.lifetimes.re_erased);
+                let region = self.catch_sinto(span, &region)?;
+                self.translate_region(span, &region)
+            })
+            .collect()
+    }
+
     /// Register this item and maybe enqueue it for translation.
     pub(crate) fn register_item_maybe_enqueue<T: TryFrom<ItemId>>(
         &mut self,
@@ -904,13 +1045,7 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         item: &hax::ItemRef<'tcx>,
         kind: TransItemSourceKind,
     ) -> T {
-        let mono = self.should_monomorphize_item(item, kind);
-        let item = if mono && item.has_param {
-            item.erase(self.hax_state_with_id())
-        } else {
-            item.clone()
-        };
-        let item_src = TransItemSource::from_item(&item, kind, mono);
+        let (item_src, _) = self.item_source(item, kind);
         if enqueue {
             self.register_and_enqueue(span, item_src)
         } else {
@@ -955,12 +1090,23 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
             hax_item
         };
 
-        let id: ItemId = self.register_item_maybe_enqueue(span, enqueue, hax_item, kind);
+        let (item_src, mono_instance) = self.item_source(hax_item, kind);
+        let id: ItemId = if enqueue {
+            self.register_and_enqueue(span, item_src)
+        } else {
+            self.register_no_enqueue(span, &item_src)
+        };
         // In mono mode, we keep trait decls generic.
         let mut generics = if self.should_monomorphize_item(hax_item, kind)
             && !matches!(kind, TransItemSourceKind::TraitDecl)
         {
-            GenericArgs::empty()
+            let mut generics = GenericArgs::empty();
+            if let Some((instance, placeholders)) = &mono_instance {
+                generics.regions = self
+                    .mono_region_args(span, hax_item, instance, placeholders)?
+                    .into();
+            }
+            generics
         } else {
             self.translate_generic_args(span, hax_item)?
         };

@@ -1,26 +1,26 @@
 # Final LLBC before serialization:
 
-// Full name: core::option::Option::<&'_ u32>
+// Full name: core::option::Option::<&_ u32>
 #[lang_item(Option)]
 #[diagnostic_item("Option")]
-pub enum Option::<&'_ u32> {
+pub enum Option::<&_ u32><'_0> {
   None,
-  Some { _0: &'_ u32 },
+  Some { _0: &'_0 u32 },
 }
 
 struct () {}
 
 // Full name: test_crate::foo
-fn foo<'_0>(x: &'_0 u32) -> Option::<&'_ u32>
+fn foo<'_0>(x: &'_0 u32) -> Option::<&_ u32><'_0>
 {
-    let mut _0: Option::<&'_ u32>; // return
-    let x: &'1 u32; // arg #1
-    let mut _2: &'2 u32; // anonymous local
+    let mut _0: Option::<&_ u32><'1>; // return
+    let x: &'3 u32; // arg #1
+    let mut _2: &'4 u32; // anonymous local
 
     storage_live(_0)
     storage_live(_2)
     _2 = &(*x)
-    _0 = Option::<&'_ u32>::Some { _0: move _2 }
+    _0 = Option::<&_ u32>::Some { _0: move _2 }
     storage_dead(_2)
     storage_dead(x)
     return
@@ -30,12 +30,12 @@ fn foo<'_0>(x: &'_0 u32) -> Option::<&'_ u32>
 fn main()
 {
     let mut _0: (); // return
-    let mut _1: Option::<&'_ u32>; // anonymous local
-    let mut _2: &'1 u32; // anonymous local
-    let _3: &'2 u32; // anonymous local
-    let mut _4: &'3 u32; // anonymous local
-    let mut _5: &'4 u32; // anonymous local
-    let mut _6: &'9 u32; // anonymous local
+    let mut _1: Option::<&_ u32><'1>; // anonymous local
+    let mut _2: &'3 u32; // anonymous local
+    let _3: &'4 u32; // anonymous local
+    let mut _4: &'5 u32; // anonymous local
+    let mut _5: &'6 u32; // anonymous local
+    let mut _6: &'11 u32; // anonymous local
     let mut _7: u32; // anonymous local
 
     storage_live(_5)
@@ -53,7 +53,7 @@ fn main()
     _4 = move _5
     _3 = &(*_4)
     _2 = &(*_3)
-    _1 = foo<'8>(move _2)
+    _1 = foo<'10>(move _2)
     ↳⚡ storage_dead(_4)
         storage_dead(_7)
         storage_dead(_6)

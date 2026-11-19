@@ -597,6 +597,12 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
         assert!(self.binding_levels.is_empty());
         self.binding_levels
             .push(BindingLevel::new(Some(def.def_id().clone())));
+        if def.def_id() == self.item_src.def_id() {
+            for placeholder in self.mono_instance_placeholders(span)? {
+                self.innermost_binder_mut()
+                    .push_unerased_region(placeholder);
+            }
+        }
         self.push_generics_for_def(span, def)?;
         // Add the lifetime generics coming from the higher-kindedness of the signature. For
         // closures, late-bound variables are only bound on the impl, not the state struct.
@@ -632,6 +638,33 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
 
         self.innermost_binder_mut().params.check_consistency();
         Ok(())
+    }
+
+    /// The placeholder regions of the monomorphic instance we're translating, in order: they are
+    /// its leading region parameters (see `mono_instance_ref`).
+    pub(crate) fn mono_instance_placeholders(
+        &mut self,
+        span: Span,
+    ) -> Result<Vec<hax::PlaceholderRegion>, Error> {
+        let super::translate_crate::RustcItem::Mono(item_ref) = &self.item_src.item else {
+            return Ok(Vec::new());
+        };
+        let args = item_ref.rustc_args(self.hax_state_with_id());
+        let name = rustc_span::Symbol::intern(super::translate_crate::MONO_REGION_NAME);
+        let mut placeholders = Vec::new();
+        self.tcx.for_each_free_region(&args, |region| {
+            if let ty::RePlaceholder(placeholder) = region.kind()
+                && placeholder.bound.kind == ty::BoundRegionKind::NamedForPrinting(name)
+                && !placeholders.contains(&placeholder)
+            {
+                placeholders.push(placeholder);
+            }
+        });
+        placeholders.sort_by_key(|placeholder| placeholder.bound.var);
+        placeholders
+            .iter()
+            .map(|placeholder| self.catch_sinto(span, placeholder))
+            .collect()
     }
 
     /// Push a new binding level, run the provided function inside it, then return the bound value.

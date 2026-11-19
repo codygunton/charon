@@ -37,16 +37,18 @@ impl "impl_Display_for_String" Display for String {
 // Full name: alloc::string::{impl Display for String}::{vtable}
 vtable impl_Display_for_String::{vtable}: core::fmt::Display::{vtable} = Opaque(VTable was chosen to be opaque)
 
+// Full name: alloc::string::{impl ToString for (dyn Display + '_0)}::to_string::<(dyn Display + _)>
+pub fn {impl ToString for (dyn Display + '_0)}::to_string::<(dyn Display + _)><'_0, '_1>(_1: &'_1 (dyn Display + '_0)) -> String
+where
+    Outlives0: ('_0: '_1),
+= <opaque>
+
 struct str {
   _0: [u8],
 }
 
 // Full name: alloc::string::{impl ToString for str}::to_string::<str>
 pub fn impl_ToString_for_str::to_string::<str><'_0>(_1: &'_0 str) -> String
-= <opaque>
-
-// Full name: alloc::string::{impl ToString for (dyn Display)}::to_string::<(dyn Display)>
-pub fn {impl ToString for (dyn Display)}::to_string::<(dyn Display)><'_0>(_1: &'_0 (dyn Display)) -> String
 = <opaque>
 
 // Full name: test_crate::dyn_to_string
@@ -59,7 +61,7 @@ fn dyn_to_string<'_0>(x: &'_0 (dyn Display + '_0)) -> String
     storage_live(_0)
     storage_live(_2)
     _2 = &(*x) with_metadata(read x.metadata)
-    _0 = {impl ToString for (dyn Display)}::to_string::<(dyn Display)><'11>(move _2)
+    _0 = {impl ToString for (dyn Display + '_0)}::to_string::<(dyn Display + _)><'10, '14>(move _2)
     ↳⚡ storage_dead(x)
         unwind_continue
     storage_dead(_2)

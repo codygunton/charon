@@ -1,0 +1,415 @@
+# Final LLBC before serialization:
+
+opaque type ()
+
+// Full name: core::marker::Destruct
+#[lang_item(Destruct)]
+pub trait Destruct<Self>
+{
+    fn drop_glue<'_0_1, Outlives0: (Self: '_0_1)>;
+    non-dyn-compatible
+}
+
+// Full name: core::panicking::panic_in_cleanup
+#[lang_item(PanicInCleanup)]
+fn panic_in_cleanup() -> !
+= <opaque>
+
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+// Full name: alloc::vec::Vec
+#[diagnostic_item("Vec")]
+pub opaque type Vec<T>
+
+// Full name: alloc::vec::Vec::{impl Destruct for Vec<T>}::drop_glue
+unsafe fn drop_glue<'_0, T, A>(_1: &'_0 mut Vec<T>)
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::{Vec<T>}::new
+#[diagnostic_item("vec_new")]
+pub fn new<T>() -> Vec<T>
+= <opaque>
+
+pub fn alloc::vec::{Vec<T>}::push<'_0, T, A>(_1: &'_0 mut Vec<T>, _2: T)
+where
+    TraitClause0: (A: Destruct),
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: test_crate::Ctx::<_>
+pub struct Ctx::<_><'_0> {
+  v: &'_0 mut Vec<u32>,
+}
+
+// Full name: test_crate::Holder::<Ctx::<_><_>>
+pub struct Holder::<Ctx::<_><_>><'_0> {
+  x: Ctx::<_><'_0>,
+}
+
+// Full name: test_crate::Holder::<(&_ u32, &_ mut u32)>
+pub struct Holder::<(&_ u32, &_ mut u32)><'_0, '_1> {
+  x: (&'_0 u32, &'_1 mut u32),
+}
+
+// Full name: test_crate::Holder::<&_ u32>
+pub struct Holder::<&_ u32><'_0> {
+  x: &'_0 u32,
+}
+
+pub fn test_crate::{Holder::<Ctx::<_><_>><'_0>}::get::<Ctx::<_><_>><'_0, '_1>(self: &'_1 Holder::<Ctx::<_><_>><'_0>) -> &'_1 Ctx::<_><'_0>
+where
+    Outlives0: ('_0: '_1),
+{
+    let mut _0: &'1 Ctx::<_><'_0>; // return
+    let self: &'3 Holder::<Ctx::<_><_>><'_0>; // arg #1
+    let _2: &'4 Ctx::<_><'_0>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = &(*self).x
+    _0 = &(*_2)
+    storage_dead(_2)
+    storage_dead(self)
+    return
+}
+
+pub fn test_crate::{Holder::<&_ u32><'_0>}::get::<&_ u32><'_0, '_1>(self: &'_1 Holder::<&_ u32><'_0>) -> &'_1 &'_0 u32
+where
+    Outlives0: ('_0: '_1),
+{
+    let mut _0: &'1 &'_0 u32; // return
+    let self: &'3 Holder::<&_ u32><'_0>; // arg #1
+    let _2: &'4 &'_0 u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = &(*self).x
+    _0 = &(*_2)
+    storage_dead(_2)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::mk::<Ctx::<_><_>>
+pub fn mk::<Ctx::<_><_>><'_0>(x: Ctx::<_><'_0>) -> Holder::<Ctx::<_><_>><'_0>
+{
+    let mut _0: Holder::<Ctx::<_><_>><'_0>; // return
+    let x: Ctx::<_><'_0>; // arg #1
+    let mut _2: Ctx::<_><'_0>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = move x
+    _0 = Holder::<Ctx::<_><_>> { x: move _2 }
+    storage_dead(_2)
+    storage_dead(x)
+    return
+}
+
+// Full name: test_crate::mk::<(&_ u32, &_ mut u32)>
+pub fn mk::<(&_ u32, &_ mut u32)><'_0, '_1>(x: (&'_0 u32, &'_1 mut u32)) -> Holder::<(&_ u32, &_ mut u32)><'_0, '_1>
+{
+    let mut _0: Holder::<(&_ u32, &_ mut u32)><'_0, '_1>; // return
+    let x: (&'_0 u32, &'_1 mut u32); // arg #1
+    let mut _2: (&'_0 u32, &'_1 mut u32); // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = move x
+    _0 = Holder::<(&_ u32, &_ mut u32)> { x: move _2 }
+    storage_dead(_2)
+    storage_dead(x)
+    return
+}
+
+// Full name: test_crate::mk::<&_ u32>
+pub fn mk::<&_ u32><'_0>(x: &'_0 u32) -> Holder::<&_ u32><'_0>
+{
+    let mut _0: Holder::<&_ u32><'_0>; // return
+    let x: &'_0 u32; // arg #1
+    let mut _2: &'_0 u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = move x
+    _0 = Holder::<&_ u32> { x: move _2 }
+    storage_dead(_2)
+    storage_dead(x)
+    return
+}
+
+// Full name: test_crate::{impl Push for Ctx::<_><'_0>}::push::<_>
+pub fn {impl Push for Ctx::<_><'_0>}::push::<_><'_0, '_1>(self: &'_1 mut Ctx::<_><'_0>, x: u32)
+where
+    Outlives0: ('_0: '_1),
+{
+    let mut _0: (); // return
+    let self: &'3 mut Ctx::<_><'4>; // arg #1
+    let x: u32; // arg #2
+    let mut _3: &'6 mut Vec<u32>; // anonymous local
+    let mut _4: u32; // anonymous local
+
+    storage_live(_0)
+    _0 = ()
+    storage_live(_3)
+    _3 = &two-phase-mut (*(*self).v)
+    storage_live(_4)
+    _4 = copy x
+    _0 = alloc::vec::{Vec<T>}::push<'12, u32, Global>[{built_in impl Destruct for Global}](move _3, move _4)
+    ↳⚡ storage_dead(x)
+        storage_dead(self)
+        unwind_continue
+    storage_dead(_4)
+    storage_dead(_3)
+    storage_dead(x)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::push_all::<Ctx::<_><_>>
+pub fn push_all::<Ctx::<_><_>><'_0, '_1>(c: &'_1 mut Ctx::<_><'_0>, n: u32)
+where
+    Outlives0: ('_0: '_1),
+{
+    let mut _0: (); // return
+    let c: &'1 mut Ctx::<_><'_0>; // arg #1
+    let n: u32; // arg #2
+    let mut i: u32; // local
+    let mut _4: bool; // anonymous local
+    let mut _5: u32; // anonymous local
+    let mut _6: u32; // anonymous local
+    let _7: (); // anonymous local
+    let mut _8: &'2 mut Ctx::<_><'_0>; // anonymous local
+    let mut _9: u32; // anonymous local
+    let mut _10: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_10)
+    _0 = ()
+    storage_live(i)
+    i = const 0u32
+    fake_read(i)
+    loop {
+        storage_live(_4)
+        storage_live(_5)
+        _5 = copy i
+        storage_live(_6)
+        _6 = copy n
+        _4 = move _5 < move _6
+        if move _4 {
+            storage_dead(_6)
+            storage_dead(_5)
+            storage_live(_7)
+            storage_live(_8)
+            _8 = &two-phase-mut (*c)
+            storage_live(_9)
+            _9 = copy i
+            _7 = {impl Push for Ctx::<_><'_0>}::push::<_><'5, '9>(move _8, move _9)
+            ↳⚡ storage_dead(_10)
+                storage_dead(n)
+                storage_dead(c)
+                unwind_continue
+            storage_dead(_9)
+            storage_dead(_8)
+            storage_dead(_7)
+            _10 = copy i panic.+ const 1u32
+            i = move _10
+            storage_dead(_4)
+            continue 0
+        } else {
+            break 0
+        }
+    }
+    storage_dead(_6)
+    storage_dead(_5)
+    _0 = ()
+    storage_dead(_4)
+    storage_dead(i)
+    storage_dead(_10)
+    storage_dead(n)
+    storage_dead(c)
+    return
+}
+
+// Full name: test_crate::wrap
+pub fn wrap<'a>(c: Ctx::<_><'a>) -> Holder::<Ctx::<_><_>><'a>
+{
+    let mut _0: Holder::<Ctx::<_><_>><'1>; // return
+    let c: Ctx::<_><'3>; // arg #1
+    let mut _2: Ctx::<_><'4>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = move c
+    _0 = mk::<Ctx::<_><_>><'6>(move _2)
+    ↳⚡ storage_dead(c)
+        unwind_continue
+    storage_dead(_2)
+    storage_dead(c)
+    return
+}
+
+// Full name: test_crate::pair
+pub fn pair<'a, 'b>(x: &'a u32, y: &'b mut u32) -> Holder::<(&_ u32, &_ mut u32)><'a, 'b>
+{
+    let mut _0: Holder::<(&_ u32, &_ mut u32)><'2, '3>; // return
+    let x: &'5 u32; // arg #1
+    let y: &'7 mut u32; // arg #2
+    let mut _3: (&'10 u32, &'11 mut u32); // anonymous local
+    let mut _4: &'12 u32; // anonymous local
+    let mut _5: &'13 mut u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &(*x)
+    storage_live(_5)
+    _5 = &mut (*y)
+    _3 = (move _4, move _5)
+    storage_dead(_5)
+    storage_dead(_4)
+    _0 = mk::<(&_ u32, &_ mut u32)><'18, '19>(move _3)
+    ↳⚡ storage_dead(y)
+        storage_dead(x)
+        unwind_continue
+    storage_dead(_3)
+    storage_dead(y)
+    storage_dead(x)
+    return
+}
+
+// Full name: test_crate::main
+pub fn main()
+{
+    let mut _0: (); // return
+    let mut v: Vec<u32>; // local
+    let mut c: Ctx::<_><'1>; // local
+    let mut _3: &'3 mut Vec<u32>; // anonymous local
+    let mut _4: &'4 mut Vec<u32>; // anonymous local
+    let _5: (); // anonymous local
+    let mut _6: &'7 mut Ctx::<_><'8>; // anonymous local
+    let mut _7: &'9 mut Ctx::<_><'10>; // anonymous local
+    let h_8: Holder::<Ctx::<_><_>><'12>; // local
+    let mut _9: Ctx::<_><'13>; // anonymous local
+    let mut _10: &'16 Ctx::<_><'17>; // anonymous local
+    let mut _11: &'20 Holder::<Ctx::<_><_>><'21>; // anonymous local
+    let x: u32; // local
+    let h_13: Holder::<&_ u32><'23>; // local
+    let mut _14: &'25 u32; // anonymous local
+    let mut _15: &'28 &'29 u32; // anonymous local
+    let mut _16: &'32 Holder::<&_ u32><'33>; // anonymous local
+    let mut y: u32; // local
+    let mut _18: Holder::<(&_ u32, &_ mut u32)><'36, '37>; // anonymous local
+    let mut _19: &'38 u32; // anonymous local
+    let _20: &'39 u32; // anonymous local
+    let mut _21: &'41 mut u32; // anonymous local
+    let mut _22: &'42 mut u32; // anonymous local
+
+    storage_live(_0)
+    _0 = ()
+    storage_live(v)
+    v = new<u32>()
+    ↳⚡ unwind_continue
+    fake_read(v)
+    storage_live(c)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &mut v
+    _3 = &mut (*_4)
+    c = Ctx::<_> { v: move _3 }
+    storage_dead(_3)
+    fake_read(c)
+    storage_dead(_4)
+    storage_live(_5)
+    storage_live(_6)
+    storage_live(_7)
+    _7 = &mut c
+    _6 = &two-phase-mut (*_7)
+    _5 = push_all::<Ctx::<_><_>><'47, '51>(move _6, const 3u32)
+    ↳⚡ conditional_drop[drop_glue<'52, u32, Global>] v
+        ↳⚡ unwind_terminate(in_cleanup)
+        unwind_continue
+    storage_dead(_6)
+    storage_dead(_7)
+    storage_dead(_5)
+    storage_live(h_8)
+    storage_live(_9)
+    _9 = move c
+    h_8 = wrap<'56>(move _9)
+    ↳⚡ conditional_drop[drop_glue<'52, u32, Global>] v
+        ↳⚡ unwind_terminate(in_cleanup)
+        unwind_continue
+    storage_dead(_9)
+    fake_read(h_8)
+    storage_live(_10)
+    storage_live(_11)
+    _11 = &h_8
+    _10 = test_crate::{Holder::<Ctx::<_><_>><'_0>}::get::<Ctx::<_><_>><'59, '63>(move _11)
+    ↳⚡ conditional_drop[drop_glue<'52, u32, Global>] v
+        ↳⚡ unwind_terminate(in_cleanup)
+        unwind_continue
+    storage_dead(_11)
+    storage_dead(_10)
+    storage_live(x)
+    x = const 5u32
+    fake_read(x)
+    storage_live(h_13)
+    storage_live(_14)
+    _14 = &x
+    h_13 = mk::<&_ u32><'65>(move _14)
+    ↳⚡ conditional_drop[drop_glue<'52, u32, Global>] v
+        ↳⚡ unwind_terminate(in_cleanup)
+        unwind_continue
+    storage_dead(_14)
+    fake_read(h_13)
+    storage_live(_15)
+    storage_live(_16)
+    _16 = &h_13
+    _15 = test_crate::{Holder::<&_ u32><'_0>}::get::<&_ u32><'69, '73>(move _16)
+    ↳⚡ conditional_drop[drop_glue<'52, u32, Global>] v
+        ↳⚡ unwind_terminate(in_cleanup)
+        unwind_continue
+    storage_dead(_16)
+    _ = (*_15)
+    storage_dead(_15)
+    storage_live(y)
+    y = const 7u32
+    fake_read(y)
+    storage_live(_18)
+    storage_live(_19)
+    storage_live(_20)
+    _20 = &x
+    _19 = &(*_20)
+    storage_live(_21)
+    storage_live(_22)
+    _22 = &mut y
+    _21 = &two-phase-mut (*_22)
+    _18 = pair<'81, '82>(move _19, move _21)
+    ↳⚡ conditional_drop[drop_glue<'52, u32, Global>] v
+        ↳⚡ unwind_terminate(in_cleanup)
+        unwind_continue
+    storage_dead(_21)
+    storage_dead(_19)
+    storage_dead(_22)
+    storage_dead(_20)
+    storage_dead(_18)
+    _0 = ()
+    storage_dead(y)
+    storage_dead(h_13)
+    storage_dead(x)
+    storage_dead(h_8)
+    storage_dead(c)
+    conditional_drop[drop_glue<'83, u32, Global>] v
+    ↳⚡ unwind_continue
+    storage_dead(v)
+    return
+}
+
+
+
