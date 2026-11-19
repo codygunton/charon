@@ -1,0 +1,931 @@
+# Final LLBC before serialization:
+
+// Full name: core::ops::index::Index
+#[lang_item(Index)]
+pub trait Index<Self, Idx, Self_Output>
+{
+    #[track_caller]
+    fn index<'_0_1, Outlives0: (Self: '_0_1), Outlives1: (Self_Output: '_0_1)>;
+    vtable: core::ops::index::Index::{vtable}<Idx, Self_Output>
+}
+
+// Full name: core::array::{impl Index<I, Clause0_Output> for [T; N]}::index
+pub fn impl_Index_for_array::index<'_0, T, I, Clause0_Output, const N : usize>(_1: &'_0 [T; N], _2: I) -> &'_0 Clause0_Output
+where
+    TraitClause0: ([T]: Index<I, Clause0_Output>),
+    Outlives0: (T: '_0),
+    Outlives1: (Clause0_Output: '_0),
+= <opaque>
+
+// Full name: core::array::{[T; N]}::as_slice
+pub fn as_slice<'_0, T, const N : usize>(_1: &'_0 [T; N]) -> &'_0 [T]
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::clone::Clone
+#[lang_item(Clone)]
+#[diagnostic_item("Clone")]
+pub trait Clone<Self>
+{
+    fn clone<'_0_1, Outlives0: (Self: '_0_1)>;
+    non-dyn-compatible
+}
+
+// Full name: core::clone::impls::{impl Clone for u32}::clone
+pub fn impl_Clone_for_u32::clone<'_0>(_1: &'_0 u32) -> u32
+= <opaque>
+
+// Full name: core::option::Option
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option<T> {
+  None,
+  Some { _0: T },
+}
+
+// Full name: core::iter::traits::iterator::Iterator
+#[lang_item(Iterator)]
+#[diagnostic_item("Iterator")]
+pub trait Iterator<Self, Self_Item>
+{
+    fn next<'_0_1, Outlives0: (Self: '_0_1)>;
+    vtable: core::iter::traits::iterator::Iterator::{vtable}<Self_Item>
+}
+
+// Full name: core::iter::traits::collect::{impl IntoIterator<Clause0_Item, I> for I}::into_iter
+pub fn into_iter<I, Clause0_Item>(_1: I) -> I
+where
+    TraitClause0: (I: Iterator<Clause0_Item>),
+= <opaque>
+
+opaque type ()
+
+// Full name: core::marker::Destruct
+#[lang_item(Destruct)]
+pub trait Destruct<Self>
+{
+    fn drop_glue<'_0_1, Outlives0: (Self: '_0_1)>;
+    non-dyn-compatible
+}
+
+// Full name: core::mem::maybe_uninit::MaybeUninit
+#[lang_item(MaybeUninit)]
+pub opaque type MaybeUninit<T>
+
+// Full name: core::ops::function::FnOnce
+#[fundamental]
+#[lang_item(FnOnce)]
+pub trait FnOnce<Self, Args, Self_Output>
+{
+    fn call_once;
+    vtable: core::ops::function::FnOnce::{vtable}<Args, Self_Output>
+}
+
+pub fn core::option::{Option<T>}::map<T, U, F>(_1: Option<T>, _2: F) -> Option<U>
+where
+    TraitClause0: (F: FnOnce<(T,), U>),
+    TraitClause1: (F: Destruct),
+= <opaque>
+
+// Full name: core::panicking::panic_in_cleanup
+#[lang_item(PanicInCleanup)]
+fn panic_in_cleanup() -> !
+= <opaque>
+
+// Full name: core::slice::index::SliceIndex
+#[diagnostic_item("SliceIndex")]
+pub unsafe trait SliceIndex<Self, T, Self_Output>
+{
+    fn get<'_0_1, Outlives0: (T: '_0_1), Outlives1: (Self_Output: '_0_1)>;
+    fn get_mut<'_0_1, Outlives0: (T: '_0_1), Outlives1: (Self_Output: '_0_1)>;
+    fn get_unchecked;
+    fn get_unchecked_mut;
+    #[track_caller]
+    fn index<'_0_1, Outlives0: (T: '_0_1), Outlives1: (Self_Output: '_0_1)>;
+    #[track_caller]
+    fn index_mut<'_0_1, Outlives0: (T: '_0_1), Outlives1: (Self_Output: '_0_1)>;
+    vtable: core::slice::index::SliceIndex::{vtable}<T, Self_Output>
+}
+
+// Full name: core::slice::index::{impl Index<I, Clause0_Output> for [T]}::index
+pub fn impl_Index_for_slice::index<'_0, T, I, Clause0_Output>(_1: &'_0 [T], _2: I) -> &'_0 Clause0_Output
+where
+    TraitClause0: (I: SliceIndex<[T], Clause0_Output>),
+    Outlives0: (T: '_0),
+    Outlives1: (Clause0_Output: '_0),
+= <opaque>
+
+// Full name: core::slice::index::{impl Index<I, Clause0_Output> for [T]}
+impl<T, I, Clause0_Output> "impl_Index_for_slice" Index<I, Clause0_Output> for [T]
+where
+    TraitClause0: (I: SliceIndex<[T], Clause0_Output>),
+{
+    fn index<'_0_1> = impl_Index_for_slice::index<'_0_1, T, I, Clause0_Output>[TraitClause0]
+    vtable: lazy
+}
+
+// Full name: core::slice::index::{impl SliceIndex<[T], T> for usize}::index_mut
+#[rustc_no_writable]
+pub fn impl_SliceIndex_slice_for_usize::index_mut<'_0, T>(_1: usize, _2: &'_0 mut [T]) -> &'_0 mut T
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::slice::index::{impl SliceIndex<[T], T> for usize}::index
+pub fn impl_SliceIndex_slice_for_usize::index<'_0, T>(_1: usize, _2: &'_0 [T]) -> &'_0 T
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::slice::index::{impl SliceIndex<[T], T> for usize}::get_unchecked_mut
+#[track_caller]
+pub unsafe fn impl_SliceIndex_slice_for_usize::get_unchecked_mut<T>(_1: usize, _2: *mut [T]) -> *mut T
+= <opaque>
+
+// Full name: core::slice::index::{impl SliceIndex<[T], T> for usize}::get_unchecked
+#[track_caller]
+pub unsafe fn impl_SliceIndex_slice_for_usize::get_unchecked<T>(_1: usize, _2: *const [T]) -> *const T
+= <opaque>
+
+// Full name: core::slice::index::{impl SliceIndex<[T], T> for usize}::get_mut
+#[rustc_no_writable]
+pub fn impl_SliceIndex_slice_for_usize::get_mut<'_0, T>(_1: usize, _2: &'_0 mut [T]) -> Option<&'_0 mut T>
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::slice::index::{impl SliceIndex<[T], T> for usize}::get
+pub fn impl_SliceIndex_slice_for_usize::get<'_0, T>(_1: usize, _2: &'_0 [T]) -> Option<&'_0 T>
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::slice::index::{impl SliceIndex<[T], T> for usize}
+unsafe impl<T> "impl_SliceIndex_slice_for_usize" SliceIndex<[T], T> for usize {
+    fn get<'_0_1> = impl_SliceIndex_slice_for_usize::get<'_0_1, T>
+    fn get_mut<'_0_1> = impl_SliceIndex_slice_for_usize::get_mut<'_0_1, T>
+    fn get_unchecked = impl_SliceIndex_slice_for_usize::get_unchecked<T>
+    fn get_unchecked_mut = impl_SliceIndex_slice_for_usize::get_unchecked_mut<T>
+    fn index<'_0_1> = impl_SliceIndex_slice_for_usize::index<'_0_1, T>
+    fn index_mut<'_0_1> = impl_SliceIndex_slice_for_usize::index_mut<'_0_1, T>
+    vtable: lazy
+}
+
+// Full name: core::slice::iter::Iter
+#[diagnostic_item("SliceIter")]
+pub opaque type Iter<'a, T>
+where
+    Outlives0: (T: 'a),
+    Outlives1: (T: 'a),
+
+// Full name: core::slice::iter::{impl Iterator<&'a T> for Iter<'a, T>}::next
+pub fn next<'a, '_1, T>(_1: &'_1 mut Iter<'a, T>) -> Option<&'a T>
+where
+    Outlives0: (T: 'a),
+    Outlives1: ('a: '_1),
+    Outlives2: (T: '_1),
+= <opaque>
+
+// Full name: core::slice::iter::{impl Iterator<&'a T> for Iter<'a, T>}
+impl<'a, T> "impl_Iterator_for_Iter" Iterator<&'a T> for Iter<'a, T>
+where
+    Outlives0: (T: 'a),
+{
+    fn next<'_0_1> = next<'a, '_0_1, T>
+    vtable: lazy
+}
+
+// Full name: core::slice::{[T]}::first
+pub fn first<'_0, T>(_1: &'_0 [T]) -> Option<&'_0 T>
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::slice::{[T]}::iter
+#[diagnostic_item("slice_iter")]
+pub fn iter<'_0, T>(_1: &'_0 [T]) -> Iter<'_0, T>
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+// Full name: alloc::alloc::{impl Clone for Global}::clone
+pub fn impl_Clone_for_Global::clone<'_0>(_1: &'_0 Global) -> Global
+= <opaque>
+
+// Full name: alloc::alloc::{impl Clone for Global}
+impl "impl_Clone_for_Global" Clone for Global {
+    fn clone<'_0_1> = impl_Clone_for_Global::clone<'_0_1>
+    non-dyn-compatible
+}
+
+// Full name: alloc::boxed::Box
+#[fundamental]
+#[lang_item(OwnedBox)]
+pub opaque type Box<T>
+
+// Full name: alloc::boxed::Box::{impl Destruct for Box<T>}::drop_glue
+unsafe fn impl_Destruct_for_Box::drop_glue<'_0, T, A>(_1: &'_0 mut Box<T>)
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+#[track_caller]
+#[diagnostic_item("box_new")]
+pub fn alloc::boxed::{Box<T>}::new<T>(_1: T) -> Box<T>
+= <opaque>
+
+// Full name: alloc::vec::Vec
+#[diagnostic_item("Vec")]
+pub opaque type Vec<T>
+
+// Full name: alloc::slice::{[T]}::into_vec
+pub fn into_vec<T, A>(_1: Box<[T]>) -> Vec<T>
+= <opaque>
+
+// Full name: alloc::vec::Vec::{impl Destruct for Vec<T>}::drop_glue
+unsafe fn impl_Destruct_for_Vec::drop_glue<'_0, T, A>(_1: &'_0 mut Vec<T>)
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+#[diagnostic_item("vec_new")]
+pub fn alloc::vec::{Vec<T>}::new<T>() -> Vec<T>
+= <opaque>
+
+// Full name: alloc::vec::{Vec<T>}::push
+pub fn push<'_0, T, A>(_1: &'_0 mut Vec<T>, _2: T)
+where
+    TraitClause0: (A: Destruct),
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::{impl Deref<[T]> for Vec<T>}::deref
+pub fn deref<'_0, T, A>(_1: &'_0 Vec<T>) -> &'_0 [T]
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::{impl Clone for Vec<T>}::clone
+pub fn impl_Clone_for_Vec::clone<'_0, T, A>(_1: &'_0 Vec<T>) -> Vec<T>
+where
+    TraitClause0: (T: Clone),
+    TraitClause1: (A: Clone),
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::{impl Index<I, Clause0_Output> for Vec<T>}::index
+pub fn impl_Index_for_Vec::index<'_0, T, I, A, Clause0_Output>(_1: &'_0 Vec<T>, _2: I) -> &'_0 Clause0_Output
+where
+    TraitClause0: (I: SliceIndex<[T], Clause0_Output>),
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+    Outlives2: (Clause0_Output: '_0),
+= <opaque>
+
+// Full name: test_crate::Nop
+pub struct Nop {
+  x: u32,
+}
+
+// Full name: test_crate::{impl Clone for Nop}::clone
+#[inline(hint)]
+pub fn impl_Clone_for_Nop::clone<'_0>(self: &'_0 Nop) -> Nop
+{
+    let mut _0: Nop; // return
+    let self: &'1 Nop; // arg #1
+    let mut _2: u32; // anonymous local
+    let mut _3: &'3 u32; // anonymous local
+    let _4: &'4 u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &(*self).x
+    _3 = &(*_4)
+    _2 = impl_Clone_for_u32::clone<'8>(move _3)
+    ↳⚡ storage_dead(self)
+        unwind_continue
+    storage_dead(_3)
+    _0 = Nop { x: move _2 }
+    storage_dead(_4)
+    storage_dead(_2)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::{impl Clone for Nop}
+impl "impl_Clone_for_Nop" Clone for Nop {
+    fn clone<'_0_1> = impl_Clone_for_Nop::clone<'_0_1>
+    non-dyn-compatible
+}
+
+// Full name: test_crate::Wrapper::<Nop>
+pub struct Wrapper::<Nop> {
+  items: Vec<Nop>,
+}
+
+// Full name: test_crate::Wrapper::{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop>
+unsafe fn {impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'_0>(_1: &'_0 mut Wrapper::<Nop>)
+{
+    let mut _0: (); // return
+    let _1: &'1 mut Wrapper::<Nop>; // arg #1
+
+    storage_live(_0)
+    _0 = ()
+    drop[impl_Destruct_for_Vec::drop_glue<'2, Nop, Global>] (*_1).items
+    ↳⚡ storage_dead(_1)
+        unwind_continue
+    storage_dead(_1)
+    return
+}
+
+// Full name: test_crate::{Wrapper::<Nop>}::push_clone::<Nop>
+pub fn push_clone::<Nop><'_0, '_1>(self: &'_0 mut Wrapper::<Nop>, x: &'_1 Nop)
+{
+    let mut _0: (); // return
+    let self: &'1 mut Wrapper::<Nop>; // arg #1
+    let x: &'3 Nop; // arg #2
+    let _3: (); // anonymous local
+    let mut _4: &'5 mut Vec<Nop>; // anonymous local
+    let mut _5: Nop; // anonymous local
+    let mut _6: &'6 Nop; // anonymous local
+
+    storage_live(_0)
+    _0 = ()
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &two-phase-mut (*self).items
+    storage_live(_5)
+    storage_live(_6)
+    _6 = &(*x)
+    _5 = impl_Clone_for_Nop::clone<'10>(move _6)
+    ↳⚡ storage_dead(x)
+        storage_dead(self)
+        unwind_continue
+    storage_dead(_6)
+    _3 = push<'14, Nop, Global>[{built_in impl Destruct for Global}](move _4, move _5)
+    ↳⚡ storage_dead(x)
+        storage_dead(self)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_3)
+    _0 = ()
+    storage_dead(x)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::{Wrapper::<Nop>}::first_mapped::{closure}::<Nop>
+struct {closure}::<Nop><'_0> {}
+
+// Full name: test_crate::{Wrapper::<Nop>}::first_mapped::{impl FnOnce<(&'_0 Nop,), Nop> for {closure}::<Nop><'_0>}::call_once::<Nop>
+extern "rust-call" fn call_once::<Nop><'_0>(_1: {closure}::<Nop><'_0>, tupled_args: (&'_0 Nop,)) -> Nop
+{
+    let mut _0: Nop; // return
+    let mut _1: {closure}::<Nop><'_0>; // arg #1
+    let mut tupled_args: (&'_0 Nop,); // arg #2
+    let x: &'2 Nop; // local
+    let mut _4: &'3 Nop; // anonymous local
+
+    storage_live(_0)
+    storage_live(x)
+    x = noretag move tupled_args.0
+    storage_live(_4)
+    _4 = &(*x)
+    _0 = impl_Clone_for_Nop::clone<'7>(move _4)
+    ↳⚡ storage_dead(x)
+        storage_dead(tupled_args)
+        storage_dead(_1)
+        unwind_continue
+    storage_dead(_4)
+    storage_dead(x)
+    storage_dead(tupled_args)
+    storage_dead(_1)
+    return
+}
+
+// Full name: test_crate::{Wrapper::<Nop>}::first_mapped::{impl FnOnce<(&'_0 Nop,), Nop> for {closure}::<Nop><'_0>}
+impl<'_0> FnOnce<(&'_0 Nop,), Nop> for {closure}::<Nop><'_0> {
+    fn call_once = call_once::<Nop><'_0>
+    vtable: lazy
+}
+
+// Full name: test_crate::{Wrapper::<Nop>}::first_mapped::<Nop>
+pub fn first_mapped::<Nop><'_0>(self: &'_0 Wrapper::<Nop>) -> Option<Nop>
+{
+    let mut _0: Option<Nop>; // return
+    let self: &'1 Wrapper::<Nop>; // arg #1
+    let mut _2: Option<&'4 Nop>; // anonymous local
+    let mut _3: &'6 [Nop]; // anonymous local
+    let _4: &'7 [Nop]; // anonymous local
+    let mut _5: &'9 Vec<Nop>; // anonymous local
+    let mut _6: {closure}::<Nop><'11>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    storage_live(_3)
+    storage_live(_4)
+    storage_live(_5)
+    _5 = &(*self).items
+    _4 = deref<'15, Nop, Global>(move _5)
+    ↳⚡ storage_dead(self)
+        unwind_continue
+    _3 = &(*_4) with_metadata(read _4.metadata)
+    storage_dead(_5)
+    _2 = first<'19, Nop>(move _3)
+    ↳⚡ storage_dead(self)
+        unwind_continue
+    storage_dead(_3)
+    storage_live(_6)
+    _6 = {closure}::<Nop> {  }
+    _0 = core::option::{Option<T>}::map<&'33 Nop, Nop, {closure}::<Nop><'33>>[{impl FnOnce<(&'_0 Nop,), Nop> for {closure}::<Nop><'_0>}<'33>, {built_in impl Destruct for {closure}::<Nop><'33>}](move _2, move _6)
+    ↳⚡ storage_dead(self)
+        unwind_continue
+    storage_dead(_6)
+    storage_dead(_2)
+    storage_dead(_4)
+    storage_dead(self)
+    return
+}
+
+// Full name: test_crate::{Wrapper::<Nop>}::duplicate::<Nop>
+pub fn duplicate::<Nop><'_0>(self: &'_0 Wrapper::<Nop>) -> Vec<Nop>
+{
+    let mut _0: Vec<Nop>; // return
+    let self: &'1 Wrapper::<Nop>; // arg #1
+    let mut _2: &'3 Vec<Nop>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = &(*self).items
+    _0 = impl_Clone_for_Vec::clone<'7, Nop, Global>[impl_Clone_for_Nop, impl_Clone_for_Global](move _2)
+    ↳⚡ storage_dead(self)
+        unwind_continue
+    storage_dead(_2)
+    storage_dead(self)
+    return
+}
+
+pub fn test_crate::index::<u8><'_0>(s: &'_0 [u8], i: usize) -> u8
+{
+    let mut _0: u8; // return
+    let s: &'1 [u8]; // arg #1
+    let i: usize; // arg #2
+    let _3: usize; // anonymous local
+    let mut _4: &'_ [u8]; // anonymous local
+    let mut _5: &'_ u8; // anonymous local
+
+    storage_live(_0)
+    storage_live(_3)
+    _3 = copy i
+    storage_live(_4)
+    _4 = &(*s) with_metadata(read s.metadata)
+    storage_live(_5)
+    _5 = impl_SliceIndex_slice_for_usize::index<'_, u8>(copy _3, move _4)
+    ↳⚡ undefined_behavior
+    _0 = copy (*_5)
+    storage_dead(_3)
+    storage_dead(i)
+    storage_dead(s)
+    storage_dead(_5)
+    storage_dead(_4)
+    return
+}
+
+pub fn test_crate::sum<'_0>(v: &'_0 Vec<u32>) -> u32
+{
+    let mut _0: u32; // return
+    let v: &'1 Vec<u32>; // arg #1
+    let mut acc: u32; // local
+    let mut _3: Iter<'3, u32>; // anonymous local
+    let mut _4: Iter<'4, u32>; // anonymous local
+    let mut _5: &'6 [u32]; // anonymous local
+    let _6: &'7 [u32]; // anonymous local
+    let mut _7: &'8 Vec<u32>; // anonymous local
+    let mut iter: Iter<'9, u32>; // local
+    let mut _9: Option<&'12 u32>; // anonymous local
+    let mut _10: &'15 mut Iter<'16, u32>; // anonymous local
+    let mut _11: &'17 mut Iter<'18, u32>; // anonymous local
+    let x: &'19 u32; // local
+    let mut _13: u32; // anonymous local
+    let mut _14: u32; // anonymous local
+
+    storage_live(_0)
+    storage_live(_14)
+    storage_live(acc)
+    acc = const 0u32
+    fake_read(acc)
+    storage_live(_3)
+    storage_live(_4)
+    storage_live(_5)
+    storage_live(_6)
+    storage_live(_7)
+    _7 = &(*v)
+    _6 = deref<'23, u32, Global>(move _7)
+    ↳⚡ storage_dead(_14)
+        storage_dead(v)
+        unwind_continue
+    _5 = &(*_6) with_metadata(read _6.metadata)
+    storage_dead(_7)
+    _4 = iter<'27, u32>(move _5)
+    ↳⚡ storage_dead(_14)
+        storage_dead(v)
+        unwind_continue
+    storage_dead(_5)
+    _3 = into_iter<Iter<'33, u32>, &'33 u32>[impl_Iterator_for_Iter<'33, u32>](move _4)
+    ↳⚡ storage_dead(_14)
+        storage_dead(v)
+        unwind_continue
+    storage_dead(_4)
+    storage_live(iter)
+    iter = move _3
+    loop {
+        storage_live(_9)
+        storage_live(_10)
+        storage_live(_11)
+        _11 = &mut iter
+        _10 = &two-phase-mut (*_11)
+        _9 = next<'44, '48, u32>(move _10)
+        ↳⚡ storage_dead(_14)
+            storage_dead(v)
+            unwind_continue
+        storage_dead(_10)
+        match _9 {
+            Option::None => {
+                break 0
+            },
+            Option::Some => {
+            },
+        }
+        storage_live(x)
+        x = copy (_9 as variant Option::Some)._0
+        storage_live(_13)
+        _13 = copy (*x)
+        _14 = copy acc panic.+ copy _13
+        acc = move _14
+        storage_dead(_13)
+        storage_dead(x)
+        storage_dead(_11)
+        storage_dead(_9)
+        continue 0
+    }
+    storage_dead(_11)
+    storage_dead(_9)
+    storage_dead(iter)
+    storage_dead(_6)
+    storage_dead(_3)
+    _0 = copy acc
+    storage_dead(acc)
+    storage_dead(_14)
+    storage_dead(v)
+    return
+}
+
+// Full name: test_crate::array_index
+pub fn array_index(a: [u64; 4usize], i: usize) -> u64
+{
+    let mut _0: u64; // return
+    let a: [u64; 4usize]; // arg #1
+    let i: usize; // arg #2
+    let _3: usize; // anonymous local
+    let mut _4: &'_ [u64; 4usize]; // anonymous local
+    let mut _5: &'_ u64; // anonymous local
+
+    storage_live(_0)
+    storage_live(_3)
+    _3 = copy i
+    fake_read(a)
+    storage_live(_4)
+    _4 = &a
+    storage_live(_5)
+    _5 = impl_Index_for_array::index<'_, u64, usize, u64, 4usize>[impl_Index_for_slice<u64, usize, u64>[impl_SliceIndex_slice_for_usize<u64>]](move _4, copy _3)
+    ↳⚡ undefined_behavior
+    _0 = copy (*_5)
+    storage_dead(_3)
+    storage_dead(i)
+    storage_dead(a)
+    storage_dead(_5)
+    storage_dead(_4)
+    return
+}
+
+// Full name: test_crate::vec_index
+pub fn vec_index<'_0>(v: &'_0 Vec<u64>, i: usize) -> u64
+{
+    let mut _0: u64; // return
+    let v: &'1 Vec<u64>; // arg #1
+    let i: usize; // arg #2
+    let mut _3: &'3 u64; // anonymous local
+    let mut _4: &'4 Vec<u64>; // anonymous local
+    let mut _5: usize; // anonymous local
+
+    storage_live(_0)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &(*v)
+    storage_live(_5)
+    _5 = copy i
+    _3 = impl_Index_for_Vec::index<'8, u64, usize, Global, u64>[impl_SliceIndex_slice_for_usize<u64>](move _4, move _5)
+    ↳⚡ storage_dead(i)
+        storage_dead(v)
+        unwind_continue
+    _0 = copy (*_3)
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_3)
+    storage_dead(i)
+    storage_dead(v)
+    return
+}
+
+fn test_crate::main::{promoted_const}() -> &'_ [u8; 2usize]
+{
+    let mut _0: &'0 [u8; 2usize]; // return
+    let mut _1: [u8; 2usize]; // anonymous local
+
+    storage_live(_0)
+    storage_live(_1)
+    _1 = [const 1u8, const 2u8]
+    _0 = &_1
+    return
+}
+
+const test_crate::main::{promoted_const}: &'_ [u8; 2usize] = test_crate::main::{promoted_const}()
+
+fn test_crate::main::{promoted_const#1}() -> &'_ Nop
+{
+    let mut _0: &'0 Nop; // return
+    let mut _1: Nop; // anonymous local
+
+    storage_live(_0)
+    storage_live(_1)
+    _1 = Nop { x: const 1u32 }
+    _0 = &_1
+    return
+}
+
+const test_crate::main::{promoted_const#1}: &'_ Nop = test_crate::main::{promoted_const#1}()
+
+// Full name: test_crate::main
+pub fn main()
+{
+    let mut _0: (); // return
+    let mut w: Wrapper::<Nop>; // local
+        where w :< Wrapper::<Nop>;
+        where w := Wrapper::<Nop>;
+    let mut _2: Vec<Nop>; // anonymous local
+    let _3: (); // anonymous local
+    let mut _4: &'1 mut Wrapper::<Nop>; // anonymous local
+    let mut _5: &'3 Nop; // anonymous local
+    let _6: &'4 Nop; // anonymous local
+    let mut _7: Option<Nop>; // anonymous local
+    let mut _8: &'6 Wrapper::<Nop>; // anonymous local
+    let mut _9: Vec<Nop>; // anonymous local
+    let mut _10: &'7 Wrapper::<Nop>; // anonymous local
+    let mut _11: u8; // anonymous local
+    let mut _12: &'9 [u8]; // anonymous local
+    let mut _13: &'11 [u8; 2usize]; // anonymous local
+    let _14: &'12 [u8; 2usize]; // anonymous local
+    let mut _15: u32; // anonymous local
+    let mut _16: &'14 Vec<u32>; // anonymous local
+    let _17: &'15 Vec<u32>; // anonymous local
+    let _18: Vec<u32>; // anonymous local
+    let mut _19: Box<MaybeUninit<[u32; 2usize]>>; // anonymous local
+    let mut _20: u64; // anonymous local
+    let mut _21: [u64; 4usize]; // anonymous local
+    let mut _22: &'16 [u8; 2usize]; // anonymous local
+    let mut _23: &'17 Nop; // anonymous local
+    let mut ret: Vec<u32>; // local
+    let mut x: Box<[u32; 2usize]>; // local
+    let mut y: Box<[u32]>; // local
+    let mut _27: [u32; 2usize]; // anonymous local
+    let mut _28: Box<[u32; 2usize]>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_22)
+    storage_live(_23)
+    _0 = ()
+    storage_live(w)
+    storage_live(_2)
+    _2 = alloc::vec::{Vec<T>}::new<Nop>()
+    ↳⚡ storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    w = Wrapper::<Nop> { items: move _2 }
+    conditional_drop[impl_Destruct_for_Vec::drop_glue<'18, Nop, Global>] _2
+    ↳⚡ storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_2)
+    fake_read(w)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &two-phase-mut w
+    storage_live(_5)
+    storage_live(_6)
+    _23 = read test_crate::main::{promoted_const#1}
+    _6 = &(*_23)
+    _5 = &(*_6)
+    _3 = push_clone::<Nop><'26, '27>(move _4, move _5)
+    ↳⚡ conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_5)
+    storage_dead(_4)
+    storage_dead(_6)
+    storage_dead(_3)
+    storage_live(_7)
+    storage_live(_8)
+    _8 = &w
+    _7 = first_mapped::<Nop><'32>(move _8)
+    ↳⚡ conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_8)
+    storage_dead(_7)
+    storage_live(_9)
+    storage_live(_10)
+    _10 = &w
+    _9 = duplicate::<Nop><'36>(move _10)
+    ↳⚡ conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_10)
+    conditional_drop[impl_Destruct_for_Vec::drop_glue<'37, Nop, Global>] _9
+    ↳⚡ conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_9)
+    storage_live(_11)
+    storage_live(_12)
+    storage_live(_13)
+    storage_live(_14)
+    _22 = read test_crate::main::{promoted_const}
+    _14 = &(*_22)
+    _13 = &(*_14)
+    _12 = as_slice<'_, u8, 2usize>(move _13)
+    ↳⚡ undefined_behavior
+    storage_dead(_13)
+    _11 = test_crate::index::<u8><'43>(move _12, const 1usize)
+    ↳⚡ conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_12)
+    storage_dead(_14)
+    storage_dead(_11)
+    storage_live(_15)
+    storage_live(_16)
+    storage_live(_17)
+    storage_live(_18)
+    storage_live(_19)
+    storage_live(_27)
+    _27 = [const 1u32, const 2u32]
+    storage_live(_28)
+    _28 = alloc::boxed::{Box<T>}::new<[u32; 2usize]>(move _27)
+    ↳⚡ conditional_drop[impl_Destruct_for_Box::drop_glue<'45, MaybeUninit<[u32; 2usize]>, Global>] _19
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_live(ret)
+    storage_live(x)
+    storage_live(y)
+    storage_dead(_27)
+    x = noretag move _28
+    storage_dead(_28)
+    y = unsize_cast<Box<[u32]>, 2usize>(move x)
+    ret = into_vec<u32, Global>(move y)
+    ↳⚡ storage_dead(y)
+        storage_dead(x)
+        conditional_drop[impl_Destruct_for_Box::drop_glue<'45, MaybeUninit<[u32; 2usize]>, Global>] _19
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(y)
+    storage_dead(x)
+    _18 = move ret
+    storage_dead(_19)
+    _17 = &_18
+    _16 = &(*_17)
+    _15 = test_crate::sum<'49>(move _16)
+    ↳⚡ conditional_drop[impl_Destruct_for_Vec::drop_glue<'50, u32, Global>] _18
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_16)
+    conditional_drop[impl_Destruct_for_Vec::drop_glue<'51, u32, Global>] _18
+    ↳⚡ conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_18)
+    storage_dead(_17)
+    storage_dead(_15)
+    storage_live(_20)
+    storage_live(_21)
+    _21 = [const 1u64, const 2u64, const 3u64, const 4u64]
+    _20 = array_index(move _21, const 2usize)
+    ↳⚡ conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'28>] w
+        ↳⚡ storage_dead(_23)
+            storage_dead(_22)
+            storage_dead(ret)
+            unwind_terminate(in_cleanup)
+        storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(_21)
+    storage_dead(_20)
+    _0 = ()
+    conditional_drop[{impl Destruct for Wrapper::<Nop>}::drop_glue::<Nop><'52>] w
+    ↳⚡ storage_dead(_23)
+        storage_dead(_22)
+        storage_dead(ret)
+        unwind_continue
+    storage_dead(w)
+    storage_dead(_23)
+    storage_dead(_22)
+    storage_dead(ret)
+    return
+}
+
+
+

@@ -1277,8 +1277,10 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
         let mut types: IndexMap<AssocTypeId, _> = IndexMap::new();
         let mut methods: IndexMap<TraitMethodId, _> = IndexMap::new();
 
-        // In mono mode, we do not translate any associated items in trait impl.
-        if self.monomorphize() {
+        // In mono mode, we do not translate any associated items in trait impl: monomorphic trait
+        // decls have none. Impls of traits translated polymorphically (foreign traits with
+        // `--monomorphize-local-only`) list them like in poly mode, as the trait decl does.
+        if self.trait_is_mono(&trait_pred.trait_ref.def_id) {
             return Ok(TraitImpl {
                 def_id,
                 item_meta,
@@ -1315,6 +1317,11 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
                     let binder_kind = BinderKind::TraitMethod(trait_id, trait_method_id);
                     let bound_fn_ref = match &impl_item.value {
                         Some(value) => {
+                            if self.monomorphize() && value.skip_binder.item.has_non_lt_param {
+                                // Methods with their own type parameters have no monomorphic
+                                // instance to refer to.
+                                continue;
+                            }
                             // By default we only enqueue required methods (those that don't have a default
                             // impl). If the impl is transparent, we enqueue all the implemented methods.
                             if item_meta.opacity.is_transparent() {
@@ -1386,6 +1393,24 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
                 }
                 hax::DefKind::AssocConst => {
                     let assoc_const_id = *assoc_item_id.as_const().unwrap();
+                    if self.monomorphize()
+                        && let Some(value) = &impl_item.value
+                    {
+                        // A monomorphic impl refers to the monomorphic instance of its constant.
+                        let gref: GlobalDeclRef = self.translate_item(
+                            item_span,
+                            &value.skip_binder.item,
+                            TransItemSourceKind::Global,
+                        )?;
+                        if item_meta.opacity.is_transparent() {
+                            self.record_containment(
+                                ItemId::TraitImpl(def_id),
+                                ItemId::Global(gref.id),
+                            );
+                        }
+                        consts.set_slot_extend(assoc_const_id, gref);
+                        continue;
+                    }
                     let id = self.register_and_enqueue(item_span, item_src);
                     if item_meta.opacity.is_transparent() && impl_item.value.is_some() {
                         self.record_containment(ItemId::TraitImpl(def_id), ItemId::Global(id));
@@ -1612,7 +1637,7 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
 
         let mut types: IndexMap<AssocTypeId, _> = IndexMap::new();
         // Monomorphic traits have no associated types.
-        if !self.monomorphize() {
+        if !self.trait_is_mono(&vimpl.trait_pred.trait_ref.def_id) {
             let trait_def = self.poly_hax_def(&vimpl.trait_pred.trait_ref.def_id)?;
             let hax::FullDefKind::Trait(t) = trait_def.kind() else {
                 panic!()

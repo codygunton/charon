@@ -625,7 +625,7 @@ impl<'tcx> TranslateCtx<'tcx> {
         };
 
         let target_def = self.poly_hax_def(&target_def_id).map_err(|err| err.msg)?;
-        if self.options.monomorphize_with_hax && target_def.this().has_non_lt_param {
+        if self.is_mono_def(&target_def_id) && target_def.this().has_non_lt_param {
             return Err("contracts on generic items are not supported \
                 with `--monomorphize`"
                 .to_string());
@@ -643,8 +643,8 @@ impl<'tcx> TranslateCtx<'tcx> {
                 &associated_item.container
         {
             let kind = TransItemSourceKind::TraitDecl;
-            let trait_src =
-                TransItemSource::from_item(trait_ref, kind, self.options.monomorphize_with_hax);
+            let trait_mono = self.is_mono_def(&trait_ref.def_id);
+            let trait_src = TransItemSource::from_item(trait_ref, kind, trait_mono);
             let trait_id = self.register_and_enqueue(&None, trait_src).expect_item();
             let item_id = self
                 .translate_assoc_item_id(trait_id, &target_def_id)
@@ -660,11 +660,8 @@ impl<'tcx> TranslateCtx<'tcx> {
                     .base_kind_for_item(&target_def_id)
                     .ok_or_else(|| format!("`{target_def_id:?}` is not a translatable item"))?,
             };
-            let target_src = TransItemSource::from_item(
-                target_def.this(),
-                kind,
-                self.options.monomorphize_with_hax,
-            );
+            let target_mono = self.is_mono_def(&target_def_id);
+            let target_src = TransItemSource::from_item(target_def.this(), kind, target_mono);
             let item_id: ItemId = self.register_and_enqueue(&None, target_src).expect_item();
             Ok(MaybeAssocItemId::Free(item_id))
         }

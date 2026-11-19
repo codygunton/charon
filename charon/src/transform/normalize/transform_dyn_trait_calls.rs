@@ -224,9 +224,11 @@ fn transform_dyn_trait_call(
     let method_field_place =
         method_vtable_place.project(ProjectionElem::Field(None, method_field_id), method_ty);
 
-    let fn_ptr_place = if ctx.ctx.options.monomorphize_with_hax {
-        // In mono mode, the vtable contains erased function pointers, cast to `*const ()`.
-        // This casts back to the expected signature.
+    let fn_ptr_place = if ctx.ctx.options.monomorphize_with_hax
+        && matches!(method_field_place.ty().kind(), TyKind::RawPtr(..))
+    {
+        // In mono mode, the vtables of monomorphic traits contain erased function pointers, cast
+        // to `*const ()`. This casts back to the expected signature.
         let is_unsafe = is_drop_glue || call.safety.is_unsafe();
         call.safety = if is_drop_glue {
             CallSafety::Safe

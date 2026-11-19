@@ -266,7 +266,10 @@ impl<'a, 'b> IndexVisitor<'a, 'b> {
         // `storage_live(tmp0')`
         // `tmp0' = core::array::{[T; N]}::as_{mut_}slice(move tmp0)`
         let (input_var, len) = match len {
-            Some(len) if self.ctx.ctx.options.monomorphize_with_hax => {
+            Some(len)
+                if self.ctx.ctx.options.monomorphize_with_hax
+                    && !self.ctx.ctx.options.monomorphize_local_only =>
+            {
                 let item = match mutability {
                     RefKind::Shared => StdItem::ArrayAsSlice,
                     RefKind::Mut => StdItem::ArrayAsMutSlice,

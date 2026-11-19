@@ -857,7 +857,7 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
             vimpl,
         )?;
 
-        if self.monomorphize() {
+        if self.trait_is_mono(&vimpl.trait_pred.trait_ref.def_id) {
             return Ok(timpl);
         }
 

@@ -299,7 +299,8 @@ impl<'tcx> TranslateCtx<'tcx> {
         if self.options.reconstruct_asserts {
             self.register_poly_function_by_path("core::hint::unreachable_unchecked")?;
         }
-        let mono = self.options.monomorphize_with_hax;
+        // Whether the standard library is monomorphized (not with `--monomorphize-local-only`).
+        let mono = self.options.monomorphize_with_hax && !self.options.monomorphize_local_only;
         if self.options.ops_to_function_calls || (mono && self.options.index_to_function_calls) {
             self.register_poly_function_by_path("array::as_slice")?;
             self.register_poly_function_by_path("array::as_mut_slice")?;
@@ -506,7 +507,7 @@ impl<'tcx> TranslateCtx<'tcx> {
             return Some(trait_item_id);
         }
         let kind = self.base_kind_for_item(def_id)?;
-        let item_src = if self.options.monomorphize_with_hax {
+        let item_src = if self.is_mono_def(def_id) {
             if let Ok(def) = self.poly_hax_def(def_id)
                 && !def.has_any_generics()
             {
@@ -558,9 +559,10 @@ impl<'tcx> TranslateCtx<'tcx> {
         }
     }
 
-    /// Whether this item is polymorphic, while we are in monomorphic mode.
+    /// Whether this item is polymorphic, while we are in monomorphic mode. Items that are not
+    /// monomorphized at all (foreign items with `--monomorphize-local-only`) don't count.
     pub(crate) fn is_poly_in_mono(&self, item_src: &TransItemSource) -> bool {
-        self.options.monomorphize_with_hax && matches!(item_src.item, RustcItem::Poly(..))
+        matches!(item_src.item, RustcItem::Poly(..)) && self.is_mono_def(item_src.def_id())
     }
 
     pub(crate) fn register_no_enqueue(
@@ -1334,6 +1336,7 @@ pub fn translate<'tcx>(
         items_to_translate: Default::default(),
         processed: Default::default(),
         poly_items_in_mono: Default::default(),
+        transparent_crates: Default::default(),
         containment_graph: Default::default(),
         translate_stack: Default::default(),
         cached_spans: Default::default(),

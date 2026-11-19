@@ -284,7 +284,7 @@ impl Transform {
 impl UllbcPass for Transform {
     fn should_run(&self, options: &crate::options::TranslateOptions) -> bool {
         options.treat_box_as_builtin
-            && !options.monomorphize_with_hax
+            && (!options.monomorphize_with_hax || options.monomorphize_local_only)
             && self.box_new.is_some()
             && self.box_write.is_some()
     }

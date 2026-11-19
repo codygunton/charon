@@ -136,6 +136,9 @@ pub struct TranslateCtx<'tcx> {
     /// `builtins_to_function_calls` calls (the pass can't request new instances), and the builtin
     /// `Box` type, which keeps its generic arguments.
     pub poly_items_in_mono: HashSet<TransItemSource<'tcx>>,
+    /// For `--monomorphize-local-only`: whether a crate is transparent (local or `--include`d),
+    /// i.e. whether its items are monomorphized. Computed lazily.
+    pub transparent_crates: RefCell<HashMap<rustc_span::def_id::CrateNum, bool>>,
     /// While translating, record which item is "contained" by another, in the sense that
     /// `--start-from` the parent should make the child be considered started from too. We use this
     /// to compute `ItemMeta.started_from` at the end of translation.
@@ -278,6 +281,43 @@ impl<'tcx> TranslateCtx<'tcx> {
         self.tcx.sess.opts.target_triple.tuple().to_owned()
     }
 
+    /// Whether the items with this `DefId` are monomorphized: always with `--monomorphize`, and
+    /// only for transparent crates (the local crate and `--include`d ones) with
+    /// `--monomorphize-local-only`. Synthetic items (tuples, ...) follow the local crate.
+    pub fn is_mono_def(&self, def_id: &hax::DefId) -> bool {
+        use hax::DefIdBase;
+        let krate = match def_id.base {
+            DefIdBase::Real(did) | DefIdBase::Promoted(did, ..) => did.krate,
+            DefIdBase::ImplAssocItem(id) => id.trait_impl_id.krate,
+            DefIdBase::Synthetic(..) | DefIdBase::Alloc(..) => rustc_span::def_id::LOCAL_CRATE,
+        };
+        self.is_mono_crate(krate)
+    }
+
+    /// See [`Self::is_mono_def`].
+    pub fn is_mono_crate(&self, krate: rustc_span::def_id::CrateNum) -> bool {
+        if !self.options.monomorphize_with_hax {
+            return false;
+        }
+        if !self.options.monomorphize_local_only {
+            return true;
+        }
+        if let Some(&transparent) = self.transparent_crates.borrow().get(&krate) {
+            return transparent;
+        }
+        let name = Name {
+            name: vec![PathElem::Ident(
+                self.tcx.crate_name(krate).to_string(),
+                Disambiguator::ZERO,
+            )],
+        };
+        let transparent = self.opacity_for_name(&name).is_transparent();
+        self.transparent_crates
+            .borrow_mut()
+            .insert(krate, transparent);
+        transparent
+    }
+
     /// Translates `T` into `U` using `hax`'s `SInto` trait, catching any hax panics.
     pub fn catch_sinto<S, T, U>(&mut self, s: &S, span: Span, x: &T) -> Result<U, Error>
     where
@@ -383,7 +423,13 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
     pub fn should_monomorphize_item(&self, item: &hax::ItemRef, kind: TransItemSourceKind) -> bool {
         // Traits and vtables use `MonoTrait` in mono mode. Other items are translated
         // monomorphically when their arguments are concrete, even if the context is poly.
-        self.options.monomorphize_with_hax && (kind.is_for_trait() || !item.has_non_lt_param)
+        self.is_mono_def(&item.def_id) && (kind.is_for_trait() || !item.has_non_lt_param)
+    }
+
+    /// Whether this trait is translated as a `MonoTrait`, i.e. without associated items. Its
+    /// impls then have no associated items either, and its vtable has erased fields.
+    pub fn trait_is_mono(&self, trait_id: &hax::DefId) -> bool {
+        self.is_mono_def(trait_id)
     }
 
     pub fn span_err(&self, span: Span, msg: &str, level: Level) -> Error {

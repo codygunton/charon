@@ -405,23 +405,24 @@ impl<'tcx, 'ctx> ItemTransCtx<'tcx, 'ctx> {
                     }
                     _ if let Some(builtin_data) = self.recognize_builtin_impl(trait_data) => {
                         let parent_trait_refs = self.translate_trait_proofs(span, trait_proofs)?;
-                        let types: IndexMap<AssocTypeId, _> = if self.monomorphize() {
-                            IndexMap::new()
-                        } else {
-                            let tdecl_id = trait_decl_ref.skip_binder.id;
-                            let mut type_map = IndexMap::new();
-                            for (def_id, ty, trait_proofs) in types {
-                                let assoc_type_id =
-                                    self.translate_assoc_type_id(tdecl_id, def_id)?;
-                                let assoc_ty = TraitAssocTyImpl {
-                                    value: self.translate_ty(span, ty)?,
-                                    implied_trait_refs: self
-                                        .translate_trait_proofs(span, trait_proofs)?,
-                                };
-                                type_map.set_slot_extend(assoc_type_id, assoc_ty);
-                            }
-                            type_map
-                        };
+                        let types: IndexMap<AssocTypeId, _> =
+                            if self.trait_is_mono(&tref.hax_skip_binder_ref().def_id) {
+                                IndexMap::new()
+                            } else {
+                                let tdecl_id = trait_decl_ref.skip_binder.id;
+                                let mut type_map = IndexMap::new();
+                                for (def_id, ty, trait_proofs) in types {
+                                    let assoc_type_id =
+                                        self.translate_assoc_type_id(tdecl_id, def_id)?;
+                                    let assoc_ty = TraitAssocTyImpl {
+                                        value: self.translate_ty(span, ty)?,
+                                        implied_trait_refs: self
+                                            .translate_trait_proofs(span, trait_proofs)?,
+                                    };
+                                    type_map.set_slot_extend(assoc_type_id, assoc_ty);
+                                }
+                                type_map
+                            };
                         let vtable = self.translate_region_binder(span, tref, |ctx, tref| {
                             ctx.translate_vtable_instance_ref_no_enqueue(
                                 span,

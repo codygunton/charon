@@ -101,6 +101,14 @@ pub struct CliOpts {
     #[clap(long, visible_alias = "mono")]
     #[serde(default)]
     pub monomorphize: bool,
+    /// Like `--monomorphize`, but only monomorphize the items of transparent crates (the local
+    /// crate and `--include`d ones). Items of other crates (standard library, foreign
+    /// dependencies), including their traits and trait impls, are translated polymorphically as
+    /// without `--monomorphize`; monomorphic code refers to them with generic arguments and trait
+    /// references. Implies `--monomorphize`.
+    #[clap(long)]
+    #[serde(default)]
+    pub monomorphize_local_only: bool,
     /// Partially monomorphize items to make it so that no item is ever monomorphized with a
     /// mutable reference (or type containing one); said differently, so that the presence of
     /// mutable references in a type is independent of its generics. This is used by Aeneas.
@@ -568,6 +576,9 @@ impl SerializationFormat {
 
 impl CliOpts {
     pub fn apply_preset(&mut self) {
+        if self.monomorphize_local_only {
+            self.monomorphize = true;
+        }
         if let Some(preset) = self.preset {
             match preset {
                 Preset::OldDefaults => {
@@ -838,6 +849,8 @@ pub struct TranslateOptions {
     pub remove_adt_clauses: bool,
     /// Monomorphize code using hax's instantiation mechanism.
     pub monomorphize_with_hax: bool,
+    /// See [CliOpts::monomorphize_local_only]. Implies `monomorphize_with_hax`.
+    pub monomorphize_local_only: bool,
     /// Extract the unstructured LLBC (i.e., don't reconstruct the control-flow)
     pub ullbc: bool,
     /// Reconstruct the control-flow by breaking forward out of enclosing loops instead of
@@ -1058,6 +1071,7 @@ impl TranslateOptions {
             remove_unused_self_clauses: options.remove_unused_self_clauses,
             remove_adt_clauses: options.remove_adt_clauses,
             monomorphize_with_hax: options.monomorphize,
+            monomorphize_local_only: options.monomorphize_local_only,
             ullbc: options.ullbc,
             no_code_duplication: options.no_code_duplication,
             code_duplication_limit: options.code_duplication_limit,

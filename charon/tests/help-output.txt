@@ -47,6 +47,9 @@ Options:
           
           [aliases: --mono]
 
+      --monomorphize-local-only
+          Like `--monomorphize`, but only monomorphize the items of transparent crates (the local crate and `--include`d ones). Items of other crates (standard library, foreign dependencies), including their traits and trait impls, are translated polymorphically as without `--monomorphize`; monomorphic code refers to them with generic arguments and trait references. Implies `--monomorphize`
+
       --monomorphize-mut[=<INCLUDE_TYPES>]
           Partially monomorphize items to make it so that no item is ever monomorphized with a mutable reference (or type containing one); said differently, so that the presence of mutable references in a type is independent of its generics. This is used by Aeneas
 

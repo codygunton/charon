@@ -284,7 +284,7 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
             .types
             .remove_and_shift_ids(TypeVarId::ZERO);
 
-        if !self.monomorphize() {
+        if !self.trait_is_mono(&tref.def_id) {
             // The vtable type also takes associated types as parameters.
             let assoc_tys: Vec<_> = tref
                 .trait_associated_types(self.hax_state_with_id())
@@ -950,9 +950,9 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
                     TransItemSourceKind::VTableMethod(TransImplSource::Normal),
                 )?;
 
-                // In mono mode the vtable fields are erased pointers, so we must compute the real type of
-                // each shim to cast it from.
-                if !self.monomorphize() {
+                // The vtable fields of monomorphic traits are erased pointers, so we must compute
+                // the real type of each shim to cast it from.
+                if !self.trait_is_mono(&implemented_trait.def_id) {
                     return Ok(VtableMethodValue::Const(shim));
                 }
 
@@ -998,7 +998,7 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
                     item,
                     TransItemSourceKind::VTableMethod(impl_source),
                 )?;
-                if !self.monomorphize() {
+                if !self.trait_is_mono(&implemented_trait.def_id) {
                     return Ok(VtableMethodValue::Const(shim));
                 }
                 // In mono mode the vtable field is an erased pointer, so we must compute the real
@@ -1079,7 +1079,7 @@ impl<'tcx> ItemTransCtx<'tcx, '_> {
                         impl_def.this(),
                         TransItemSourceKind::VTableDropShim(impl_kind),
                     )?;
-                    if self.monomorphize() {
+                    if self.trait_is_mono(&implemented_trait_ref.def_id) {
                         let hax::FullDefKind::Trait(trait_def) = trait_def.kind() else {
                             unreachable!()
                         };
