@@ -440,9 +440,9 @@ impl "impl_Foo_u16_for_unit" test_crate::loopy_with_generics::Foo<'static, u16> 
     proof ImpliedClause1: (u16: Sized) = {built_in impl Sized for u16}
     proof ImpliedClause2: ((): Sized) = {built_in impl Sized for ()}
     proof ImpliedClause3: ((): test_crate::loopy_with_generics::Foo<'static, u16>) = impl_Foo_u16_for_unit
-    proof ImpliedClause4: ((): test_crate::loopy_with_generics::Bar<'static, u8, Option<u16>[{built_in impl Sized for u16}], &'_ Option<u16>[{built_in impl Sized for u16}]>) = impl_Bar_u8_for_unit<'_, Option<u16>[{built_in impl Sized for u16}]>[{built_in impl Sized for Option<u16>[{built_in impl Sized for u16}]}]
+    proof ImpliedClause4: ((): test_crate::loopy_with_generics::Bar<'static, u8, Option<u16>[{built_in impl Sized for u16}], &'static Option<u16>[{built_in impl Sized for u16}]>) = impl_Bar_u8_for_unit<'_, Option<u16>[{built_in impl Sized for u16}]>[{built_in impl Sized for Option<u16>[{built_in impl Sized for u16}]}]
     type FooTy = ()
-    type Self_Clause4_BarTy = &'_ Option<u16>[{built_in impl Sized for u16}]
+    type Self_Clause4_BarTy = &'static Option<u16>[{built_in impl Sized for u16}]
     vtable: lazy
 }
 

@@ -1,0 +1,264 @@
+# Final LLBC before serialization:
+
+// Full name: core::iter::adapters::peekable::Peekable
+#[diagnostic_item("IterPeekable")]
+pub opaque type Peekable<I, Clause0_Item>
+
+opaque type ()
+
+// Full name: core::option::Option
+#[lang_item(Option)]
+#[diagnostic_item("Option")]
+pub enum Option<T> {
+  None,
+  Some { _0: T },
+}
+
+// Full name: core::iter::traits::iterator::Iterator
+#[lang_item(Iterator)]
+#[diagnostic_item("Iterator")]
+pub trait Iterator<Self, Self_Item>
+{
+    fn next<'_0_1, Outlives0: (Self: '_0_1)>;
+    fn peekable = peekable<Self, Self_Item>[Self]
+    vtable: core::iter::traits::iterator::Iterator::{vtable}<Self_Item>
+}
+
+// Full name: core::iter::adapters::peekable::Peekable::{impl Destruct for Peekable<I, Clause0_Item>}::drop_glue
+unsafe fn impl_Destruct_for_Peekable::drop_glue<'_0, I, Clause0_Item>(_1: &'_0 mut Peekable<I, Clause0_Item>)
+where
+    TraitClause0: (I: Iterator<Clause0_Item>),
+    Outlives0: (I: '_0),
+= <opaque>
+
+// Full name: core::iter::traits::iterator::Iterator::peekable
+pub fn peekable<Self, Clause0_Item>(_1: Self) -> Peekable<Self, Clause0_Item>
+where
+    TraitClause0: (Self: Iterator<Clause0_Item>),
+= <opaque>
+
+// Full name: core::panicking::panic_in_cleanup
+#[lang_item(PanicInCleanup)]
+fn panic_in_cleanup() -> !
+= <opaque>
+
+pub fn core::slice::{[T]}::first<'_0, T>(_1: &'_0 [T]) -> Option<&'_0 T>
+where
+    Outlives0: (T: '_0),
+= <opaque>
+
+// Full name: core::str::iter::SplitWhitespace
+pub opaque type SplitWhitespace<'a>
+
+struct str {
+  _0: [u8],
+}
+
+// Full name: core::str::iter::{impl Iterator<&'a str> for SplitWhitespace<'a>}::next
+pub fn impl_Iterator_for_SplitWhitespace::next<'a, '_1>(_1: &'_1 mut SplitWhitespace<'a>) -> Option<&'a str>
+where
+    Outlives0: ('a: '_1),
+= <opaque>
+
+// Full name: core::str::iter::{impl Iterator<&'a str> for SplitWhitespace<'a>}
+impl<'a> "impl_Iterator_for_SplitWhitespace" Iterator<&'a str> for SplitWhitespace<'a> {
+    fn next<'_0_1> = impl_Iterator_for_SplitWhitespace::next<'a, '_0_1>
+    fn peekable = peekable<SplitWhitespace<'a>, &'a str>[impl_Iterator_for_SplitWhitespace<'a>]
+    vtable: lazy
+}
+
+// Full name: core::str::{str}::split_whitespace
+#[diagnostic_item("str_split_whitespace")]
+pub fn split_whitespace<'_0>(_1: &'_0 str) -> SplitWhitespace<'_0>
+= <opaque>
+
+// Full name: alloc::alloc::Global
+#[lang_item(GlobalAlloc)]
+pub struct Global {}
+
+pub opaque type alloc::vec::into_iter::IntoIter<T, A>
+
+// Full name: alloc::vec::into_iter::IntoIter::{impl Destruct for alloc::vec::into_iter::IntoIter<T, A>}::drop_glue
+unsafe fn impl_Destruct_for_IntoIter::drop_glue<'_0, T, A>(_1: &'_0 mut alloc::vec::into_iter::IntoIter<T, A>)
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::into_iter::{impl Iterator<T> for alloc::vec::into_iter::IntoIter<T, A>}::next
+pub fn impl_Iterator_for_IntoIter::next<'_0, T, A>(_1: &'_0 mut alloc::vec::into_iter::IntoIter<T, A>) -> Option<T>
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::into_iter::{impl Iterator<T> for alloc::vec::into_iter::IntoIter<T, A>}
+impl<T, A> "impl_Iterator_for_IntoIter" Iterator<T> for alloc::vec::into_iter::IntoIter<T, A> {
+    fn next<'_0_1> = impl_Iterator_for_IntoIter::next<'_0_1, T, A>
+    fn peekable = peekable<alloc::vec::into_iter::IntoIter<T, A>, T>[impl_Iterator_for_IntoIter<T, A>]
+    vtable: lazy
+}
+
+// Full name: alloc::vec::Vec
+#[diagnostic_item("Vec")]
+pub opaque type Vec<T>
+
+// Full name: alloc::vec::Vec::{impl Destruct for Vec<T>}::drop_glue
+unsafe fn impl_Destruct_for_Vec::drop_glue<'_0, T, A>(_1: &'_0 mut Vec<T>)
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::{Vec<T>}::new
+#[diagnostic_item("vec_new")]
+pub fn new<T>() -> Vec<T>
+= <opaque>
+
+// Full name: alloc::vec::{impl Deref<[T]> for Vec<T>}::deref
+pub fn deref<'_0, T, A>(_1: &'_0 Vec<T>) -> &'_0 [T]
+where
+    Outlives0: (T: '_0),
+    Outlives1: (A: '_0),
+= <opaque>
+
+// Full name: alloc::vec::{impl IntoIterator<T, alloc::vec::into_iter::IntoIter<T, A>> for Vec<T>}::into_iter
+pub fn into_iter<T, A>(_1: Vec<T>) -> alloc::vec::into_iter::IntoIter<T, A>
+= <opaque>
+
+// Full name: test_crate::Edge
+pub struct Edge<'a> {
+  args: &'a [u32],
+}
+
+// Full name: test_crate::Summary
+pub struct Summary<'a> {
+  formals: &'a [u32],
+  dests: Peekable<alloc::vec::into_iter::IntoIter<Edge<'a>, Global>, Edge<'a>>,
+}
+
+// Full name: test_crate::Words
+pub struct Words<'a> {
+  words: Peekable<SplitWhitespace<'a>, &'a str>,
+}
+
+// Full name: test_crate::Array
+pub trait Array<Self, Self_Item>
+
+// Full name: test_crate::{impl Array<T> for [T; N]}
+impl<T, const N : usize> "impl_Array_for_array" Array<T> for [T; N] {
+    vtable: lazy
+}
+
+// Full name: test_crate::Small
+pub struct Small<A, Clause0_Item> {
+  items: Vec<Clause0_Item>,
+}
+
+// Full name: test_crate::Block
+pub struct Block<'a> {
+  edges: Small<[Edge<'a>; 2usize], Edge<'a>>,
+}
+
+// Full name: test_crate::mk
+pub fn mk<'a>(f: &'a [u32]) -> Summary<'a>
+{
+    let mut _0: Summary<'2>; // return
+    let f: &'4 [u32]; // arg #1
+    let mut _2: &'5 [u32]; // anonymous local
+    let mut _3: Peekable<alloc::vec::into_iter::IntoIter<Edge<'13>, Global>, Edge<'13>>; // anonymous local
+    let mut _4: alloc::vec::into_iter::IntoIter<Edge<'16>, Global>; // anonymous local
+    let mut _5: Vec<Edge<'18>>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    _2 = &(*f) with_metadata(read f.metadata)
+    storage_live(_3)
+    storage_live(_4)
+    storage_live(_5)
+    _5 = new<Edge<'0>>()
+    ↳⚡ storage_dead(f)
+        unwind_continue
+    _4 = into_iter<Edge<'26>, Global>(move _5)
+    ↳⚡ conditional_drop[impl_Destruct_for_Vec::drop_glue<'33, Edge<'32>, Global>] _5
+        ↳⚡ storage_dead(f)
+            unwind_terminate(in_cleanup)
+        storage_dead(f)
+        unwind_continue
+    storage_dead(_5)
+    _3 = peekable<alloc::vec::into_iter::IntoIter<Edge<'41>, Global>, Edge<'41>>[impl_Iterator_for_IntoIter<Edge<'41>, Global>](move _4)
+    ↳⚡ conditional_drop[impl_Destruct_for_IntoIter::drop_glue<'55, Edge<'54>, Global>] _4
+        ↳⚡ storage_dead(f)
+            unwind_terminate(in_cleanup)
+        storage_dead(f)
+        unwind_continue
+    storage_dead(_4)
+    _0 = Summary { formals: move _2, dests: move _3 }
+    conditional_drop[impl_Destruct_for_Peekable::drop_glue<'72, alloc::vec::into_iter::IntoIter<Edge<'67>, Global>, Edge<'67>>[impl_Iterator_for_IntoIter<Edge<'67>, Global>]] _3
+    ↳⚡ storage_dead(f)
+        unwind_continue
+    storage_dead(_3)
+    storage_dead(_2)
+    storage_dead(f)
+    return
+}
+
+// Full name: test_crate::words
+pub fn words<'a>(s: &'a str) -> Words<'a>
+{
+    let mut _0: Words<'1>; // return
+    let s: &'3 str; // arg #1
+    let mut _2: Peekable<SplitWhitespace<'9>, &'9 str>; // anonymous local
+    let mut _3: SplitWhitespace<'12>; // anonymous local
+    let mut _4: &'13 str; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &(*s) with_metadata(read s.metadata)
+    _3 = split_whitespace<'17>(move _4)
+    ↳⚡ storage_dead(s)
+        unwind_continue
+    storage_dead(_4)
+    _2 = peekable<SplitWhitespace<'23>, &'23 str>[impl_Iterator_for_SplitWhitespace<'23>](move _3)
+    ↳⚡ storage_dead(s)
+        unwind_continue
+    storage_dead(_3)
+    _0 = Words { words: move _2 }
+    storage_dead(_2)
+    storage_dead(s)
+    return
+}
+
+pub fn test_crate::first<'a, 'b>(b: &'b Block<'a>) -> Option<&'b Edge<'a>>
+where
+    Outlives0: ('a: 'b),
+{
+    let mut _0: Option<&'5 Edge<'6>>; // return
+    let b: &'10 Block<'11>; // arg #1
+    let mut _2: &'15 [Edge<'16>]; // anonymous local
+    let _3: &'17 [Edge<'18>]; // anonymous local
+    let mut _4: &'22 Vec<Edge<'23>>; // anonymous local
+
+    storage_live(_0)
+    storage_live(_2)
+    storage_live(_3)
+    storage_live(_4)
+    _4 = &(*b).edges.items
+    _3 = deref<'43, Edge<'38>, Global>(move _4)
+    ↳⚡ storage_dead(b)
+        unwind_continue
+    _2 = &(*_3) with_metadata(read _3.metadata)
+    storage_dead(_4)
+    _0 = core::slice::{[T]}::first<'53, Edge<'48>>(move _2)
+    ↳⚡ storage_dead(b)
+        unwind_continue
+    storage_dead(_2)
+    storage_dead(_3)
+    storage_dead(b)
+    return
+}
+
+
+

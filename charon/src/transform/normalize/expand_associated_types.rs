@@ -966,6 +966,182 @@ impl<'a> ComputeItemModifications<'a> {
     }
 }
 
+/// Item signatures as they were before this pass modified them, used to recover the regions of
+/// the trait refs we compute associated types from.
+///
+/// rustc resolves trait refs with erased regions, so the generics of a `TraitRefKind::TraitImpl`
+/// (and its `trait_decl_ref`) have erased regions. An associated type computed from that impl
+/// (e.g. the lifted `Item` of `Peekable<vec::IntoIter<Edge<'a>>>`, from `impl<T, A> Iterator for
+/// IntoIter<T, A> { type Item = T; }`) would then have erased regions too. We recover them by
+/// instantiating the clause of the referencing item with its (region-accurate) explicit arguments,
+/// and matching the impl's own trait reference against it.
+#[derive(Default)]
+struct OriginalSignatures {
+    /// The trait clauses of each item, with their trait refs removed (we only substitute the
+    /// explicit generics). `None` for clauses that mention the `Self` clause.
+    clauses: HashMap<ItemId, IndexVec<TraitClauseId, Option<PolyTraitDeclRef>>>,
+    /// The trait implemented by each impl, in terms of the impl's generics.
+    impl_traits: HashMap<TraitImplId, TraitDeclRef>,
+}
+
+impl OriginalSignatures {
+    fn new(krate: &TranslatedCrate) -> Self {
+        let mut sigs = Self::default();
+        for (id, item) in krate.all_items_with_ids() {
+            let params = item.generic_params();
+            if !params.trait_clauses.is_empty() {
+                let clauses = params.trait_clauses.map_ref(|clause| {
+                    let mut tref = clause.trait_.clone();
+                    tref.skip_binder.generics.trait_refs = Default::default();
+                    let flags = tref.type_info().flags;
+                    (!flags.contains(TypeFlags::MENTIONS_SELF_CLAUSE)).then_some(tref)
+                });
+                sigs.clauses.insert(id, clauses);
+            }
+            if let ItemRef::TraitImpl(timpl) = item {
+                let impl_trait = timpl.impl_trait.clone();
+                sigs.impl_traits.insert(timpl.def_id, impl_trait);
+            }
+        }
+        sigs
+    }
+
+    /// Restore the regions of `tref.trait_decl_ref`, where `tref` proves clause `clause_id` of
+    /// item `item_id` instantiated with `args`.
+    fn restore_clause_regions(
+        &self,
+        item_id: ItemId,
+        clause_id: TraitClauseId,
+        args: &GenericArgs,
+        tref: &mut TraitRef,
+    ) {
+        if !tref.type_info().has_erased_or_body_regions() {
+            return;
+        }
+        let Some(Some(clause)) = self.clauses.get(&item_id).and_then(|c| c.get(clause_id)) else {
+            return;
+        };
+        let Ok(clause) = SubstVisitor::new(args, None, true).visit(clause.clone()) else {
+            return;
+        };
+        let accurate = clause.erase();
+        if accurate.id != tref.trait_decl_ref.id {
+            return;
+        }
+        let mut decl_ref = tref.trait_decl_ref.clone();
+        let generics = &mut decl_ref.generics;
+        for (region, accurate) in generics.regions.iter_mut().zip(accurate.generics.regions) {
+            if region.is_erased() {
+                *region = accurate;
+            }
+        }
+        for (ty, accurate) in generics.types.iter_mut().zip(accurate.generics.types) {
+            if ty.eq_modulo_regions(&accurate) {
+                *ty = accurate;
+            }
+        }
+        *tref = TraitRef::new(tref.kind.clone(), decl_ref);
+    }
+
+    /// Restore the erased regions of the generics of `impl_ref` by matching the impl's trait
+    /// reference against `trait_decl_ref`, the trait reference it proves.
+    fn restore_impl_regions(
+        &self,
+        impl_ref: &TraitImplRef,
+        trait_decl_ref: &TraitDeclRef,
+    ) -> Option<GenericArgs> {
+        if !impl_ref.generics.type_info().has_erased_or_body_regions() {
+            return None;
+        }
+        let impl_trait = self.impl_traits.get(&impl_ref.id)?;
+        let mut matcher = ImplArgsMatcher {
+            args: impl_ref.generics.as_ref().clone(),
+            depth: DeBruijnId::zero(),
+        };
+        // The trait refs may have extra lifted type arguments: only match the original prefix.
+        // A mismatch only stops the matching of that argument.
+        let (pat, target) = (&impl_trait.generics, &trait_decl_ref.generics);
+        for (pat, target) in pat.regions.iter().zip(&target.regions) {
+            let _ = ZipAst::visit(&mut matcher, pat, target);
+        }
+        for (pat, target) in pat.types.iter().zip(&target.types) {
+            let _ = ZipAst::visit(&mut matcher, pat, target);
+        }
+        (matcher.args != *impl_ref.generics).then_some(matcher.args)
+    }
+}
+
+/// Zips an impl's trait reference (in terms of the impl's generics) with a trait reference it
+/// proves, and replaces the impl arguments in `args` whose regions are erased with the matched
+/// values.
+struct ImplArgsMatcher {
+    args: GenericArgs,
+    depth: DeBruijnId,
+}
+
+impl Visitor for ImplArgsMatcher {
+    type Break = ();
+}
+
+impl ZipAst for ImplArgsMatcher {
+    fn visit_region(&mut self, pat: &Region, target: &Region) -> ControlFlow<()> {
+        if let Region::Var(var) = pat
+            && let Some(id) = var.bound_at_depth(self.depth)
+            && let Some(slot) = self.args.regions.get_mut(id)
+            && slot.is_erased()
+            && let Some(target) = target.clone().move_from_under_binders(self.depth)
+        {
+            *slot = target;
+        }
+        Continue(())
+    }
+    fn visit_ty_kind(&mut self, pat: &TyKind, target: &TyKind) -> ControlFlow<()> {
+        if let TyKind::TypeVar(var) = pat
+            && let Some(id) = var.bound_at_depth(self.depth)
+        {
+            if let Some(slot) = self.args.types.get_mut(id)
+                && slot.type_info().has_erased_or_body_regions()
+                && let Some(target) = target.clone().into_ty().move_from_under_binders(self.depth)
+                && slot.eq_modulo_regions(&target)
+            {
+                *slot = target;
+            }
+            return Continue(());
+        }
+        self.visit_inner(pat, target)
+    }
+    // Neither constants nor trait proofs carry the regions we're after.
+    fn visit_constant_expr(&mut self, _: &ConstantExpr, _: &ConstantExpr) -> ControlFlow<()> {
+        Continue(())
+    }
+    fn visit_trait_ref(&mut self, _: &TraitRef, _: &TraitRef) -> ControlFlow<()> {
+        Continue(())
+    }
+    fn visit_poly_trait_ref(&mut self, _: &PolyTraitRef, _: &PolyTraitRef) -> ControlFlow<()> {
+        Continue(())
+    }
+    fn visit_region_binder<T: AstVisitable>(
+        &mut self,
+        pat: &RegionBinder<T>,
+        target: &RegionBinder<T>,
+    ) -> ControlFlow<()> {
+        self.depth = self.depth.incr();
+        let result = self.visit_inner(pat, target);
+        self.depth = self.depth.decr();
+        result
+    }
+    fn visit_binder<T: AstVisitable>(
+        &mut self,
+        pat: &Binder<T>,
+        target: &Binder<T>,
+    ) -> ControlFlow<()> {
+        self.depth = self.depth.incr();
+        let result = self.visit_inner(pat, target);
+        self.depth = self.depth.decr();
+        result
+    }
+}
+
 /// Visitor that will traverse item bodies and update `GenericArgs` to match the new item
 /// signatures. This also replaces `TyKind::TraitType`s for which we have a replacement.
 ///
@@ -980,6 +1156,7 @@ struct UpdateItemBody<'a> {
     // Whether the current item is a type alias, which affects error messages.
     is_type_alias: bool,
     item_modifications: &'a HashMap<GenericsSource, ItemModifications>,
+    original_signatures: &'a OriginalSignatures,
     // It's a reversed stack, for when we go under binders.
     type_replacements: BindingStack<TypeConstraintSet>,
 }
@@ -1048,9 +1225,13 @@ impl UpdateItemBody<'_> {
                     .get(&GenericsSource::item(impl_ref.id))?
                     .type_constraints
                     .find(path)?;
+                let restored = self
+                    .original_signatures
+                    .restore_impl_regions(impl_ref, &tref.trait_decl_ref);
+                let impl_args = restored.as_ref().unwrap_or(&*impl_ref.generics);
                 Some(
                     ItemBinder::new(impl_ref.id, ty.clone())
-                        .substitute(ItemBinder::new(CurrentItem, &impl_ref.generics))
+                        .substitute(ItemBinder::new(CurrentItem, impl_args))
                         .under_current_binder(),
                 )
             }
@@ -1117,7 +1298,12 @@ impl UpdateItemBody<'_> {
                         .bound_at_depth(DeBruijnId::zero())
                         .expect("found replacement not at binder level 0?");
                     path = path.pop_base();
-                    args.trait_refs[clause_id].clone().erase()
+                    let mut tref = args.trait_refs[clause_id].clone().erase();
+                    if let GenericsSource::Item(item_id) = &target {
+                        self.original_signatures
+                            .restore_clause_regions(*item_id, clause_id, args, &mut tref);
+                    }
+                    tref
                 }
             };
             let ty = if let Some(ty) = self.lookup_path_on_trait_ref(&path, &base_tref) {
@@ -1476,6 +1662,7 @@ impl TransformPass for Transform {
     fn transform_ctx(&self, ctx: &mut TransformCtx) {
         // Compute all the necessary type info to be able to replace and normalize associated
         // types.
+        let original_signatures = OriginalSignatures::new(&ctx.translated);
         let item_modifications: HashMap<GenericsSource, ItemModifications> = {
             let mut computer = ComputeItemModifications::new(ctx);
             let mut item_modifications = HashMap::default();
@@ -1569,6 +1756,7 @@ impl TransformPass for Transform {
                 span,
                 is_type_alias,
                 item_modifications: &item_modifications,
+                original_signatures: &original_signatures,
                 type_replacements: BindingStack::new(type_replacements),
             };
             if let Break(_) = item.drive_mut(&mut visitor) {
